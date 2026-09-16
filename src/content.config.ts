@@ -24,7 +24,7 @@ const riskSchema = z.enum(["low", "med", "high"]);
 //
 // The teeth stay where they matter: anything asserting an effect still has to
 // show its sample size and say whether it was blinded.
-const effectClaim = z.object({
+const effectClaim = z.strictObject({
   kind: z.literal("effect"),
   text: z.string().trim().min(1),
   // A number, or an explicit admission that the source never published one.
@@ -36,7 +36,14 @@ const effectClaim = z.object({
   source: z.string().trim().min(1),
 });
 
-const historyClaim = z.object({
+// Strict on both sides, which closes one specific dodge: relabelling an effect
+// claim as history while leaving its `n` and `blinded` in place. A history
+// claim carrying a sample size is incoherent, and the build now says so.
+//
+// It does not close the general hole — see spec/FALSIFICATION.md. Someone who
+// relabels a claim *and* deletes its numbers is simply lying about what kind of
+// claim it is, and no schema can tell.
+const historyClaim = z.strictObject({
   kind: z.literal("history"),
   text: z.string().trim().min(1),
   source: z.string().trim().min(1),
