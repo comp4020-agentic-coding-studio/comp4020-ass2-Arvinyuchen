@@ -1,30 +1,23 @@
 ---
-title: Opening lecture
-description:
-  The first lecture — what the course is, why it is shaped this way, and what
-  happens in week 1
+title: Why the Advice Doesn't Fit
+description: >-
+  The opening lecture — where everyday instructions about your day actually came
+  from, and why they are the wrong shape for a person
 week: 1
 date: 2027-02-22
-teachers:
-  - marisol-quaye
-slides: /decks/week-01/
 related:
   - sessions/01-baseline
 ---
 
-<!-- STARTER_CONTENT: replace this lecture, then remove this comment. -->
+The course opens by taking apart four instructions you have almost certainly been
+given: sleep eight hours, eat breakfast, walk ten thousand steps, work in
+twenty-five minute blocks.
 
-Replace this page. A lecture entry says what was covered and links to the pages
-that own the detail, so the lecture stays short and nothing is explained twice.
+Not to debunk them. Two of the four are defensible advice for a population. The
+lecture is about a different problem — that all four are statements about a
+distribution, delivered to you as an instruction about your Tuesday, and that the
+translation from the first thing to the second is never shown.
 
-The `related:` ref above is a graph edge: it renders on this page and on the
-session's, so declare a connection once, on whichever side is convenient.
-
-The page renders its `slides:` link automatically. Decks are markdown too,
-under `src/decks/`; the path is part of the lecture's API metadata.
-
-## Outline
-
-- what the course is for
-- how the weeks are shaped
-- what to do before the first session
+We finish on the shape of the course: why the unit of design is a single day
+rather than a habit or a goal, and why a course like this cannot end by handing
+out answers.
