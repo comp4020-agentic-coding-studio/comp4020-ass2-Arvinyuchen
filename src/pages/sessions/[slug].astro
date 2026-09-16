@@ -8,7 +8,7 @@ import Claims from "../../components/Claims.astro";
 import Protocol from "../../components/Protocol.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
-import "../../styles/site.css";
+import SiteChrome from "../../components/SiteChrome.astro";
 import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
@@ -25,6 +25,7 @@ const { Content } = await render(session);
   description={session.data.description}
   {...siteConfig}
 >
+  <SiteChrome />
   <p><strong>{formatCourseDate(session.data.date)}</strong></p>
   <Protocol week={session} />
   <Content />

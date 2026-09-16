@@ -1,0 +1,31 @@
+---
+// Site-wide chrome: the global stylesheet, and the one bit of furniture that
+// needs moving.
+//
+// The theme renders its theme-switch button inside the footer's legal row, and
+// BaseLayout exposes no slot near the nav, so there is no way to place it in
+// the header from markup. This moves the theme's own button rather than
+// building a second one, so its behaviour, its aria-label and the script that
+// drives it all come along unchanged.
+//
+// Included on every page in place of a bare stylesheet import, so anything
+// else the chrome needs later has one home instead of nine.
+import "../styles/site.css";
+---
+
+<script>
+  function liftThemeToggle() {
+    const nav = document.querySelector(".at-nav-inner");
+    const toggle = document.querySelector(".at-footer-theme-toggle");
+    if (!nav || !toggle || toggle.closest(".at-nav-inner")) return;
+
+    // Sits beside the search button so the two icon buttons travel together.
+    const search = nav.querySelector(".at-search-trigger");
+    nav.insertBefore(toggle, search ?? null);
+    toggle.classList.add("at-nav-theme-toggle");
+  }
+
+  liftThemeToggle();
+  // ClientRouter swaps the document on navigation, so do it again after.
+  document.addEventListener("astro:page-load", liftThemeToggle);
+</script>

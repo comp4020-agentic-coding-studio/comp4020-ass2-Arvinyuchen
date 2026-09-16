@@ -28,12 +28,68 @@
  * sit just after the lockup instead of being pushed right, which reads fine.
  */
 @media (width >= 640px) {
+  /* Row one is the lockup with the two icon buttons at the far end; row two is
+     the links. The nav is a wrapping flex row, so this is a question of order:
+     send the links last and they overflow to a second line on their own, while
+     the buttons stay up with the lockup. The auto margin on the first button
+     eats the space between.
+
+     Giving the buttons order:-1 instead does not work, and the way it fails is
+     instructive: they land ahead of the lockup, and the auto margin then
+     pushes the lockup to the right-hand end of the row. */
   .at-nav-links {
-    margin-inline-start: 0;
+    order: 1;
+
+    /* The negative margin is the anchor's own inline padding. Without it the
+       link *box* aligns to the wordmark and the link *text* sits a padding
+       further right, which is the misalignment that showed on screen. */
+    margin-inline-start: calc(-1 * var(--at-spacing-sm));
   }
 
-  /* The search button keeps its place at the end of the row it lands on. */
-  .at-nav-inner > .at-search-trigger {
+  .at-nav-inner > .at-nav-theme-toggle {
     margin-inline-start: auto;
   }
+
+  /* Air between the two rows. The theme sets a row gap of zero, which was
+     fine when the nav was one line and cramped once it became two. */
+  .at-nav-inner {
+    row-gap: var(--at-spacing-sm);
+  }
+
+  /* The links were 0.875rem, which read as small print beside the lockup. At
+     1rem they match body text: the theme sets the root to 18px, so 1rem is
+     18px here, not smaller. That is the intent, since the nav is a primary
+     control rather than an aside. */
+  .at-nav-links a {
+    font-size: 1rem;
+  }
+}
+
+/* The footer's legal row held one stray "|" separator and, until the toggle
+   moved up, the theme switch. With the button gone there is nothing left in
+   it but the pipe. */
+.at-footer-legal {
+  display: none;
+}
+
+/* The licence is fine print, and it was wrapped in two rules of its own in the
+   middle of an otherwise empty band. No rules: it sits in the corner where the
+   page's vertical rule meets the footer's horizontal one, at the size fine
+   print deserves. */
+.at-footer-bottom > hr {
+  display: none;
+}
+
+/* 36px of padding above and 72px below left the licence floating in the middle
+   of an empty band. Tucked in: a small gap under the rule, and enough beneath
+   to breathe without the void. */
+.at-footer-bottom {
+  padding-block: var(--at-spacing-sm) var(--at-spacing-lg);
+}
+
+.at-footer-licence {
+  margin-block: 0;
+  color: var(--at-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.5;
 }

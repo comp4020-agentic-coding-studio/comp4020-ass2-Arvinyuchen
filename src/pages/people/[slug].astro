@@ -4,7 +4,7 @@ import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { siteConfig } from "../../site-config";
-import "../../styles/site.css";
+import SiteChrome from "../../components/SiteChrome.astro";
 
 export async function getStaticPaths() {
   const people = await getPublishedCollection("people");
@@ -31,6 +31,7 @@ const description = person.data.description;
   heroImageAlt={photoAlt}
   {...siteConfig}
 >
+  <SiteChrome />
   <dl>
     {label && (
       <>

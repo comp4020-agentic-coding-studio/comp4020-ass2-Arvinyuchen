@@ -22,7 +22,7 @@
 // so a suffix there would show up as a heading on the page.
 import BaseLayout from "astro-theme-university/layouts/BaseLayout.astro";
 import { siteConfig } from "../site-config";
-import "../styles/site.css";
+import SiteChrome from "../components/SiteChrome.astro";
 
 const { frontmatter } = Astro.props as { frontmatter?: Record<string, unknown> };
 const { title, description, ...rest } = (frontmatter ?? {}) as {
@@ -42,6 +42,7 @@ const hasOwnHeading = Boolean(rest.heroTitle || rest.heroImage);
 ---
 
 <BaseLayout title={heading ?? ""} description={lead} {...siteConfig} {...rest}>
+  <SiteChrome />
   {!hasOwnHeading && heading && <h1>{heading}</h1>}
   {!hasOwnHeading && lead && <p class="lead">{lead}</p>}
   <slot />

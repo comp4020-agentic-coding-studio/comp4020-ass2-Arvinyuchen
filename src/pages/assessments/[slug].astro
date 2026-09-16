@@ -7,7 +7,7 @@ import Callout from "astro-theme-university/components/Callout.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import MarkingModel from "../../components/MarkingModel.astro";
 import { formatCourseDate } from "../../lib/dates";
-import "../../styles/site.css";
+import SiteChrome from "../../components/SiteChrome.astro";
 import { graphCollections, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
@@ -27,6 +27,7 @@ const { Content } = await render(assessment);
   description={assessment.data.description}
   {...siteConfig}
 >
+  <SiteChrome />
   {
     assessment.data.draft && (
       <Callout type="warning">

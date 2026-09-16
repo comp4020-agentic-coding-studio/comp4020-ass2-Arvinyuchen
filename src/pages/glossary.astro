@@ -8,7 +8,7 @@
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { glossaryTerms } from "../glossary";
 import { siteConfig } from "../site-config";
-import "../styles/site.css";
+import SiteChrome from "../components/SiteChrome.astro";
 
 const terms = [...glossaryTerms].sort((a, b) => a.term.localeCompare(b.term));
 ---
@@ -18,6 +18,7 @@ const terms = [...glossaryTerms].sort((a, b) => a.term.localeCompare(b.term));
   description="Every technical term this course uses, in plain language"
   {...siteConfig}
 >
+  <SiteChrome />
   <p>
     Each term is linked from the first week that uses it. If you meet one the
     course never explained where you first met it, that is a fault in the

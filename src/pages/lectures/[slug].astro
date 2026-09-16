@@ -15,7 +15,7 @@ import { withBase } from "astro-theme-university/url";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
 import { readingMinutes } from "../../lib/reading-time";
-import "../../styles/site.css";
+import SiteChrome from "../../components/SiteChrome.astro";
 import { graphCollections, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
@@ -34,6 +34,7 @@ const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").
 ---
 
 <BaseLayout title={title} description={lecture.data.description ?? undefined} {...siteConfig}>
+  <SiteChrome />
   <h1 transition:name={transitionName}>{title}</h1>
 
   <p class="lecture-meta">

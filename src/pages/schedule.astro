@@ -10,7 +10,7 @@ import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
 import { formatCourseDate } from "../lib/dates";
 import { sessionLabels, siteConfig } from "../site-config";
-import "../styles/site.css";
+import SiteChrome from "../components/SiteChrome.astro";
 
 const [labs, lectures, assessments] = await Promise.all([
   getPublishedCollection("sessions"),
@@ -35,6 +35,7 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
   description="The twelve weeks on one page: lectures, labs and everything that falls due"
   {...siteConfig}
 >
+  <SiteChrome />
   <p>
     Twelve teaching weeks with a two-week break after week 6: three lectures,
     twelve labs, and four pieces of assessment totalling {totalWeight}%. Each
