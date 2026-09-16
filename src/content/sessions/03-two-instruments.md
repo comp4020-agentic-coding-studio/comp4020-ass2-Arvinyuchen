@@ -4,6 +4,7 @@ description:
   Your phone, a paper diary and your own memory will disagree about last night,
   and none of them is the referee
 week: 3
+teachers: [wren-halliday, priya-ramanathan]
 date: 2027-03-08
 method: measurement-error
 component: sleep

@@ -4,6 +4,7 @@ description: >-
   Where the twenty-five minute work block actually came from, and what it means
   that the world adopted one person's answer
 week: 6
+teachers: [wren-halliday]
 date: 2027-03-29
 related:
   - sessions/06-twenty-five-minutes

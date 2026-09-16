@@ -4,6 +4,7 @@ description:
   Every experiment in this course has the same unfixable flaw, and this week we
   look straight at it
 week: 7
+teachers: [wren-halliday, priya-ramanathan]
 date: 2027-04-19
 method: blinding
 component: caffeine

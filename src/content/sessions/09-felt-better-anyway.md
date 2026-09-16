@@ -4,6 +4,7 @@ description:
   Almost everything appears to work, because almost everybody starts on their
   worst day
 week: 9
+teachers: [priya-ramanathan]
 date: 2027-05-03
 method: regression-to-mean
 component: the bad day

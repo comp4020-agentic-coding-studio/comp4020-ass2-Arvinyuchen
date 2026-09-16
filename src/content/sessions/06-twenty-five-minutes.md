@@ -4,6 +4,7 @@ description:
   The most repeated productivity instruction in the world was one student's
   answer to one question, so this week we test it properly
 week: 6
+teachers: [tobias-veck]
 date: 2027-03-29
 method: counterbalancing
 component: the work block

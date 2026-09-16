@@ -4,6 +4,7 @@ description:
   Track enough about yourself and something will always correlate with
   something, which is how a dashboard lies to you with true numbers
 week: 11
+teachers: [wren-halliday, priya-ramanathan]
 date: 2027-05-17
 method: multiple-comparisons
 component: the dashboard

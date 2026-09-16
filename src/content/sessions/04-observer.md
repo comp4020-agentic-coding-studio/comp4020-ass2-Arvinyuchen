@@ -4,6 +4,7 @@ description:
   You cannot watch your own day without changing it, so this week we measure the
   size of the change instead of pretending it away
 week: 4
+teachers: [tobias-veck]
 date: 2027-03-15
 method: reactivity
 component: phone use

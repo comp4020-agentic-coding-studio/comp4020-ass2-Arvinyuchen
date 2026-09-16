@@ -4,6 +4,7 @@ description:
   Before you can measure how tired you are, you have to decide what you mean,
   and that decision quietly settles what you are able to find
 week: 2
+teachers: [tobias-veck]
 date: 2027-03-01
 method: operationalisation
 component: alertness

@@ -4,6 +4,7 @@ description:
   We record one ordinary day and change nothing about it, which is harder than
   it sounds
 week: 1
+teachers: [priya-ramanathan]
 date: 2027-02-22
 method: naturalistic-baseline
 component: the whole day

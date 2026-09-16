@@ -4,6 +4,7 @@ description:
   You cannot randomise your own life, so this week we go looking for what else
   moved while we were not watching
 week: 8
+teachers: [tobias-veck]
 date: 2027-04-26
 method: confounding
 component: the social evening

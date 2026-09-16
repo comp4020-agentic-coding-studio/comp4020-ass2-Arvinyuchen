@@ -4,6 +4,7 @@ description:
   When to stop experimenting, why every answer you found has an expiry date, and
   what you are left holding
 week: 12
+teachers: [tobias-veck]
 date: 2027-05-24
 method: stopping-and-exit
 component: the unmeasured day

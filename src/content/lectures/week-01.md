@@ -4,6 +4,7 @@ description: >-
   The opening lecture — where everyday instructions about your day actually came
   from, and why they are the wrong shape for a person
 week: 1
+teachers: [wren-halliday]
 date: 2027-02-22
 related:
   - sessions/01-baseline

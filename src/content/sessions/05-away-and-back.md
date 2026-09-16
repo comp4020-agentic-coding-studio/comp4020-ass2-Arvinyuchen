@@ -4,6 +4,7 @@ description:
   The simplest honest experiment one person can run alone, demonstrated on
   breakfast
 week: 5
+teachers: [wren-halliday, priya-ramanathan]
 date: 2027-03-22
 method: aba-withdrawal
 component: breakfast

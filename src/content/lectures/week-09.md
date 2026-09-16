@@ -4,6 +4,7 @@ description: >-
   The lecture on regression to the mean, and why almost every intervention
   appears to work
 week: 9
+teachers: [wren-halliday]
 date: 2027-05-03
 related:
   - sessions/09-felt-better-anyway

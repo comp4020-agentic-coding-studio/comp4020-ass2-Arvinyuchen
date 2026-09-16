@@ -4,6 +4,7 @@ description:
   We run week 5's experiment again, on the same person, and get a different
   answer
 week: 10
+teachers: [tobias-veck]
 date: 2027-05-10
 method: non-stationarity
 component: the morning, ten weeks on
