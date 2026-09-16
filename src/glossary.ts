@@ -20,4 +20,111 @@ export interface GlossaryTerm {
   aliases?: string[];
 }
 
-export const glossaryTerms: GlossaryTerm[] = [];
+// Each term is introduced by exactly one week, and the check enforces that the
+// week which introduces it is the first one to mention it. That is a real
+// constraint on the writing: a later week may use "placebo" freely, but week 3
+// may not mention it in passing, because week 7 is where it gets explained.
+//
+// Which week introduces what:
+//   1  baseline, sample size          7  blinding, placebo
+//   2  operationalise                 8  confounding
+//   3  orthosomnia                    9  regression to the mean
+//   4  reactivity                    10  non-stationary
+//   5  withdrawal design             11  multiple comparisons
+//   6  counterbalancing, pre-registration
+export const glossaryTerms: GlossaryTerm[] = [
+  {
+    term: "baseline",
+    slug: "baseline",
+    aliases: ["baselines"],
+    definition:
+      "What something looks like before you interfere with it. Without one, you have nothing to compare a change against — so the first week of this course changes nothing on purpose.",
+  },
+  {
+    term: "sample size",
+    slug: "sample-size",
+    aliases: ["sample sizes"],
+    definition:
+      "How many people, or how many days, a finding rests on. A result from four people and a result from four thousand are not the same kind of fact, and most everyday advice does not tell you which one it is.",
+  },
+  {
+    term: "operationalise",
+    slug: "operationalise",
+    aliases: ["operationalised", "operationalising", "operationalisation"],
+    definition:
+      "To turn a vague word into something you can actually write down. “Tired” is not a measurement; “minutes to fall asleep” is. Choosing badly here quietly decides what the rest of your experiment can find.",
+  },
+  {
+    term: "orthosomnia",
+    slug: "orthosomnia",
+    definition:
+      "Sleeping worse because you are tracking your sleep. Sleep clinicians named it after a run of patients whose main problem turned out to be anxiety about their own sleep data.",
+  },
+  {
+    term: "reactivity",
+    slug: "reactivity",
+    aliases: ["reactive"],
+    definition:
+      "The way measuring something changes it. People behave differently when watched, and this still holds when the person watching is themselves.",
+  },
+  {
+    term: "withdrawal design",
+    slug: "withdrawal-design",
+    definition:
+      "Measure, add the thing, then take it away again. If the effect arrives with the thing and leaves with it, the thing is the likely cause. It is the simplest honest experiment one person can run alone.",
+  },
+  {
+    term: "counterbalancing",
+    slug: "counterbalancing",
+    aliases: ["counterbalanced", "counterbalance"],
+    definition:
+      "Alternating the order you try two things in, so that “I did this one second” cannot be mistaken for “this one worked better”.",
+  },
+  {
+    term: "pre-registration",
+    slug: "pre-registration",
+    aliases: ["pre-register", "pre-registered", "pre-registering"],
+    definition:
+      "Writing down what you expect, how you will measure it, and when you will stop — before you begin. It is what stops you quietly changing the question once you have seen the answer.",
+  },
+  {
+    term: "blinding",
+    slug: "blinding",
+    aliases: ["blinded"],
+    definition:
+      "Not knowing which condition you are in, so that what you expect cannot colour what you record. Doing this to yourself is close to impossible, which is a real limit on every experiment in this course.",
+  },
+  {
+    term: "placebo",
+    slug: "placebo",
+    aliases: ["placebos"],
+    definition:
+      "A real effect produced by expecting an effect. It is not imaginary. It simply is not caused by the thing you believe caused it.",
+  },
+  {
+    term: "confounding",
+    slug: "confounding",
+    aliases: ["confounded", "confounder", "confounders"],
+    definition:
+      "When something you were not tracking moved at the same time as the thing you were, so you cannot tell which one mattered. Weather, deadlines and other people confound almost everything.",
+  },
+  {
+    term: "regression to the mean",
+    slug: "regression-to-the-mean",
+    definition:
+      "Unusual measurements tend to be followed by ordinary ones. Because people start new routines on their worst days, almost any routine appears to help. This is the single most useful idea in the course.",
+  },
+  {
+    term: "non-stationary",
+    slug: "non-stationary",
+    aliases: ["non-stationarity"],
+    definition:
+      "Changing over time. A person is non-stationary, so an answer that fitted you in March may not fit you in May — and that is not a mistake in your method.",
+  },
+  {
+    term: "multiple comparisons",
+    slug: "multiple-comparisons",
+    definition:
+      "Testing many things at once and reporting whichever one looks interesting. Track forty measures and something will correlate with something by chance alone. This is how dashboards mislead.",
+  },
+];
