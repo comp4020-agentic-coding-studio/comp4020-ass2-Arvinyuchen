@@ -1,4 +1,5 @@
 ---
+import { roleLabel } from "../../lib/roles";
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
@@ -12,15 +13,7 @@ export async function getStaticPaths() {
 const { person } = Astro.props;
 const { Content } = await render(person);
 
-// Map the role enum (convenor|tutor|guest|other) to display labels rather than
-// rendering the raw lowercase value.
-const roleLabels: Record<string, string> = {
-  convenor: "Convenor",
-  tutor: "Tutor",
-  guest: "Guest lecturer",
-  other: "",
-};
-const roleLabel = person.data.role ? roleLabels[person.data.role] : undefined;
+const label = roleLabel(person.data.role);
 // Astro's generated type does not retain the image/alt refinement relationship,
 // so narrow the alt at the rendering boundary as well.
 const rawPhotoAlt = (person.data as { photoAlt?: unknown }).photoAlt;
@@ -38,10 +31,10 @@ const description = person.data.description;
   {...siteConfig}
 >
   <dl>
-    {roleLabel && (
+    {label && (
       <>
         <dt>Role</dt>
-        <dd>{roleLabel}</dd>
+        <dd>{label}</dd>
       </>
     )}
     {person.data.affiliation && (

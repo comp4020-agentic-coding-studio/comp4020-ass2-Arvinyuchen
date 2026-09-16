@@ -1,4 +1,5 @@
 ---
+import { roleLabel } from "../lib/roles";
 import { getPublishedCollection } from "astro-course-university/content";
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
@@ -12,14 +13,6 @@ const roleOrder: Record<string, number> = {
   other: 3,
 };
 
-// Map the role enum (convenor|tutor|guest|other) to display labels rather than
-// rendering the raw lowercase value.
-const roleLabels: Record<string, string> = {
-  convenor: "Convenor",
-  tutor: "Tutor",
-  guest: "Guest lecturer",
-  other: "",
-};
 
 // photoAlt rides the schema's passthrough (definePeopleCollection has no
 // extension point), so it needs a cast out of the generated types.
@@ -46,9 +39,9 @@ const visible = people.sort((a, b) => {
         image={person.data.photo ?? undefined}
         imageAlt={photoAlt(person.data)}
       >
-        {person.data.role && roleLabels[person.data.role] && (
+        {roleLabel(person.data.role) && (
           <p>
-            <small>{roleLabels[person.data.role]}</small>
+            <small>{roleLabel(person.data.role)}</small>
           </p>
         )}
         <p>{person.data.description}</p>
