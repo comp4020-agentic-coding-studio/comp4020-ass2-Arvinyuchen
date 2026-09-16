@@ -6,22 +6,30 @@ restates it.
 
 ## The course
 
-You have been told what to do with your day. Sleep eight hours. Eat breakfast.
-Exercise. No screens before bed. Work in twenty-five minute blocks.
+Public guidance is the best summary anyone has of what helps people in
+general. Sleep seven to nine hours. Aim for seven thousand steps or more.
+Enjoy a healthy breakfast. The course starts from that guidance rather than
+against it, and teaches it as published: what it says, how strong it is, and
+what it is a summary of.
 
-Every one of those is a population average wearing the costume of a personal
-instruction. Eight hours is a distribution flattened into a single number. Ten
-thousand steps was the name of a 1965 Japanese pedometer, not a finding. And the
-twenty-five minute work block was one student with a kitchen timer in the late
-1980s, who tested it on nobody but himself.
+What guidance cannot do is the last step, from a population to one person on
+one Tuesday. That step belongs to the student, and it can be taken carefully.
 
-The advice industry generalises from a single person, then instructs you to be
-average. This course does the opposite: it treats every prescription as a
-hypothesis, and tests it on the only subject the student has standing to
-experiment on. The unit of design is one day, not a life, not a habit, not a
-goal.
+The course teaches it in three moves, and the twelve weeks are those moves in
+order:
 
-Three ideas carry the whole course, and every page should serve at least one:
+1. **Realisation.** Read the guidance accurately, then look at your own day
+   and find where you actually sit in it. Weeks 1 to 4.
+2. **Change.** Alter one thing, using the guidance for what to change and how.
+   Weeks 5 to 7.
+3. **Rethinking.** Read what your body, your mood and your actions send back,
+   and revise the change against it. Weeks 8 to 12.
+
+Then round again, because the person is not the same in May as in March. The
+unit of design is one day.
+
+Three ideas make the third move necessary, and every page should serve at
+least one:
 
 1. **The average is not you.** A population finding is a hypothesis about a
    person, never an instruction.
@@ -31,13 +39,18 @@ Three ideas carry the whole course, and every page should serve at least one:
 
 ## Scope
 
-**In:** the 24-hour unit · designing protocols for a single subject ·
-measurement and its distortions · the history of self-experimentation · reading
-population studies as hypotheses · stopping rules and harm boundaries.
+**In:** the 24-hour unit · public guidance, taught as published, including
+what to change and how · designing protocols for a single subject ·
+measurement and its distortions · reading your own body, mood and actions as
+feedback · the history of self-experimentation · stopping rules and harm
+boundaries.
 
-**Out:** habit formation and streaks · productivity systems · goal setting ·
-nutrition or clinical advice · anything tracked over longer than a single day's
-structure.
+**Out:** personalised clinical advice, diagnosis or treatment · anything that
+substitutes for a doctor · goal setting and streaks · anything tracked over
+longer than a single day's structure.
+
+Teaching what the guidance says is in scope. Telling a particular student what
+their body needs is not, and no page should blur the two.
 
 If a page drifts out of scope, cut it rather than widen the course. The course
 is deliberately narrow, and staying narrow is the point.

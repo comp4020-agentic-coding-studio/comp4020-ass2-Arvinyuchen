@@ -55,9 +55,9 @@ export const courseMeta = slopCourseMetaSchema.parse({
   startDate: "2027-02-22",
   endDate: "2027-05-28",
   description:
-    "Sleep eight hours. Eat breakfast. Work in twenty-five minute blocks. " +
-    "Every one of those is a population average dressed as a personal " +
-    "instruction. This course treats each prescription as a hypothesis and " +
-    "tests it on a sample of one.",
+    "Public guidance tells you what helps people in general. This course " +
+    "teaches the last step it cannot take: realising where your own day " +
+    "sits in it, changing one thing, and rethinking that change against " +
+    "what your body, mood and actions send back.",
   tags: ["self-experiment", "everyday life", "methods"],
 }) satisfies CourseMetaInput;

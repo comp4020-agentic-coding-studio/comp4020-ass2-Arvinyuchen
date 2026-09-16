@@ -27,6 +27,23 @@ const dueIn = (week: number) => assessments.filter((entry) => entry.data.week ==
 const BREAK_AFTER = 6;
 const BREAK_DATES = "5 and 12 April 2027";
 
+// The three moves the course teaches. Read from the weeks rather than listed
+// here, so the table cannot disagree with the content.
+const PHASES = [
+  { key: "realisation", label: "Realisation", blurb: "Read the guidance, and find where your own day sits in it." },
+  { key: "change", label: "Change", blurb: "Alter one thing, using the guidance for what to change and how." },
+  { key: "rethinking", label: "Rethinking", blurb: "Read what your body, your mood and your actions send back, and revise." },
+] as const;
+
+const firstWeekOf = new Map(
+  PHASES.map(({ key }) => [
+    key,
+    Math.min(...weeks.filter((w) => w.data.phase === key).map((w) => w.data.week)),
+  ]),
+);
+const phaseStartingAt = (week: number) =>
+  PHASES.find(({ key }) => firstWeekOf.get(key) === week);
+
 const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 0);
 ---
 
@@ -38,9 +55,9 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
   <SiteChrome />
   <p>
     Twelve teaching weeks with a two-week break after week 6: three lectures,
-    twelve labs, and four pieces of assessment totalling {totalWeight}%. Each
-    lab introduces one method, named under its title, and builds only on
-    methods from earlier weeks.
+    twelve labs, and four pieces of assessment totalling {totalWeight}%. The
+    weeks run in three moves, banded below. Each lab introduces one method,
+    named under its title, and builds only on methods from earlier weeks.
   </p>
 
   <div
@@ -65,8 +82,17 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
             const week = lab.data.week;
             const lecture = lecturesIn(week);
             const due = dueIn(week);
+            const opens = phaseStartingAt(week);
             return (
               <>
+                {opens && (
+                  <tr class="phase-row">
+                    <th colspan="5" scope="colgroup">
+                      <span class="phase-label">{opens.label}</span>
+                      <span class="phase-blurb">{opens.blurb}</span>
+                    </th>
+                  </tr>
+                )}
                 <tr>
                   <th scope="row">{week}</th>
                   <td class="starting">{formatCourseDate(lab.data.date)}</td>
@@ -157,6 +183,30 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
 
   .none {
     color: var(--at-text-muted);
+  }
+
+  /* The three moves, as bands across the table. A heading row rather than a
+     column, because a phase covers a run of consecutive weeks and a column
+     would repeat the same word four times. */
+  .phase-row th {
+    padding-block: var(--at-spacing-md) 0.35rem;
+    text-align: start;
+    font-weight: 400;
+  }
+
+  .phase-label {
+    display: block;
+    color: var(--at-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .phase-blurb {
+    display: block;
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
   }
 
   .teaching-break td {

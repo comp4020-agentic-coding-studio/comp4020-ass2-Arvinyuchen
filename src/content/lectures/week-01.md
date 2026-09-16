@@ -1,8 +1,8 @@
 ---
 title: Why the Advice Doesn't Fit
 description: >-
-  The opening lecture: where everyday instructions about your day actually came
-  from, and why they are the wrong shape for a person
+  The opening lecture: what public guidance can tell you, what it cannot, and
+  the three moves that close the gap
 week: 1
 teachers: [wren-halliday]
 date: 2027-02-22
@@ -10,15 +10,20 @@ related:
   - sessions/01-baseline
 ---
 
-The course opens by taking apart four instructions you have almost certainly been
-given: sleep eight hours, eat breakfast, walk ten thousand steps, work in
-twenty-five minute blocks.
-
-Not to debunk them. Two of the four are defensible advice for a population. The
-lecture is about a different problem: all four are statements about a
-distribution, delivered to you as an instruction about your Tuesday, and that the
-translation from the first thing to the second is never shown.
-
-We finish on the shape of the course: why the unit of design is a single day
-rather than a habit or a goal, and why a course like this cannot end by handing
-out answers.
+Public guidance is the best summary we have of what helps people in general.
+Sleep seven to nine hours (Hirshkowitz et al., *Sleep Health* 2015). Aim for
+seven thousand steps or more (Australia's 24-Hour Movement Guidelines). Enjoy a
+healthy breakfast (the Australian Dietary Guidelines' own practical tips).
+Notice that these are ranges and aims rather than instructions, and that none of
+them knows anything about you. This course teaches you to close that gap in
+three moves. Realisation: read the guidance accurately, then look at your own
+day and find where you actually sit in it. Change: alter one thing, using the
+guidance for what to change and how, which later lectures cover in detail.
+Rethinking: read what comes back from your body, your mood and what you
+actually did, and revise the change against it. Then go round again, because you
+will not be the same person in May that you were in March. The unit is a single
+day: twenty-four hours observed, adjusted, and observed again. What the course
+will not do is hand you a finished answer, because a finished answer belongs to
+one person across one stretch of days, and it is no substitute for a doctor.
+What it gives you instead is the loop itself, and the judgement to know when a
+result is worth acting on.

@@ -52,9 +52,11 @@ work. Twelve weeks on, the honest position is this: you have found some things o
 about yourself, and every one of them has an expiry date, because week 10 showed
 you that the subject keeps moving.
 
-That is not a disappointing result. It is the result. Any course that sent you
-away with a list would be selling you the same thing the advice industry sells: a population average with your name written on it, which in this case happens to
-be a sample of one, measured in March.
+That is not a disappointing result. It is the result. A course that sent you
+away with a list would be handing you the one thing this subject cannot
+support: a fixed answer, drawn from one person across one stretch of days, and
+measured in March. The published guidance has the same shape and is honest
+about it, which is why it comes as ranges and aims.
 
 What survives is not the answer. It is that you now know how to ask again.
 

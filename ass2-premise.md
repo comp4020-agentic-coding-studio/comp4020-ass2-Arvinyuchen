@@ -10,7 +10,30 @@ applied at absurd granularity, a full protocol, with control conditions, for the
 first ten minutes after waking. Never winks. Never mocks. This register is what
 keeps the duty-of-care obligations honest rather than decorative.
 
-## Premise
+## Premise (revised 2026-09-17)
+
+The original framing set the course against public guidance: the advice
+industry generalises from one person and instructs you to be average. That was
+wrong about what the course does. The guidance is the best summary anyone has
+of what helps people in general, and the course teaches it as published,
+including what to change and how. What guidance cannot do is the last step,
+from a population to one person on one Tuesday.
+
+The course teaches that step in three moves, and the twelve weeks are those
+moves in order:
+
+1. **Realisation**, weeks 1 to 4. Read the guidance accurately, then find
+   where your own day sits in it.
+2. **Change**, weeks 5 to 7. Alter one thing, using the guidance for what to
+   change and how.
+3. **Rethinking**, weeks 8 to 12. Read what your body, your mood and your
+   actions send back, and revise against it.
+
+Then round again. `phase` is a declared field on every week and
+spec/content-invariants checks the three never double back, so the spine is in
+the data rather than only in the prose.
+
+## Premise (original, superseded)
 
 > You have been told what to do with your day. Sleep eight hours. Eat breakfast.
 > Exercise. No screens before bed. Work in twenty-five minute blocks.
