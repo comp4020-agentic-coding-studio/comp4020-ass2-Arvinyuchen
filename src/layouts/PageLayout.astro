@@ -1,8 +1,33 @@
 ---
+// The wrapper every .md and .mdx page gets, via `defaultLayout` in
+// astro.config.ts.
+//
+// MdxPageLayout renders the frontmatter description as a lead paragraph but
+// emits no h1 of its own, so a markdown page's heading outline started at h2
+// with no parent. /assessments/, /lectures/ and /people/ all shipped that way
+// in the starter, and the build never complained: axe's page-has-heading-one
+// is a best-practice rule and is off by default.
+//
+// Adding a markdown heading to each page put the h1 *after* the lead
+// paragraph, which is worse. So take the lead over and render both here, in
+// the order ContentLayout already uses on the .astro pages — heading, then
+// lead, then content — and the two kinds of page now agree.
 import MdxPageLayout from "astro-theme-university/layouts/MdxPageLayout.astro";
 import { siteConfig } from "../site-config";
+
+const { frontmatter } = Astro.props as { frontmatter?: Record<string, unknown> };
+const asText = (value: unknown): string | undefined =>
+  typeof value === "string" && value.trim() ? value : undefined;
+
+const title = asText(frontmatter?.title);
+const description = asText(frontmatter?.description);
+
+// A page carrying its own hero already has a heading; don't add a second one.
+const hasOwnHeading = Boolean(frontmatter?.heroTitle || frontmatter?.heroImage);
 ---
 
-<MdxPageLayout siteConfig={siteConfig} {...Astro.props}>
+<MdxPageLayout siteConfig={siteConfig} {...Astro.props} lead={false}>
+  {!hasOwnHeading && title && <h1>{title}</h1>}
+  {!hasOwnHeading && description && <p class="lead">{description}</p>}
   <slot />
 </MdxPageLayout>
