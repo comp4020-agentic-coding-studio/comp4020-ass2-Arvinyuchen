@@ -1,53 +1,75 @@
 # Process overview
 
-<!-- TEMPLATE: this file is a shape to fill in, not a form. Replace everything
-     in it with your own overview, and delete this comment — `pnpm
-     check:evidence` will remind you if it's still here. -->
-
-Written by you, for a reader: how you got from the brief to the harness and
-agentic workflow behind this submission. Markers read this file and follow its
-citations; they don't trawl the repo for evidence you didn't point at.
-
-This file is the shape; the course site's
-[assessment page](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#what-you-submit)
-is the requirement, and its
-[word counts](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#word-counts)
-cover every deliverable.
-
 ## What I built
 
-One paragraph: the thing, and the idea behind it.
+**SLOP1638 — How to Make a Day.** A twelve-week first-year course on running
+experiments on yourself, built on one argument: the instructions you are given
+about your day are statements about a population, handed over as instructions
+about your Tuesday.
 
-## How I got here
+## What I decided a good course looks like
 
-The account of the process: how the work actually went, and how you knew the
-result was right. Tell it in whatever order makes it clear. A weekly prototype
-needs a paragraph or two; an assignment needs more.
+Assignment 1 scored 95 for the artefact and 62 for process. The gap was not
+effort. My harness there ran to 7,648 words with no rule about content,
+factuality or audience, and every check was structural — so the course-design
+decisions happened in my head and left no trace in the repo.
 
-Cite the record as you go, as links whose text is the commit hash or range and
-whose target is this repo's commit or compare URL, so a reader clicks straight
-to the evidence:
+So this time the design came first and in writing: the premise, the scope I was
+refusing, the twelve weeks keyed on distinct methods
+([`dd4405e`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/dd4405e)). Two decisions did the most work. The unit is
+one day, not a habit, which rules out most of what such a course usually
+contains. And the twelve weeks are differentiated by **method** rather than
+topic, because twelve interchangeable weeks was the failure I was most likely to
+produce.
 
-- one commit: [`a1b2c3d`](https://github.com/YOUR-ORG/YOUR-REPO/commit/a1b2c3d)
-- a range:
-  [`a1b2c3d...e4f5a6b`](https://github.com/YOUR-ORG/YOUR-REPO/compare/a1b2c3d...e4f5a6b)
+## What went into the harness
 
-To pair a prompt with the commit it produced, quote the prompt (curated, not a
-full transcript) next to the citation:
+Six rules, each a course value rather than a coding standard
+([`9be7c3c`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/9be7c3c)): safety, evidence, plain language, distinct
+weeks, honest ordering, assessment arithmetic.
 
-> the prompt, verbatim
+Then the part I would repeat. I committed the six checks **failing**, before any
+course content existed ([`7291c68`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/7291c68)). The ordering is the
+evidence: the rules constrained what got written rather than describing it
+afterwards.
 
-Screenshots are welcome where one carries the point better than a sentence does.
-Commit the file to this repo and link it with a **relative** path, which is what
-makes it render on GitHub: `![alt text](docs/before.png)`. Images don't count
-towards the word count and don't replace the citation.
+Two obligations went into the content schema instead of `spec/`, and that is the
+call I am most pleased with. The deploy job deliberately does not depend on the
+check job, so a spec-only safety rule would let a week with no stopping rule
+deploy anyway. Failing the build is what actually stops it shipping
+([`8f8fb3f`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/8f8fb3f)).
 
-## Before you ship
+The harness also changed when it was wrong. My claim schema demanded a sample
+size from every claim, and the first real week broke it: "the 10,000-step target
+began as a product name" is history, not an effect, and recording it as
+*unreported* would have misrepresented why the number was absent
+([`4567725`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/4567725)). Fixing the rule beat writing the page around
+it.
 
-`pnpm check:evidence` verifies that this comment is gone, that your citations
-resolve to real commits, that a crit week's reflection entry is in
-`reflections/`, and that your `CLAUDE.md` is there. It checks that your account
-is traceable, not that it is good: that is the marker's call.
+## What I deliberately left out
 
-Images aren't checked: unlike a citation whose SHA doesn't resolve, a broken
-image is visible the moment this file is rendered on GitHub.
+No `weeks` collection: `sessions` already carries a week number and titles its
+pages "Week N", so a second one would have given every week two pages saying
+overlapping things. No prose-tone check, because a regex cannot judge voice.
+
+And one hole I could not close. An effect claim can be relabelled as history to
+escape the sample-size rule. Strict schemas catch the lazy version; someone who
+relabels *and* deletes the numbers is lying about the kind of claim, and nothing
+detects that. I designed the word-list check that would catch it and abandoned
+it — it fires on this course's own legitimate history claims, where Galton and
+Kahneman are history *about* effects ([`b765359`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/b765359)).
+
+## How I knew it was right
+
+Eleven deliberate mutations against a green fixture, then ten more against the
+real twelve weeks. In Assignment 1, six of twelve such mutations left my suite
+green. This time every one was caught — and the sweep exposed a flaw in my own
+method, because with one rule already failing, exit codes made every mutation
+look caught
+([`d50cc53...b765359`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/compare/d50cc53...b765359)).
+
+The checks did not catch everything. Opening the site at 390px found the claims table pushing the whole page sideways
+([`1d3c2fa`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/1d3c2fa)), and three pages inherited from the starter
+with no `h1` at all — where my first fix put the heading below the lead and the
+second did it properly
+([`f821750...60b250c`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/compare/f821750...60b250c)).
