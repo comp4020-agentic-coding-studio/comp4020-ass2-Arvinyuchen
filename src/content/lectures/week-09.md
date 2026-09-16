@@ -6,6 +6,7 @@ description: >-
 week: 9
 teachers: [wren-halliday]
 date: 2027-05-03
+slides: /decks/week-09/
 related:
   - sessions/09-felt-better-anyway
   - assessments/the-report
