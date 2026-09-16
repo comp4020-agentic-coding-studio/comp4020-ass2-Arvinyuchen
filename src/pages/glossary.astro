@@ -1,0 +1,40 @@
+---
+// The rendering half of the rule 3 contract.
+//
+// This page and spec/content-invariants.test.ts read the same array, so the
+// glossary a reader sees and the glossary the check enforces cannot drift
+// apart. Adding a term here is what makes the check start watching for its
+// first use.
+import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { glossaryTerms } from "../glossary";
+import { siteConfig } from "../site-config";
+
+const terms = [...glossaryTerms].sort((a, b) => a.term.localeCompare(b.term));
+---
+
+<ContentLayout
+  title="Glossary"
+  description="Every technical term this course uses, in plain language"
+  {...siteConfig}
+>
+  <p>
+    Each of these is linked from the first week that uses it. If you meet a word
+    here that the course never explained where you first met it, that is a fault
+    in the course, not in you.
+  </p>
+
+  {
+    terms.length === 0 ? (
+      <p>No terms yet.</p>
+    ) : (
+      <dl>
+        {terms.map((entry) => (
+          <div id={entry.slug}>
+            <dt>{entry.term}</dt>
+            <dd>{entry.definition}</dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+</ContentLayout>
