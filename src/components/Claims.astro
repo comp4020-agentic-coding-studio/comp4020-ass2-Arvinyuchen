@@ -30,6 +30,11 @@ const blinding = (blinded: boolean | "n/a"): string =>
       <h2 id="what-we-know">What we actually know</h2>
 
       {effects.length > 0 && (
+        // The citations make this table wider than a phone. Without a scroll
+        // container it pushes the whole page sideways at 390px, which breaks
+        // the viewport rather than the table. tabindex makes the scroll
+        // reachable from the keyboard as well as by dragging.
+        <div class="claims-scroll" tabindex="0" role="region" aria-label="Claims about effects">
         <table>
           <caption>
             Claims about effects. Every one shows the number of people it rests
@@ -54,6 +59,7 @@ const blinding = (blinded: boolean | "n/a"): string =>
             ))}
           </tbody>
         </table>
+        </div>
       )}
 
       {history.length > 0 && (
@@ -76,3 +82,30 @@ const blinding = (blinded: boolean | "n/a"): string =>
     </section>
   )
 }
+
+<style>
+  /* The table scrolls inside this box; the page never scrolls sideways. */
+  .claims-scroll {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  /* A visible focus ring matters here: the container is focusable so it can be
+     scrolled by keyboard, and a focusable thing with no focus style is a trap
+     for anyone not using a mouse. */
+  .claims-scroll:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 2px;
+  }
+
+  .claims-scroll table {
+    margin-block: 0;
+  }
+
+  /* Citations are the reason the table is wide. Smaller type buys back room
+     without hiding the source, which is the one thing that must stay legible. */
+  .claims-scroll td:last-child {
+    font-size: 0.85em;
+    min-width: 14rem;
+  }
+</style>

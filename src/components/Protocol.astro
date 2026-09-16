@@ -31,7 +31,7 @@ const takesCare = risk === "med" || risk === "high";
 <section aria-labelledby="protocol">
   <h2 id="protocol">The protocol</h2>
 
-  <dl>
+  <dl class="protocol-fields">
     {method && (
       <>
         <dt>Method</dt>
@@ -80,3 +80,35 @@ const takesCare = risk === "med" || risk === "high";
     )
   }
 </section>
+
+<style>
+  /* An unstyled dl stacks label and value as two loose lines, which reads as
+     prose rather than as a specification. A label column makes it scannable —
+     and collapses back to stacked rows on a phone, where there is no room. */
+  .protocol-fields {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.35rem 1rem;
+    margin-block-end: var(--at-spacing-md, 1rem);
+  }
+
+  .protocol-fields dt {
+    font-weight: 600;
+    color: var(--at-text-secondary);
+  }
+
+  .protocol-fields dd {
+    margin: 0;
+  }
+
+  @media (max-width: 28rem) {
+    .protocol-fields {
+      grid-template-columns: 1fr;
+      gap: 0 0;
+    }
+
+    .protocol-fields dd {
+      margin-block-end: 0.5rem;
+    }
+  }
+</style>
