@@ -15,17 +15,34 @@ const riskSchema = z.enum(["low", "med", "high"]);
 // Rule 2 in CLAUDE.md: a claim carries its own evidence. Claims are structured
 // rather than prose so the numbers cannot quietly go missing.
 //
-// `n` accepts "unreported" on purpose. Where a source never published a sample
-// size, saying so is honest and teachable; inventing one would be the exact
-// error this course is about. `blinded` accepts "n/a" for the same reason —
-// observational work cannot be blinded, and pretending otherwise is worse than
-// admitting it.
-const claimSchema = z.object({
+// Split by kind. The first version of this schema demanded a sample size from
+// every claim, and the first real week broke it: "the 10,000-step target began
+// as a product name, not a finding" is a historical fact with no n to report,
+// and recording it as `unreported` would have been a lie about *why* the number
+// is missing. CLAUDE.md says to fix the harness rather than work around it, so
+// the schema now separates claims about effects from claims about history.
+//
+// The teeth stay where they matter: anything asserting an effect still has to
+// show its sample size and say whether it was blinded.
+const effectClaim = z.object({
+  kind: z.literal("effect"),
   text: z.string().trim().min(1),
+  // A number, or an explicit admission that the source never published one.
+  // Guessing would be the exact error this course is about.
   n: z.union([z.number().int().positive(), z.literal("unreported")]),
+  // "n/a" for observational work, which cannot be blinded. Pretending
+  // otherwise is worse than admitting it.
   blinded: z.union([z.boolean(), z.literal("n/a")]),
   source: z.string().trim().min(1),
 });
+
+const historyClaim = z.object({
+  kind: z.literal("history"),
+  text: z.string().trim().min(1),
+  source: z.string().trim().min(1),
+});
+
+const claimSchema = z.discriminatedUnion("kind", [effectClaim, historyClaim]);
 
 // The duty of care, enforced at build time rather than only in spec/.
 //

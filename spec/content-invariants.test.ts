@@ -106,7 +106,7 @@ describe("rule 2: a claim carries its own evidence", () => {
     }
   });
 
-  it("makes every claim state its sample size, blinding and source", () => {
+  it("makes every claim about an effect state its sample size and blinding", () => {
     for (const week of weeks) {
       const claims = Array.isArray(week.meta?.claims) ? (week.meta.claims as unknown[]) : [];
       claims.forEach((raw, index) => {
@@ -115,20 +115,26 @@ describe("rule 2: a claim carries its own evidence", () => {
 
         expect(str(claim.text).length, `${where} needs text`).toBeGreaterThan(0);
         expect(str(claim.source).length, `${where} needs a source`).toBeGreaterThan(0);
+        expect(
+          ["effect", "history"].includes(str(claim.kind)),
+          `${where} must declare kind as "effect" or "history", got ${JSON.stringify(claim.kind)}`,
+        ).toBe(true);
 
-        // A number, or an explicit admission that the source never reported
-        // one. Guessing a sample size would be the exact sin this course is
-        // about, so "unreported" is a legitimate — and teachable — answer.
+        // A claim about history has no sample size to report — the 10,000-step
+        // target being a product name is a fact about 1965, not a measurement.
+        // Only claims asserting an effect owe a number.
+        if (str(claim.kind) !== "effect") return;
+
         const n = claim.n;
         expect(
           (typeof n === "number" && Number.isFinite(n) && n > 0) || n === "unreported",
-          `${where} needs n as a positive number or "unreported", got ${JSON.stringify(n)}`,
+          `${where} asserts an effect, so it needs n as a positive number or "unreported", got ${JSON.stringify(n)}`,
         ).toBe(true);
 
         const blinded = claim.blinded;
         expect(
           blinded === true || blinded === false || blinded === "n/a",
-          `${where} needs blinded as true, false or "n/a", got ${JSON.stringify(blinded)}`,
+          `${where} asserts an effect, so it needs blinded as true, false or "n/a", got ${JSON.stringify(blinded)}`,
         ).toBe(true);
       });
     }

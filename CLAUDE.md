@@ -69,6 +69,11 @@ check.
    cannot go missing. A course about sample sizes cannot itself wave at
    "research".
 
+   Claims about history are marked as such and carry a source but no sample
+   size. "The 10,000-step target began as a product name" is a fact about 1965,
+   not a measurement, and recording it as an unreported sample size would
+   misrepresent why the number is absent.
+
 3. **Plain language.** Every technical term is explained the first time a
    reader meets it, by linking to the glossary. The reader is a smart stranger
    with no background in statistics or physiology. Writing that only an expert
