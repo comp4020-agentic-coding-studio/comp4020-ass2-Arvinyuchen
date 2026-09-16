@@ -10,6 +10,7 @@ import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
 import { formatCourseDate } from "../lib/dates";
 import { sessionLabels, siteConfig } from "../site-config";
+import "../styles/site.css";
 
 const [labs, lectures, assessments] = await Promise.all([
   getPublishedCollection("sessions"),

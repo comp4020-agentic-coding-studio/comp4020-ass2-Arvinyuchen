@@ -8,6 +8,7 @@
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { glossaryTerms } from "../glossary";
 import { siteConfig } from "../site-config";
+import "../styles/site.css";
 
 const terms = [...glossaryTerms].sort((a, b) => a.term.localeCompare(b.term));
 ---

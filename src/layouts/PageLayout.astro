@@ -14,6 +14,7 @@
 // lead, then content — and the two kinds of page now agree.
 import MdxPageLayout from "astro-theme-university/layouts/MdxPageLayout.astro";
 import { siteConfig } from "../site-config";
+import "../styles/site.css";
 
 const { frontmatter } = Astro.props as { frontmatter?: Record<string, unknown> };
 const asText = (value: unknown): string | undefined =>

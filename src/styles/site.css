@@ -1,0 +1,39 @@
+/* Every global rule the site adds, in one file.
+ *
+ * Imported by each page rather than from one shared module, because there is
+ * no safe single point: the theme's layouts live in node_modules, and
+ * src/site-config.ts is imported by astro.config.ts, so a stylesheet imported
+ * there would be pulled in while the config is being evaluated. One import
+ * line per page it is, and adding a rule here needs no new imports.
+ */
+
+@import "./apparatus.css";
+
+/* The nav wraps, and it should wrap tidily.
+ *
+ * .at-nav-inner sits in the content column (48rem), so the lockup plus seven
+ * links plus the search button cannot fit on one line and the links drop to a
+ * second row. The theme pushes them right with margin-inline-start: auto,
+ * which on a row of their own left a large indent: the first link started at
+ * x=835 while the wordmark started at x=649.
+ *
+ * Removing the auto margin starts the row at the content edge. That lands the
+ * first link within 2px of the "S" of Slop, which is not a coincidence: the
+ * lockup is drawn with the crest hanging into the margin and the wordmark
+ * beginning at 17.5% of its width, so the wordmark already aligns with the
+ * text column. Measured, not guessed: crest ink runs 0 to 11.7%, wordmark ink
+ * starts at 17.5%.
+ *
+ * Safe if the nav ever shrinks enough to fit on one line: the links would then
+ * sit just after the lockup instead of being pushed right, which reads fine.
+ */
+@media (width >= 640px) {
+  .at-nav-links {
+    margin-inline-start: 0;
+  }
+
+  /* The search button keeps its place at the end of the row it lands on. */
+  .at-nav-inner > .at-search-trigger {
+    margin-inline-start: auto;
+  }
+}
