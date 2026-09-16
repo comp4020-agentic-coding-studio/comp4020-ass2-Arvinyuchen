@@ -20,7 +20,7 @@ claims:
   - kind: effect
     text:
       In older women, the fall in mortality with more daily steps levelled off
-      at around 7,500 — well below the figure most wearables set by default.
+      at around 7,500, well below the figure most wearables set by default.
     n: 16741
     blinded: "n/a"
     source:
@@ -35,7 +35,7 @@ spec:
 This week we record a day and change nothing.
 
 That instruction is harder to follow than it reads. Most people, two or three
-hours into writing down their own day, begin quietly improving it — a slightly
+hours into writing down their own day, begin quietly improving it: a slightly
 earlier start, one fewer detour, the walk they had been meaning to take. An
 improved day is a perfectly good thing to have. It is not the day you set out to
 describe.
@@ -53,8 +53,7 @@ only way to do that badly is to make it interesting.
 
 ## What we do in the lab
 
-We record twenty-four hours at whatever resolution you can actually sustain —
-fifteen minutes is plenty, and an hour is not useless. Paper is fine. Your phone
+We record twenty-four hours at whatever resolution you can actually sustain: fifteen minutes is plenty, and an hour is not useless. Paper is fine. Your phone
 is fine. What matters is that the record is continuous and that you wrote it
 during the day rather than reconstructing it that night.
 
@@ -74,7 +73,7 @@ was a health target: Yamasa launched Japan's first consumer pedometer in 1965 an
 called it the manpo-kei, the ten-thousand-step meter. It was chosen because it
 was round, memorable and easy to print. When researchers eventually went looking,
 the mortality benefit in older women flattened out somewhere near 7,500 steps a
-day — a number nobody has ever put on a box.
+day: a number nobody has ever put on a box.
 
 This is not a course about steps, and the point is not that 7,500 is the real
 answer. The point is that a figure with no study behind it travelled around the

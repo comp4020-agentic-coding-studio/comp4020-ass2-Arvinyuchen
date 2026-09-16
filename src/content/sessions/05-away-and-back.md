@@ -19,7 +19,7 @@ harm_boundary: >-
   This is not a fasting exercise and there is no target. You are not trying to
   eat less, lose anything, or discover that breakfast is unnecessary. Anyone
   with a history of disordered eating, diabetes, or any condition affected by
-  meal timing should take the alternative instead — and so should anyone who
+  meal timing should take the alternative instead, and so should anyone who
   simply does not want to.
 opt_out: >-
   Run the same design on something inert: your first coffee's timing, the
@@ -60,7 +60,7 @@ pattern twice.
 ## Why the third phase is the one that matters
 
 Most people run two phases and stop. They remove breakfast, feel worse, conclude
-breakfast matters, and go back to eating it — without measuring the going back.
+breakfast matters, and go back to eating it, without measuring the going back.
 
 But the second phase is when you were also getting used to a new routine, and
 possibly sleeping badly, and possibly annoyed about the whole exercise. Putting
@@ -85,7 +85,7 @@ fast. Yours will not be, so you need the design to do work that drama cannot.
 
 Read the boundary at the top of this page before you plan anything. Breakfast is
 used here because it is a convenient, reversible, everyday variable that almost
-everyone has an opinion about — not because this course has a view on whether
+everyone has an opinion about, not because this course has a view on whether
 you should eat it.
 
 If the removal phase starts to feel like an achievement rather than a

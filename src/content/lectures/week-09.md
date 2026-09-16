@@ -1,7 +1,7 @@
 ---
 title: The Shape of the Data
 description: >-
-  Thirty days of one measure, the worst day marked, and what follows it — before
+  Thirty days of one measure, the worst day marked, and what follows it, before
   the effect is given a name
 week: 9
 teachers: [wren-halliday]
@@ -16,7 +16,7 @@ The most useful hour in the course, and the most uncomfortable.
 
 We start with distributions rather than definitions: thirty days of one measure
 on a screen, the worst day marked, and what happens next. The effect is visible
-before any statistics are introduced, which is the point — this is not a subtle
+before any statistics are introduced, which is the point. This is not a subtle
 artefact that appears under analysis. It is the shape of the data.
 
 From there: Galton's 1886 measurements of parents and children, Kahneman's flight

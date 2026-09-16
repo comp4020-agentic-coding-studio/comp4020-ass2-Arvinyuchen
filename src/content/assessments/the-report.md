@@ -10,7 +10,7 @@ assesses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 marking:
   mode: weighted
   criteria:
-    - name: Quality of inference — what you concluded, and whether it follows
+    - name: Quality of inference, and whether your conclusion follows
       weight: 45
     - name: Honesty about limits, including results that came out null
       weight: 35
@@ -41,7 +41,7 @@ better"*, on a design that cannot support the claim, is a weak one no matter how
 true the feeling is.
 
 This is not a stylistic preference. **Marking the outcome would reward regression
-to the mean** — most of you began your experiments on an unremarkable-to-bad
+to the mean**: most of you began your experiments on an unremarkable-to-bad
 stretch, and most of you will have improved regardless of what you did. A course
 that handed out marks for improvement would be handing them out for arithmetic,
 and week 9 exists to show you exactly that.
@@ -60,7 +60,7 @@ change, when you made it, and whether you had seen any data at the time.
 If nothing happened, report that nothing happened, at the same length and with
 the same care you would have given a positive result.
 
-The literature has spent decades learning this the hard way — week 12 covers why
-journals now insist on registration — and the personal version is the same. A
+The literature has spent decades learning this the hard way (week 12 covers why
+journals now insist on registration) and the personal version is the same. A
 semester of reports that all found something would tell us only that we had
 taught you to find things.

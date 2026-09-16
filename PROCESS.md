@@ -2,7 +2,7 @@
 
 ## What I built
 
-**SLOP1638 — How to Make a Day.** A twelve-week first-year course on running
+**SLOP1638: How to Make a Day.** A twelve-week first-year course on running
 experiments on yourself, built on one argument: the instructions you are given
 about your day are statements about a population, handed over as instructions
 about your Tuesday.
@@ -11,7 +11,7 @@ about your Tuesday.
 
 Assignment 1 scored 95 for the artefact and 62 for process. The gap was not
 effort. My harness there ran to 7,648 words with no rule about content,
-factuality or audience, and every check was structural — so the course-design
+factuality or audience, and every check was structural, so the course-design
 decisions happened in my head and left no trace in the repo.
 
 So this time the design came first and in writing: the premise, the scope I was
@@ -56,20 +56,20 @@ And one hole I could not close. An effect claim can be relabelled as history to
 escape the sample-size rule. Strict schemas catch the lazy version; someone who
 relabels *and* deletes the numbers is lying about the kind of claim, and nothing
 detects that. I designed the word-list check that would catch it and abandoned
-it — it fires on this course's own legitimate history claims, where Galton and
+it, it fires on this course's own legitimate history claims, where Galton and
 Kahneman are history *about* effects ([`b765359`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/b765359)).
 
 ## How I knew it was right
 
 Eleven deliberate mutations against a green fixture, then ten more against the
 real twelve weeks. In Assignment 1, six of twelve such mutations left my suite
-green. This time every one was caught — and the sweep exposed a flaw in my own
+green. This time every one was caught, and the sweep exposed a flaw in my own
 method, because with one rule already failing, exit codes made every mutation
 look caught
 ([`d50cc53...b765359`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/compare/d50cc53...b765359)).
 
 The checks did not catch everything. Opening the site at 390px found the claims table pushing the whole page sideways
 ([`1d3c2fa`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/1d3c2fa)), and three pages inherited from the starter
-with no `h1` at all — where my first fix put the heading below the lead and the
+with no `h1` at all: where my first fix put the heading below the lead and the
 second did it properly
 ([`f821750...60b250c`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/compare/f821750...60b250c)).

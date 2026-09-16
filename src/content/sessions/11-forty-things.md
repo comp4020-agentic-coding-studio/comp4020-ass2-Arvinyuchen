@@ -11,7 +11,7 @@ component: the dashboard
 needs: [2, 9]
 risk: high
 stopping_rule: >-
-  Stop and hand the logging to us if the tracking becomes the point — if you are
+  Stop and hand the logging to us if the tracking becomes the point, if you are
   reluctant to end the week, if a missing entry bothers you, or if you find
   yourself adjusting your day to make a number look better.
 harm_boundary: >-
@@ -39,7 +39,7 @@ claims:
     text: >-
       A group of neuroscientists scanned a dead Atlantic salmon in an fMRI
       machine while showing it photographs of human social situations, and
-      recovered apparently significant brain activity — presented as an argument
+      recovered apparently significant brain activity, presented as an argument
       for correcting when you test many voxels at once.
     source: >-
       Bennett CM, Baird AA, Miller MB, Wolford GL, Neural correlates of
@@ -62,7 +62,7 @@ correctly calculated, and mostly meaningless.
 ## The arithmetic of finding things
 
 Twenty variables give you a hundred and ninety possible pairs. At four days each,
-some of those pairs will line up beautifully by chance alone — not because you
+some of those pairs will line up beautifully by chance alone, not because you
 made an error, but because that is what chance does at that many opportunities.
 
 [Multiple comparisons](/glossary/#multiple-comparisons) is the name for this

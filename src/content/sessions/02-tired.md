@@ -29,7 +29,7 @@ spec:
   - you can name something each measure would miss
 ---
 
-"I'm tired" is not a measurement. It is a report, and a compressed one — it can
+"I'm tired" is not a measurement. It is a report, and a compressed one: it can
 mean your eyes hurt, or you are bored, or you have been awake for nineteen hours,
 or you do not want to do the thing you are about to do.
 
@@ -53,9 +53,9 @@ useful part.
 ## Why this is the week it matters
 
 There is a well-known sleep restriction study in which people spent two weeks on
-four, six or eight hours in bed. Their own sleepiness ratings rose sharply for a
-few days and then flattened out — after a while, four hours and six hours felt
-about the same. Their measured performance did not flatten out. It kept
+four, six or eight hours in bed. Their own sleepiness ratings rose sharply for
+a few days and then flattened out. After a while, four hours and six hours
+felt about the same. Their measured performance did not flatten out. It kept
 declining, steadily, the whole time.
 
 The people in that study were not lying and they were not careless. They had simply
@@ -71,5 +71,5 @@ what you would have to have written down instead.
 
 You will be tempted to pick the measure that is easiest to collect and then
 quietly treat it as though it measured everything. Everybody does this. The
-defence is to write down, now, one thing your chosen measure cannot see — and to
+defence is to write down, now, one thing your chosen measure cannot see, and to
 keep that sentence next to your results for the rest of the semester.

@@ -52,8 +52,7 @@ about yourself, and every one of them has an expiry date, because week 10 showed
 you that the subject keeps moving.
 
 That is not a disappointing result. It is the result. Any course that sent you
-away with a list would be selling you the same thing the advice industry sells —
-a population average with your name written on it, which in this case happens to
+away with a list would be selling you the same thing the advice industry sells: a population average with your name written on it, which in this case happens to
 be a sample of one, measured in March.
 
 What survives is not the answer. It is that you now know how to ask again.
@@ -74,7 +73,7 @@ nobody does voluntarily.
 
 By the early 2000s medical journal editors had a problem they could no longer
 ignore. Trials were reporting outcomes that had been chosen after the results came
-in, and trials with unwelcome results were not being published at all — so the
+in, and trials with unwelcome results were not being published at all, so the
 literature was a record of what had worked rather than what had been tried.
 
 The fix was procedural, not statistical: register the trial, with its outcomes, in
@@ -82,7 +81,7 @@ public, before enrolling anybody. From mid-2005 the major journals would not
 publish anything that had not done so.
 
 You did the personal version of this in week 6. It is the same instrument at a
-different scale, and it exists for the same reason — not because researchers are
+different scale, and it exists for the same reason, not because researchers are
 dishonest, but because nobody, including you, can be trusted to remember what they
 expected once they know what happened.
 

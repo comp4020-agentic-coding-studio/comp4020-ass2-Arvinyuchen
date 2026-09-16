@@ -45,10 +45,10 @@ const perIcon = selectors
   .map((s) => `${s} > h2::before {\n  mask-image: url("data:image/svg+xml,${dataUri(ICONS[s])}");\n}`)
   .join("\n\n");
 
-const css = `/* Apparatus sections. GENERATED — see scripts/build-apparatus-css.mjs.
+const css = `/* Apparatus sections. GENERATED, see scripts/build-apparatus-css.mjs.
  *
  * A lab page had seven h2s at the same size doing two different jobs: three
- * were the lesson, four were the recurring machinery around it — the evidence,
+ * were the lesson, four were the recurring machinery around it, the evidence,
  * the spec, the teaching team, the related links. A reader could not
  * tell them apart, so the page shouted seven times at one volume.
  *
@@ -60,7 +60,7 @@ const css = `/* Apparatus sections. GENERATED — see scripts/build-apparatus-cs
  * The icons are masks rather than markup because two of the four sections are
  * rendered by package components whose h2 cannot be reached from here. Driving
  * all four from CSS keeps them identical instead of icons-on-some. They are
- * decorative — ::before content is not announced — and the label text carries
+ * decorative (::before content is not announced) and the label text carries
  * the meaning on its own.
  */
 
@@ -111,7 +111,7 @@ ${perIcon}
  * rule be the only one.
  *
  * The doubled class is deliberate. The package's style is Astro-scoped, so it
- * lands at .related-content[data-astro-cid-…] — the same specificity as
+ * lands at .related-content[data-astro-cid-…], the same specificity as
  * .apparatus .related-content, and a tie would be settled by whichever
  * stylesheet the bundler happened to order last. Repeating the class wins
  * outright instead of relying on that. */
@@ -121,15 +121,14 @@ ${perIcon}
   border-block-start: 0;
 }
 
-/* And its list is a list. The package styles it as a horizontal chip row —
- * list-style: none, no indent, display: flex — which sat directly under
+/* And its list is a list. The package styles it as a horizontal chip row (* list-style: none, no indent, display: flex) which sat directly under
  * Teaching team's ordinary bulleted list and made two lists of the same kind
  * look like two different things.
  *
  * The revert keyword rather than hard-coded values: it drops the component's own
  * declarations and lets the list land wherever every other list on the site
  * lands, so the two cannot drift apart if list styling changes later. Checked
- * after the change — both lists compute identically. */
+ * after the change, both lists compute identically. */
 .apparatus .related-content.related-content ul {
   display: revert;
   list-style: revert;

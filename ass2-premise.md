@@ -1,4 +1,4 @@
-# SLOPxxxx — How to Make a Day
+# SLOPxxxx: How to Make a Day
 
 Working premise for COMP4020 Assignment 2. Decisions locked 2026-09-16.
 Moves into the repo as the basis for CLAUDE.md + spec/ once the starter is accepted.
@@ -6,7 +6,7 @@ Moves into the repo as the basis for CLAUDE.md + spec/ once the starter is accep
 ## Register
 
 **Deadpan-sincere.** The course means every word. The comedy comes from real rigour
-applied at absurd granularity — a full protocol, with control conditions, for the
+applied at absurd granularity, a full protocol, with control conditions, for the
 first ten minutes after waking. Never winks. Never mocks. This register is what
 keeps the duty-of-care obligations honest rather than decorative.
 
@@ -17,7 +17,7 @@ keeps the duty-of-care obligations honest rather than decorative.
 >
 > Every one of those is a population average wearing the costume of a personal
 > instruction. Eight hours is a distribution flattened into a single number. Ten
-> thousand steps was the name of a 1965 Japanese pedometer — *manpo-kei* — not a
+> thousand steps was the name of a 1965 Japanese pedometer (*manpo-kei*) not a
 > finding. Breakfast's importance was pushed hard by cereal manufacturers into
 > observational studies riddled with confounds. And the twenty-five minute work
 > block was one university student with a kitchen timer in the late 1980s, who
@@ -28,7 +28,7 @@ keeps the duty-of-care obligations honest rather than decorative.
 >
 > This course does the opposite. It treats every prescription as a hypothesis and
 > tests it on the only subject you have standing to experiment on. The unit of
-> design is one day — not a life, not a habit, not a goal. Twenty-four hours,
+> design is one day, not a life, not a habit, not a goal. Twenty-four hours,
 > taken apart and rebuilt, twelve times.
 
 ## The three pillars
@@ -37,7 +37,7 @@ keeps the duty-of-care obligations honest rather than decorative.
    never an instruction. Distributions, effect sizes, and why "eight hours" is a
    category error.
 2. **Measuring changes the measured.** You cannot observe your own day neutrally.
-   Orthosomnia — sleep trackers making sleep worse — is the worked example. The
+   Orthosomnia (sleep trackers making sleep worse) is the worked example. The
    instrument is part of the experiment.
 3. **The subject is non-stationary.** You evolve. What worked in week 2 fails in
    week 9, not because you did it wrong but because you are a different system.
@@ -61,10 +61,10 @@ The out-list is what keeps the course off a real curriculum committee's desk.
 
 ## Intellectual lineage (verify before publishing)
 
-- Santorio Santorio — thirty years weighing himself and everything he ingested
-- Werner Forssmann — catheterised his own heart, 1929; Nobel 1956
-- Barry Marshall — drank *H. pylori*; Nobel 2005
-- Francesco Cirillo — the Pomodoro technique, late 1980s, n=1. THE load-bearing
+- Santorio Santorio: thirty years weighing himself and everything he ingested
+- Werner Forssmann: catheterised his own heart, 1929; Nobel 1956
+- Barry Marshall: drank *H. pylori*; Nobel 2005
+- Francesco Cirillo, the Pomodoro technique, late 1980s, n=1. THE load-bearing
   fact of the whole premise. Verify hard: dates, whether he was a student, the
   tomato timer. If this doesn't hold up, the opening argument needs rebuilding.
 
@@ -73,8 +73,7 @@ The out-list is what keeps the course off a real curriculum committee's desk.
 A1 scored 95 artefact / 62 process. The harness knew only about the DOM: 7,648
 words of CLAUDE.md with zero rules about content, factuality, audience or jargon,
 and every spec/ check structural ("exists", "server-renders", "has alt text").
-The marker asked how the content became factual and how interaction was chosen —
-both decisions were made well and left no trace in the repo.
+The marker asked how the content became factual and how interaction was chosen, both decisions were made well and left no trace in the repo.
 
 Content invariants for this course, to be written BEFORE any week pages exist:
 
@@ -82,7 +81,7 @@ Content invariants for this course, to be written BEFORE any week pages exist:
    stopping rule, and what is off-limits. Missing any → build fails. A course
    value (duty of care) enforced by the harness. The flagship check.
 2. **n and blinding.** Every claim of an effect states its sample size and
-   whether it was blinded — including the course's own examples.
+   whether it was blinded: including the course's own examples.
 3. **Citation integrity.** Every empirical claim carries a source. Uncited → fails
    check:evidence.
 4. **First-use definitions.** Every term defined on first use or in the glossary.
@@ -122,12 +121,12 @@ Cloned to `comp4020-ass2-Arvinyuchen/`. Provisioned 2026-08-30, private, 2 commi
 
 Differentiated by **method**, not topic. Two weeks sharing a method is the
 interchangeability failure the brief punishes, so `method` is the uniqueness key
-for check #6. `needs` is the uniqueness key's companion for check #5 — it lists
+for check #6. `needs` is the uniqueness key's companion for check #5, it lists
 the weeks whose methods this one depends on, and no week may depend on a later one.
 
 | # | slug | title | method | component | needs | risk |
 |---|---|---|---|---|---|---|
-| 1 | baseline | The Day You Didn't Design | naturalistic-baseline | the whole day | — | low |
+| 1 | baseline | The Day You Didn't Design | naturalistic-baseline | the whole day |: | low |
 | 2 | tired | What Is "Tired"? | operationalisation | alertness | 1 | low |
 | 3 | two-instruments | Two Instruments, One Night | measurement-error | sleep | 2 | **high** |
 | 4 | observer | The Observer in the Room | reactivity | phone use | 3 | med |
@@ -149,16 +148,16 @@ the weeks whose methods this one depends on, and no week may depend on a later o
 - **Week 9** is the pointed one: regression to the mean explains why *every*
   intervention appears to work, because you start them when you feel worst. It
   dismantles the advice industry without raising its voice. **This week carries
-  the real deck** — most counterintuitive, most visual, needs actual distributions
+  the real deck**: most counterintuitive, most visual, needs actual distributions
   on screen.
 
 ### Pillar coverage
 
-- *The average is not you* — weeks 1, 2, 9
-- *Measuring changes the measured* — weeks 3, 4, 11
-- *The subject is non-stationary* — week 10 explicitly, by re-running week 5
+- *The average is not you*: weeks 1, 2, 9
+- *Measuring changes the measured*: weeks 3, 4, 11
+- *The subject is non-stationary*: week 10 explicitly, by re-running week 5
 - The forced conclusion (any specific answer expires; the deliverable is a
-  practice) — banked in week 12
+  practice): banked in week 12
 
 ### Duty of care: decision
 
@@ -169,13 +168,13 @@ that tells students to change their sleep and food has duties, and encoding thos
 duties in the harness is the strongest available process story.
 
 Each high-risk week (3, 5, 7, 11) must therefore carry:
-- an explicit harm boundary — what this experiment must never become
+- an explicit harm boundary: what this experiment must never become
 - a stopping rule stated before the protocol, not after
 - an opt-out: a named alternative protocol for anyone who should not run it
 
 Check #1 enforces all four fields on every experiment page. Week 7 additionally
 documents caffeine withdrawal as a foreseeable, benign-but-unpleasant effect
-rather than a surprise — the stopping rule is part of the method, not a footnote.
+rather than a surprise, the stopping rule is part of the method, not a footnote.
 
 ## Still open
 

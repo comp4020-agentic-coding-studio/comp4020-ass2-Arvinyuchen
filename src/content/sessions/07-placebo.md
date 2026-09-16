@@ -17,7 +17,7 @@ stopping_rule: >-
   push through.
 harm_boundary: >-
   There is no reduction target and no abstinence phase. Nobody is quitting
-  anything. If you do not drink caffeine, do not start for this week — and if
+  anything. If you do not drink caffeine, do not start for this week, and if
   you are pregnant, taking medication affected by caffeine, or prone to
   migraine, take the alternative.
 opt_out: >-
@@ -60,7 +60,7 @@ important safeguard in experimental work, and as a person experimenting on
 yourself you essentially cannot have it. You poured the coffee. You set the
 timer. You know.
 
-That makes you the [placebo](/glossary/#placebo) — not a victim of one. The
+That makes you the [placebo](/glossary/#placebo), not a victim of one. The
 effect is real, it is yours, and it is not caused by the thing you think caused
 it.
 
@@ -80,7 +80,7 @@ yourself something rare and worth having.
 
 ## The oldest version of this
 
-In 1784 Louis XVI appointed a commission — Franklin was on it — to investigate
+In 1784 Louis XVI appointed a commission (Franklin was on it) to investigate
 mesmerism, then fashionable in Paris and said to work by manipulating an
 invisible fluid. The commission's method was to blindfold subjects, so that they
 could not tell when the treatment was being applied.
@@ -91,7 +91,7 @@ when they were mesmerised and not told.
 
 It is, as far as anyone can tell, the first blinded experiment. It was designed
 by people who had no statistics, no controls in the modern sense, and no
-mathematics of chance — and they got the essential move right on the first
+mathematics of chance, and they got the essential move right on the first
 attempt, because the essential move is not mathematical. It is the decision to
 stop trusting yourself.
 

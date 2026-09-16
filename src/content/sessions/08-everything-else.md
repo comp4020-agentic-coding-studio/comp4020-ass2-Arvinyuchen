@@ -47,7 +47,7 @@ tell which one produced the result.
 ## The list
 
 Open your week 5 records. Write down everything that also changed during those
-days. Not the plausible things — everything.
+days. Not the plausible things: everything.
 
 Weather. A deadline. Who you ate with. Whether you were annoyed with someone.
 Daylight. A cold coming on. Money. A new season of something. Whether you were
@@ -75,7 +75,7 @@ arranged for you.
 In 1854 John Snow was trying to show that cholera travelled in water rather than
 air, against the obvious objection that poor neighbourhoods had both bad water
 and everything else bad. So he found streets in south London where two different
-water companies supplied neighbouring houses — one drawing from a polluted
+water companies supplied neighbouring houses, one drawing from a polluted
 stretch of the Thames, one from upstream. Same streets, same poverty, same air,
 different water.
 

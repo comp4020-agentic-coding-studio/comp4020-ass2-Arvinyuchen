@@ -16,7 +16,7 @@ university student in Rome in the late 1980s, a tomato-shaped kitchen timer, and
 a run of self-experiments on interval lengths from two minutes up to an hour.
 
 The interesting part is not that the origin is humble. It is that the origin is
-*a self-experiment with a sample size of one* — the exact thing this course
+*a self-experiment with a sample size of one*: the exact thing this course
 teaches you to run, and the exact thing a reader should treat as a hypothesis
 rather than an instruction. Somewhere between 1987 and now, one person's result
 became everybody's rule, and nobody ran the trial in between.

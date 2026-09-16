@@ -14,7 +14,7 @@ claims:
   - kind: effect
     text: >-
       Interrupted every two minutes, people finished the task in less time with
-      no loss of quality — and reported significantly more stress, frustration
+      no loss of quality, and reported significantly more stress, frustration
       and effort. Conditions were counterbalanced, which is this week's method.
     n: 48
     blinded: false
@@ -59,7 +59,7 @@ attention.
 This week's reading list has a hole in it, and the hole is the lesson.
 
 We have no effect claim to offer you about twenty-five minutes. Not a weak one,
-not a contested one — none. There is no trial establishing that twenty-five
+not a contested one: none. There is no trial establishing that twenty-five
 minutes beats forty, or eighteen, or however long you happen to be able to
 concentrate today. The interval is not disputed in the literature so much as
 absent from it.
@@ -70,7 +70,7 @@ worked for him. The overreach happened downstream, in everyone who repeated it.
 ## So we test it
 
 You will compare two work-block lengths. Twenty-five minutes against something
-else — your own guess, forty minutes, whatever you suspect might suit you better.
+else: your own guess, forty minutes, whatever you suspect might suit you better.
 One variable, two conditions.
 
 The difficulty is order. If you run twenty-five minutes all week and forty the
@@ -92,7 +92,7 @@ evidence for no one.
 
 Your week 5 record, because we are reusing the discipline you built there. A
 guess about your own best interval, written down, so you cannot revise it
-afterwards. And a timer that is not on your phone, if you can find one — not for
+afterwards. And a timer that is not on your phone, if you can find one, not for
 any measured reason, but because Cirillo's wasn't, and it is worth noticing how
 different the same instruction feels when it cannot also show you a
 notification.

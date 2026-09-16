@@ -11,7 +11,7 @@ component: phone use
 needs: [3]
 risk: med
 stopping_rule:
-  Stop if the record turns into a scorecard — if you notice yourself feeling
+  Stop if the record turns into a scorecard, if you notice yourself feeling
   ashamed of a number rather than curious about it, put the log down for the
   day.
 harm_boundary:
@@ -19,8 +19,8 @@ harm_boundary:
   use, and anyone who tells you there is has skipped the part where they say how
   they measured it.
 opt_out:
-  Log a different observable instead — how often you open the fridge, how often
-  you check the time — or work from a partner's log with their consent.
+  Log a different observable instead (how often you open the fridge, how often
+  you check the time) or work from a partner's log with their consent.
 claims:
   - kind: effect
     text: >-
@@ -68,7 +68,7 @@ gap between your phone use and your phone use while being watched by yourself.
 
 ## Careful with the story
 
-The effect is usually taught through the Hawthorne Works — a factory outside
+The effect is usually taught through the Hawthorne Works: a factory outside
 Chicago where, between 1924 and 1932, researchers changed the lighting and
 workers' output went up, and went up again when they changed it back, apparently
 because the workers knew they were being studied.
@@ -81,8 +81,7 @@ retelling suggests.
 So we are in an odd position: the effect is real and you will observe it in
 yourself this week, but the famous demonstration of it is not strong evidence.
 Both things are true and you should be able to hold them at once. Getting that
-distinction right — between *this happens* and *this study showed it happens* —
-is most of what this course is for.
+distinction right (between *this happens* and *this study showed it happens*) is most of what this course is for.
 
 ## What comes next
 

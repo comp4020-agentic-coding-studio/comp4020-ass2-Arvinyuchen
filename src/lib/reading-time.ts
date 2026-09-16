@@ -2,7 +2,7 @@
 //
 // Counted on the source rather than the rendered page because the source is
 // what we have at build time. That means stripping the things a reader never
-// sees — HTML comments, code fences, link targets, markdown punctuation —
+// sees (HTML comments, code fences, link targets, markdown punctuation)
 // before counting, or a page thick with citations reads as longer than it is.
 //
 // 200 words a minute is the conventional figure for careful reading of prose.
@@ -26,7 +26,7 @@ export function countWords(markdown: string): number {
   return prose ? prose.split(" ").length : 0;
 }
 
-/** Whole minutes, never zero — a one-line page still takes a moment. */
+/** Whole minutes, never zero. A one-line page still takes a moment. */
 export function readingMinutes(markdown: string): number {
   return Math.max(1, Math.round(countWords(markdown) / WORDS_PER_MINUTE));
 }

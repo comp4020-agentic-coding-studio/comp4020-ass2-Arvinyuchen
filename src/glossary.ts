@@ -2,7 +2,7 @@
 //
 // Rule 3 in CLAUDE.md says every technical term is explained the first time a
 // reader meets it. That rule needs a list of what counts as technical, and the
-// list has to be the same one the glossary page renders — otherwise the page
+// list has to be the same one the glossary page renders, or the page
 // and the check drift apart, and the check starts passing for the wrong reason.
 //
 // So this array is the single source of truth: /glossary/ renders it, and
@@ -38,7 +38,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     slug: "baseline",
     aliases: ["baselines"],
     definition:
-      "What something looks like before you interfere with it. Without one, you have nothing to compare a change against — so the first week of this course changes nothing on purpose.",
+      "What something looks like before you interfere with it. Without one, you have nothing to compare a change against, so the first week of this course changes nothing on purpose.",
   },
   {
     term: "sample size",
@@ -85,7 +85,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     slug: "pre-registration",
     aliases: ["pre-register", "pre-registered", "pre-registering"],
     definition:
-      "Writing down what you expect, how you will measure it, and when you will stop — before you begin. It is what stops you quietly changing the question once you have seen the answer.",
+      "Writing down what you expect, how you will measure it, and when you will stop, before you begin. It is what stops you quietly changing the question once you have seen the answer.",
   },
   {
     term: "blinding",
@@ -119,7 +119,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     slug: "non-stationary",
     aliases: ["non-stationarity"],
     definition:
-      "Changing over time. A person is non-stationary, so an answer that fitted you in March may not fit you in May — and that is not a mistake in your method.",
+      "Changing over time. A person is non-stationary, so an answer that fitted you in March may not fit you in May, and that is not a mistake in your method.",
   },
   {
     term: "multiple comparisons",

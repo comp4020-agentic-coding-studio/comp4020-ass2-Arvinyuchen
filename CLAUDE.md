@@ -1,4 +1,4 @@
-# SLOP1638 — How to Make a Day
+# SLOP1638: How to Make a Day
 
 Rules for building this course site. They are about the course, not about the
 code: the platform is fixed and documented in `README.md`, and nothing here
@@ -18,7 +18,7 @@ twenty-five minute work block was one student with a kitchen timer in the late
 The advice industry generalises from a single person, then instructs you to be
 average. This course does the opposite: it treats every prescription as a
 hypothesis, and tests it on the only subject the student has standing to
-experiment on. The unit of design is one day — not a life, not a habit, not a
+experiment on. The unit of design is one day, not a life, not a habit, not a
 goal.
 
 Three ideas carry the whole course, and every page should serve at least one:
@@ -45,7 +45,7 @@ is deliberately narrow, and staying narrow is the point.
 ## Voice
 
 Deadpan and sincere. The course means every word. Where it is funny, the
-humour comes from real rigour applied at unexpectedly small scale — a full
+humour comes from real rigour applied at unexpectedly small scale, a full
 protocol, with a control condition, for the first ten minutes after waking. It
 never winks at the reader, never mocks the people it describes, and never
 signals that it is joking. A joke would undercut the safety obligations, which
@@ -54,7 +54,7 @@ are real.
 ## Rules
 
 These six are enforced by `spec/content-invariants.test.ts`. If a rule is
-inconvenient, change the rule deliberately and say so — do not work around the
+inconvenient, change the rule deliberately and say so: do not work around the
 check.
 
 1. **Safety.** Every week states how risky its experiment is. Any week above
@@ -94,7 +94,7 @@ check.
 
 - **Never invent a source.** If a claim cannot be traced, cut the claim. Where
   a source genuinely does not report a sample size, record it as unreported
-  rather than guessing — that gap is itself worth teaching.
+  rather than guessing. That gap is itself worth teaching.
 - **Assess inference, not outcome.** Students are marked on the quality of
   their reasoning, never on whether their day improved. Marking the outcome
   would reward regression to the mean, which is the error week 9 exists to

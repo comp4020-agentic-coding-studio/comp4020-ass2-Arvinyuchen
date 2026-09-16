@@ -39,7 +39,7 @@ const nodesOfType = (type: string): ApiNode[] => api.nodes.filter((node) => node
 
 // The twelve weeks live in `sessions`: the weekly lab is where an experiment
 // actually gets run, so the session *is* the week. Considered a separate
-// `weeks` collection and decided against it — it would have given every week
+// `weeks` collection and decided against it, it would have given every week
 // two pages saying overlapping things.
 const weeks = nodesOfType("sessions");
 const assessments = nodesOfType("assessments");
@@ -117,7 +117,7 @@ describe("rule 2: a claim carries its own evidence", () => {
       );
       expect(
         effects.length,
-        `${week.id} makes no claim about an effect — history alone is not evidence that anything works`,
+        `${week.id} makes no claim about an effect: history alone is not evidence that anything works`,
       ).toBeGreaterThan(0);
     }
   });
@@ -136,7 +136,7 @@ describe("rule 2: a claim carries its own evidence", () => {
           `${where} must declare kind as "effect" or "history", got ${JSON.stringify(claim.kind)}`,
         ).toBe(true);
 
-        // A claim about history has no sample size to report — the 10,000-step
+        // A claim about history has no sample size to report, the 10,000-step
         // target being a product name is a fact about 1965, not a measurement.
         // Only claims asserting an effect owe a number.
         if (str(claim.kind) !== "effect") return;
@@ -163,7 +163,7 @@ describe("rule 2: a claim carries its own evidence", () => {
       for (const phrase of UNQUALIFIED_APPEALS) {
         expect(
           body.includes(phrase),
-          `${node.id} says "${phrase}" — name the study and its sample size instead`,
+          `${node.id} says "${phrase}": name the study and its sample size instead`,
         ).toBe(false);
       }
     }
@@ -261,7 +261,7 @@ describe("rule 5: twelve weeks, twelve different methods", () => {
       const previous = seen.get(method);
       expect(
         previous,
-        `${id} reuses the method "${method}", already used by ${previous} — twelve interchangeable weeks is the failure this course risks most`,
+        `${id} reuses the method "${method}", already used by ${previous}: twelve interchangeable weeks is the failure this course risks most`,
       ).toBeUndefined();
       seen.set(method, id);
     }

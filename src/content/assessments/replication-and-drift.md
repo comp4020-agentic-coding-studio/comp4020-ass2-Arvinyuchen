@@ -35,7 +35,7 @@ can see three things wrong with how you measured it, and fixing them would
 obviously give a better result.
 
 Fix nothing. A modified re-run answers a different question and tells you nothing
-about drift — and the marks for this piece sit in the comparison, which a
+about drift, and the marks for this piece sit in the comparison, which a
 modified protocol destroys.
 
 If the original protocol was genuinely unsafe or unrunnable, say so and stop.
@@ -44,7 +44,7 @@ That is a legitimate finding and it is assessed as one.
 ## Do not average them
 
 Two results, side by side, both visible. The average of a March answer and a May
-answer is a number describing nobody — not the person you were in March, not the
+answer is a number describing nobody, not the person you were in March, not the
 person you are now.
 
 ## The largest criterion, again, is the account

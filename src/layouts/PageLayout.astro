@@ -2,33 +2,47 @@
 // The wrapper every .md and .mdx page gets, via `defaultLayout` in
 // astro.config.ts.
 //
-// MdxPageLayout renders the frontmatter description as a lead paragraph but
-// emits no h1 of its own, so a markdown page's heading outline started at h2
-// with no parent. /assessments/, /lectures/ and /people/ all shipped that way
-// in the starter, and the build never complained: axe's page-has-heading-one
-// is a best-practice rule and is off by default.
+// It renders BaseLayout directly rather than MdxPageLayout, for two reasons.
 //
-// Adding a markdown heading to each page put the h1 *after* the lead
-// paragraph, which is worse. So take the lead over and render both here, in
-// the order ContentLayout already uses on the .astro pages — heading, then
-// lead, then content — and the two kinds of page now agree.
-import MdxPageLayout from "astro-theme-university/layouts/MdxPageLayout.astro";
+// MdxPageLayout emits no h1 of its own but does render the frontmatter
+// description as a lead paragraph, so a markdown page's heading outline began
+// at h2 with no parent. /assessments/, /lectures/ and /people/ all shipped
+// that way in the starter, and the build never complained: axe's
+// page-has-heading-one is a best-practice rule and is off by default. Adding a
+// markdown heading to each page put the h1 after the lead, which is worse. So
+// the heading and the lead are rendered here, in the order ContentLayout uses
+// on the .astro pages: heading, then lead, then content.
+//
+// And MdxPageLayout builds the document title by joining the page title to the
+// site name with an em dash, which put one in the tab and the link preview of
+// every markdown page, and gave those five pages a suffix the other
+// twenty-seven did not have. Titles are bare here, which is what every other
+// page already does. Unifying the other way is not available: ContentLayout
+// uses a single `title` prop for both the document title and the visible h1,
+// so a suffix there would show up as a heading on the page.
+import BaseLayout from "astro-theme-university/layouts/BaseLayout.astro";
 import { siteConfig } from "../site-config";
 import "../styles/site.css";
 
 const { frontmatter } = Astro.props as { frontmatter?: Record<string, unknown> };
+const { title, description, ...rest } = (frontmatter ?? {}) as {
+  title?: string;
+  description?: string;
+  [key: string]: unknown;
+};
+
 const asText = (value: unknown): string | undefined =>
   typeof value === "string" && value.trim() ? value : undefined;
 
-const title = asText(frontmatter?.title);
-const description = asText(frontmatter?.description);
+const heading = asText(title);
+const lead = asText(description);
 
 // A page carrying its own hero already has a heading; don't add a second one.
-const hasOwnHeading = Boolean(frontmatter?.heroTitle || frontmatter?.heroImage);
+const hasOwnHeading = Boolean(rest.heroTitle || rest.heroImage);
 ---
 
-<MdxPageLayout siteConfig={siteConfig} {...Astro.props} lead={false}>
-  {!hasOwnHeading && title && <h1>{title}</h1>}
-  {!hasOwnHeading && description && <p class="lead">{description}</p>}
+<BaseLayout title={heading ?? ""} description={lead} {...siteConfig} {...rest}>
+  {!hasOwnHeading && heading && <h1>{heading}</h1>}
+  {!hasOwnHeading && lead && <p class="lead">{lead}</p>}
   <slot />
-</MdxPageLayout>
+</BaseLayout>

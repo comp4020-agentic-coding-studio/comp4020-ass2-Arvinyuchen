@@ -1,6 +1,6 @@
 ---
-// A week's method, what it takes apart, what it builds on, and — for anything
-// above the lowest risk — the safety block.
+// A week's method, what it takes apart, what it builds on, and for anything
+// above the lowest risk, the safety block.
 //
 // This used to be an h2 headed "The protocol" above a definition list, which
 // put a block of metadata between the reader and the first line of the lesson.
@@ -8,8 +8,8 @@
 // a spec sheet, takes three lines instead of ten, and gets out of the way.
 //
 // The safety block keeps full prominence. The duty-of-care fields are checked
-// by the schema and by spec/, but a check only proves they exist in the data —
-// this is what puts them in front of the student who needs them.
+// by the schema and by spec/, but a check only proves they exist in the data.
+// This is what puts them in front of the student who needs them.
 import { getPublishedCollection } from "astro-course-university/content";
 import type { CollectionEntry } from "astro:content";
 import Callout from "astro-theme-university/components/Callout.astro";
@@ -145,7 +145,7 @@ const takesCare = risk === "med" || risk === "high";
   }
 
   /* The callout supplies the box; this is the icon and the label inside it.
-     Sized down from a normal h2 — it is a warning, not a chapter. */
+     Sized down from a normal h2, it is a warning, not a chapter. */
   .safety-heading {
     display: flex;
     align-items: center;

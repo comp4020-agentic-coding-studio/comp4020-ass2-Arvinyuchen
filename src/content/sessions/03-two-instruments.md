@@ -18,8 +18,8 @@ harm_boundary:
   Nothing in this week asks you to sleep less, sleep more, or go to bed at a
   different time. You are measuring the sleep you were already going to have.
 opt_out:
-  Compare two instruments on someone else's published night — the class has a
-  shared set of records from previous years — or compare a paper diary against
+  Compare two instruments on someone else's published night (the class has a
+  shared set of records from previous years) or compare a paper diary against
   your own morning recall, with no device at all.
 claims:
   - kind: effect
@@ -59,8 +59,8 @@ deciding which one won.
 
 ## There is no referee in this room
 
-In a sleep laboratory there is a third measure — electrodes, a technician, a
-recording of your actual brain — and it settles the argument. You do not have
+In a sleep laboratory there is a third measure (electrodes, a technician, a
+recording of your actual brain) and it settles the argument. You do not have
 one. Neither do the millions of people making decisions about their lives based
 on a number a wristband produced by guessing from wrist movement.
 
@@ -75,12 +75,12 @@ agreed with you.
 ## The risk in this particular week
 
 This is the first week with a real way to hurt yourself, and it is not sleep
-deprivation — it is the measuring.
+deprivation. It is the measuring.
 
 In 2017 a group of sleep clinicians gave a name to something they kept seeing:
 patients arriving at clinic distressed about their sleep, whose sleep was fine,
 and whose actual complaint was their tracker. They called it
-[orthosomnia](/glossary/#orthosomnia) — anxiety about sleeping correctly,
+[orthosomnia](/glossary/#orthosomnia): anxiety about sleeping correctly,
 produced by the instrument meant to help. Some of those patients were sleeping
 worse because of the data.
 

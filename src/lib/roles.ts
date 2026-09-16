@@ -9,7 +9,7 @@
 // page are lowercase too. A role is a field value like any other, and
 // capitalising only this one would make it the single value on the site that
 // shouts. Ordinary usage agrees: a job title is a common noun unless it comes
-// before a name as a formal title — "Convenor Halliday" takes the capital,
+// before a name as a formal title. "Convenor Halliday" takes the capital,
 // "(convenor)" does not.
 //
 // `other` maps to an empty string deliberately. It means the person's role is

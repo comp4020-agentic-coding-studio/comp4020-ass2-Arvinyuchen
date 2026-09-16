@@ -3,7 +3,7 @@
 // what is due, week by week.
 //
 // Built from the three collections rather than written out, so it cannot drift
-// from them. That is also why there is no spec check for this page — a check
+// from them. That is also why there is no spec check for this page: a check
 // would only be testing the loop below against the data the loop reads.
 import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
@@ -32,7 +32,7 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
 
 <ContentLayout
   title="Schedule"
-  description="The twelve weeks on one page — lectures, labs and everything that falls due"
+  description="The twelve weeks on one page: lectures, labs and everything that falls due"
   {...siteConfig}
 >
   <p>
@@ -71,7 +71,7 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
                   <td class="starting">{formatCourseDate(lab.data.date)}</td>
                   <td>
                     {lecture.length === 0 ? (
-                      <span class="none">—</span>
+                      <span class="none">none</span>
                     ) : (
                       lecture.map((entry) => (
                         <a href={withBase(`/lectures/${entry.id}/`)}>{entry.data.title}</a>
@@ -84,7 +84,7 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
                   </td>
                   <td>
                     {due.length === 0 ? (
-                      <span class="none">—</span>
+                      <span class="none">none</span>
                     ) : (
                       due.map((entry) => (
                         <span class="due">
@@ -97,7 +97,7 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
                 </tr>
                 {week === BREAK_AFTER && (
                   <tr class="teaching-break">
-                    <td colspan="5">Teaching break — {BREAK_DATES}</td>
+                    <td colspan="5">Teaching break: {BREAK_DATES}</td>
                   </tr>
                 )}
               </>
@@ -135,14 +135,14 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
   }
 
   /* Dates read badly broken across lines ("22 February / 2027"). Keeping them
-     on one line widens the table, which costs nothing here — it already
+     on one line widens the table, which costs nothing here, because it already
      scrolls inside its own box on a narrow screen. */
   .starting,
   .due small {
     white-space: nowrap;
   }
 
-  /* The method and the due date sit under their link rather than beside it —
+  /* The method and the due date sit under their link rather than beside it,
      five columns is already the most a phone will take. */
   .method,
   .due small {

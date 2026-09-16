@@ -1,7 +1,7 @@
 ---
 title: Why the Advice Doesn't Fit
 description: >-
-  The opening lecture — where everyday instructions about your day actually came
+  The opening lecture: where everyday instructions about your day actually came
   from, and why they are the wrong shape for a person
 week: 1
 teachers: [wren-halliday]
@@ -15,7 +15,7 @@ given: sleep eight hours, eat breakfast, walk ten thousand steps, work in
 twenty-five minute blocks.
 
 Not to debunk them. Two of the four are defensible advice for a population. The
-lecture is about a different problem — that all four are statements about a
+lecture is about a different problem: all four are statements about a
 distribution, delivered to you as an instruction about your Tuesday, and that the
 translation from the first thing to the second is never shown.
 

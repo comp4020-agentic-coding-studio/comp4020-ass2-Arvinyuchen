@@ -5,7 +5,7 @@ import { slopBranding } from "astro-theme-slop";
 // language students see.
 //
 // "Lab" rather than "Session" or "Seminar", because the weekly meeting is where
-// an experiment actually gets run — students arrive with a record and leave
+// an experiment actually gets run: students arrive with a record and leave
 // with a result, which is not what either of the other words promises.
 export const sessionLabels = {
   singular: "Lab",
@@ -40,7 +40,7 @@ export const siteConfig = defineSiteConfig({
 
   licence: "CC-BY-NC-SA-4.0",
   // No social card. The four starter images were deleted rather than
-  // replaced, and `socialImage` is optional in the theme's types — the trade
+  // replaced, and `socialImage` is optional in the theme's types. The trade
   // is that links to this site get no preview image, which is a fair price for
   // a course site that does not illustrate anything.
 });

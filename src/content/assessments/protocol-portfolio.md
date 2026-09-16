@@ -33,14 +33,14 @@ run is how you discover which parts of it you had been improvising.
 
 - The measure, and how long a single recording took
 - The duration, and whether you completed it
-- The raw record — the actual log, not a summary of it
+- The raw record: the actual log, not a summary of it
 - **One thing this protocol cannot detect.** A sentence, minimum
 
 ## The third criterion
 
 "Legible to someone else" is not a politeness. Hand your portfolio to the person
 next to you in the lab. If they cannot tell what you did on the Tuesday, the
-record has failed, however clear it is to you — and it will not be clear to you
+record has failed, however clear it is to you, and it will not be clear to you
 either, in October, when you need it for the replication.
 
 ## The second criterion is the interesting one

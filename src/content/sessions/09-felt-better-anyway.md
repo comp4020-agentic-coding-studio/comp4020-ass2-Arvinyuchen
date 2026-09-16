@@ -47,7 +47,7 @@ claims:
     text:
       Kahneman describes teaching flight instructors that praise after an
       unusually good landing appeared to make the next one worse, and criticism
-      after a bad one appeared to help — with neither doing anything at all.
+      after a bad one appeared to help, with neither doing anything at all.
     source: Daniel Kahneman, Thinking, Fast and Slow (2011), chapter 17
 spec:
   - you can identify your own most unusual day from your week 1 record
@@ -66,8 +66,8 @@ have seen it you cannot unsee it in any advice you are ever given again.
 
 Think about when a person starts something new. Nobody takes up a sleep routine
 on a week they have been sleeping beautifully. Nobody reorganises their whole day
-on a day that went well. People change things on their worst days — that is what
-a bad enough day is for.
+on a day that went well. People change things on their worst days. That is
+what a bad enough day is for.
 
 So the intervention begins at the bottom. And from the bottom, the next few days
 are very likely to be better, for the same reason that an unusually cold Tuesday

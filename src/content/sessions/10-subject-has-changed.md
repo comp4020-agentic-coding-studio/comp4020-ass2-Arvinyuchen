@@ -80,7 +80,7 @@ expires, and the only durable thing is the ability to run the measurement again.
 ## The long version
 
 Santorio Santorio, in Venice, built himself a weighing chair and spent something
-close to thirty years on it — weighing what he ate, what he excreted, and
+close to thirty years on it: weighing what he ate, what he excreted, and
 himself, trying to account for the difference. He published in 1614.
 
 Thirty years is the part to notice. He was not running an experiment; he was

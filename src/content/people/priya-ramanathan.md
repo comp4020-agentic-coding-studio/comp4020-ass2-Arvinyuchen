@@ -17,7 +17,7 @@ takes. If the honest answer is four minutes, the design is already dead and it i
 better to know in week 2.
 
 Marks the protocol portfolios. The thing most often lost there is not rigour but
-legibility — a record that made complete sense to its author in March and is
+legibility: a record that made complete sense to its author in March and is
 unreadable to them by May.
 
 **Ask me first** about your measure, your logging, and whether what you have

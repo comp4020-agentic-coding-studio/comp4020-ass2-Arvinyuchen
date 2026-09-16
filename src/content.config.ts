@@ -30,8 +30,7 @@ const effectClaim = z.strictObject({
   // A number, or an explicit admission that the source never published one.
   // Guessing would be the exact error this course is about.
   n: z.union([z.number().int().positive(), z.literal("unreported")]),
-  // What `n` counts. Defaults to people, because most claims count people —
-  // but a systematic review counts trials, a pooled analysis counts studies,
+  // What `n` counts. Defaults to people, because most claims count people: // but a systematic review counts trials, a pooled analysis counts studies,
   // and the fMRI demonstration in week 11 counts one salmon. Rendering all of
   // those as "people" would have printed a false statement on the page, which
   // is how this field came to exist.
@@ -46,7 +45,7 @@ const effectClaim = z.strictObject({
 // claim as history while leaving its `n` and `blinded` in place. A history
 // claim carrying a sample size is incoherent, and the build now says so.
 //
-// It does not close the general hole — see spec/FALSIFICATION.md. Someone who
+// It does not close the general hole, see spec/FALSIFICATION.md. Someone who
 // relabels a claim *and* deletes its numbers is simply lying about what kind of
 // claim it is, and no schema can tell.
 const historyClaim = z.strictObject({
@@ -60,7 +59,7 @@ const claimSchema = z.discriminatedUnion("kind", [effectClaim, historyClaim]);
 // The duty of care, enforced at build time rather than only in spec/.
 //
 // The deploy job in .github/workflows/checks.yml deliberately does not depend
-// on the check job — a red spec test is a finding about the course, not a
+// on the check job, a red spec test is a finding about the course, not a
 // reason to take the site down. That is the right call for most checks and the
 // wrong one for this rule: a spec-only version would let a week with no
 // stopping rule deploy anyway. Failing the build is what actually prevents it
@@ -106,7 +105,7 @@ const holisticMarking = z.object({
 
 export const collections = {
   // The twelve weeks. A session is the lab where a week's experiment actually
-  // gets run, so the session is the week — there is no separate `weeks`
+  // gets run, so the session is the week, there is no separate `weeks`
   // collection, which would have given every week two pages saying overlapping
   // things.
   //
