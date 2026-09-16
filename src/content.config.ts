@@ -8,6 +8,49 @@ const courseNodeLoader = (dir: string) =>
   glob({ pattern: ["**/*.{md,mdx}", "!**/CLAUDE.md"], base: `src/content/${dir}` });
 const teacherRefs = z.array(reference("people")).min(1);
 
+// How much a week's experiment can cost the student who runs it. Weeks 3, 5, 7
+// and 11 ask people to change their sleep, their eating and their caffeine.
+const riskSchema = z.enum(["low", "med", "high"]);
+
+// Rule 2 in CLAUDE.md: a claim carries its own evidence. Claims are structured
+// rather than prose so the numbers cannot quietly go missing.
+//
+// `n` accepts "unreported" on purpose. Where a source never published a sample
+// size, saying so is honest and teachable; inventing one would be the exact
+// error this course is about. `blinded` accepts "n/a" for the same reason —
+// observational work cannot be blinded, and pretending otherwise is worse than
+// admitting it.
+const claimSchema = z.object({
+  text: z.string().trim().min(1),
+  n: z.union([z.number().int().positive(), z.literal("unreported")]),
+  blinded: z.union([z.boolean(), z.literal("n/a")]),
+  source: z.string().trim().min(1),
+});
+
+// The duty of care, enforced at build time rather than only in spec/.
+//
+// The deploy job in .github/workflows/checks.yml deliberately does not depend
+// on the check job — a red spec test is a finding about the course, not a
+// reason to take the site down. That is the right call for most checks and the
+// wrong one for this rule: a spec-only version would let a week with no
+// stopping rule deploy anyway. Failing the build is what actually prevents it
+// shipping, so this obligation lives here as well.
+const requireDutyOfCare = (
+  week: { risk?: "low" | "med" | "high"; stopping_rule?: string; harm_boundary?: string; opt_out?: string },
+  ctx: z.RefinementCtx,
+) => {
+  if (week.risk !== "med" && week.risk !== "high") return;
+  for (const field of ["stopping_rule", "harm_boundary", "opt_out"] as const) {
+    if (!week[field]?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: [field],
+        message: `a risk-${week.risk} week cannot ship without ${field}`,
+      });
+    }
+  }
+};
+
 const weightedMarking = z
   .object({
     mode: z.literal("weighted"),
@@ -32,6 +75,15 @@ const holisticMarking = z.object({
 });
 
 export const collections = {
+  // The twelve weeks. A session is the lab where a week's experiment actually
+  // gets run, so the session is the week — there is no separate `weeks`
+  // collection, which would have given every week two pages saying overlapping
+  // things.
+  //
+  // The new fields are optional here while the course is being written; the
+  // checks in spec/content-invariants.test.ts require them. Once all twelve
+  // weeks declare them, tighten `method` and `risk` to required so a week
+  // cannot ship by omission.
   sessions: defineCollection({
     loader: courseNodeLoader("sessions"),
     schema: courseNodeSchema
@@ -39,8 +91,20 @@ export const collections = {
         week: weekSchema,
         date: z.coerce.date(),
         teachers: teacherRefs.optional(),
+        // What this week teaches that no other week does (rule 4).
+        method: z.string().trim().min(1).optional(),
+        // Which part of a day it takes apart.
+        component: z.string().trim().min(1).optional(),
+        // Earlier weeks this one builds on (rule 5).
+        needs: z.array(weekSchema).default([]),
+        risk: riskSchema.optional(),
+        stopping_rule: z.string().trim().min(1).optional(),
+        harm_boundary: z.string().trim().min(1).optional(),
+        opt_out: z.string().trim().min(1).optional(),
+        claims: z.array(claimSchema).default([]),
       })
-      .loose(),
+      .loose()
+      .superRefine(requireDutyOfCare),
   }),
 
   assessments: defineCollection({
@@ -51,8 +115,22 @@ export const collections = {
         due: z.coerce.date(),
         weight: z.coerce.number().positive().max(100),
         marking: z.discriminatedUnion("mode", [weightedMarking, holisticMarking]).optional(),
+        // Which teaching weeks this piece assesses (rule 6). Nothing may be
+        // assessed before it has been taught.
+        assesses: z.array(weekSchema).default([]),
       })
-      .loose(),
+      .loose()
+      .superRefine((assessment, ctx) => {
+        for (const week of assessment.assesses) {
+          if (week > assessment.week) {
+            ctx.addIssue({
+              code: "custom",
+              path: ["assesses"],
+              message: `due in week ${assessment.week} but assesses week ${week}, which is taught later`,
+            });
+          }
+        }
+      }),
   }),
 
   lectures: defineCollection({
