@@ -241,6 +241,37 @@ describe("rule 4: nothing is taught before what it depends on", () => {
 });
 
 describe("rule 5: twelve weeks, twelve different methods", () => {
+  // The course teaches realisation, then change, then rethinking, and the
+  // twelve weeks are that spine. A week that doubled back, a rethinking week
+  // before a change week, would break the argument the course makes about
+  // itself, and prose alone would not stop it.
+  const PHASES = ["realisation", "change", "rethinking"];
+
+  it("runs the three moves in order, with every week in one of them", () => {
+    const ordered = [...weeks].sort((a, b) => weekNumber(a) - weekNumber(b));
+    let furthest = 0;
+    for (const week of ordered) {
+      const phase = str(week.meta?.phase);
+      expect(
+        PHASES.includes(phase),
+        `${week.id} must declare phase as one of ${PHASES.join(", ")}, got ${JSON.stringify(week.meta?.phase)}`,
+      ).toBe(true);
+      const index = PHASES.indexOf(phase);
+      expect(
+        index >= furthest,
+        `week ${weekNumber(week)} is ${phase}, which comes before ${PHASES[furthest]}: the three moves run in order and do not double back`,
+      ).toBe(true);
+      furthest = Math.max(furthest, index);
+    }
+  });
+
+  it("uses all three moves", () => {
+    const used = new Set(weeks.map((week) => str(week.meta?.phase)));
+    for (const phase of PHASES) {
+      expect(used.has(phase), `no week belongs to "${phase}"`).toBe(true);
+    }
+  });
+
   it("runs across all twelve teaching weeks, once each", () => {
     expect(weeks.length, `expected ${TEACHING_WEEKS} weeks, found ${weeks.length}`).toBe(
       TEACHING_WEEKS,

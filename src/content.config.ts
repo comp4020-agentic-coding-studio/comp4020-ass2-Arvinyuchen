@@ -8,6 +8,15 @@ const courseNodeLoader = (dir: string) =>
   glob({ pattern: ["**/*.{md,mdx}", "!**/CLAUDE.md"], base: `src/content/${dir}` });
 const teacherRefs = z.array(reference("people")).min(1);
 
+// The three moves the course teaches, and the spine the twelve weeks hang on.
+// Realisation is reading the guidance accurately and finding where you sit in
+// it; change is altering one thing, guided by what the guidance says to
+// change; rethinking is reading what comes back from your body, your mood and
+// what you actually did, and revising against it. A week belongs to exactly
+// one of them, and the phases run in that order: spec/content-invariants
+// checks that no week doubles back.
+const phaseSchema = z.enum(["realisation", "change", "rethinking"]);
+
 // How much a week's experiment can cost the student who runs it. Weeks 3, 5, 7
 // and 11 ask people to change their sleep, their eating and their caffeine.
 const riskSchema = z.enum(["low", "med", "high"]);
@@ -120,6 +129,8 @@ export const collections = {
         week: weekSchema,
         date: z.coerce.date(),
         teachers: teacherRefs.optional(),
+        // Which of the three moves this week belongs to.
+        phase: phaseSchema.optional(),
         // What this week teaches that no other week does (rule 4).
         method: z.string().trim().min(1).optional(),
         // Which part of a day it takes apart.

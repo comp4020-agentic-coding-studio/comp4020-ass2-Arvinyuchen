@@ -6,6 +6,7 @@ description:
 week: 7
 teachers: [wren-halliday, priya-ramanathan]
 date: 2027-04-19
+phase: change
 method: blinding
 component: caffeine
 needs: [5, 6]

@@ -6,6 +6,7 @@ description:
 week: 8
 teachers: [tobias-veck]
 date: 2027-04-26
+phase: rethinking
 method: confounding
 component: the social evening
 needs: [5]

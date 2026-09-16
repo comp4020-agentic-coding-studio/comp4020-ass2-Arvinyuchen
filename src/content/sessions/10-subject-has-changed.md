@@ -6,6 +6,7 @@ description:
 week: 10
 teachers: [tobias-veck]
 date: 2027-05-10
+phase: rethinking
 method: non-stationarity
 component: the morning, ten weeks on
 needs: [5]

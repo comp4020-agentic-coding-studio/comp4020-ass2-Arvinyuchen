@@ -6,6 +6,7 @@ description:
 week: 6
 teachers: [tobias-veck]
 date: 2027-03-29
+phase: change
 method: counterbalancing
 component: the work block
 needs: [5]

@@ -6,6 +6,7 @@ description:
 week: 2
 teachers: [tobias-veck]
 date: 2027-03-01
+phase: realisation
 method: operationalisation
 component: alertness
 needs: [1]

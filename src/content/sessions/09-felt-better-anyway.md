@@ -6,6 +6,7 @@ description:
 week: 9
 teachers: [priya-ramanathan]
 date: 2027-05-03
+phase: rethinking
 method: regression-to-mean
 component: the bad day
 needs: [1, 8]

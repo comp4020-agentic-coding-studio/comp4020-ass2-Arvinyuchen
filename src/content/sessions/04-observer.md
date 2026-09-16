@@ -6,6 +6,7 @@ description:
 week: 4
 teachers: [tobias-veck]
 date: 2027-03-15
+phase: realisation
 method: reactivity
 component: phone use
 needs: [3]
