@@ -10,10 +10,16 @@ related:
   - sessions/01-baseline
 ---
 
+## Course premise
+
 Public guidance is the best summary we have of what helps people in general.
-Sleep seven to nine hours (Hirshkowitz et al., *Sleep Health* 2015). Aim for
-seven thousand steps or more (Australia's 24-Hour Movement Guidelines). Enjoy a
-healthy breakfast (the Australian Dietary Guidelines' own practical tips).
+Sleep seven to nine hours ([Hirshkowitz et al.,
+2015](https://doi.org/10.1016/j.sleh.2014.12.010)). Aim for seven thousand
+steps or more (a companion statement to the [24-Hour Movement
+Guidelines](https://www.health.gov.au/topics/physical-activity/24-hour-movement-guidelines-for-all-australians/recommendations-for-adults-18-to-64-years)).
+Enjoy a healthy breakfast (a practical tip in the [Australian Dietary
+Guidelines](https://www.eatforhealth.gov.au/sites/default/files/files/the_guidelines/n55a_australian_dietary_guidelines_summary_book.pdf)
+summary booklet, not one of the five guidelines themselves).
 Notice that these are ranges and aims rather than instructions, and that none of
 them knows anything about you. This course teaches you to close that gap in
 three moves. Realisation: read the guidance accurately, then look at your own
