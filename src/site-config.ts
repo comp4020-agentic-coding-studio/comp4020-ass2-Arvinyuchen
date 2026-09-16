@@ -28,6 +28,9 @@ export const siteConfig = defineSiteConfig({
     { text: "Lectures", href: "/lectures/" },
     { text: sessionLabels.plural, href: "/sessions/" },
     { text: "Assessment", href: "/assessments/" },
+    // In the menu because rule 3 sends readers here from every week, so it is a
+    // reference work rather than an appendix.
+    { text: "Glossary", href: "/glossary/" },
     { text: "People", href: "/people/" },
     { text: "Policies", href: "/policies/" },
   ],

@@ -2,48 +2,101 @@
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
-import heroImage from "../assets/images/hero-home.avif";
 import { courseMeta } from "../course-config";
+import { withBase } from "astro-theme-university/url";
 import { sessionLabels, siteConfig } from "../site-config";
 
-// STARTER_CONTENT: replace the hero artwork and its alt text below, then
-// remove this comment.
+// No hero artwork, on purpose. A course arguing that confident presentation is
+// not evidence should not open with a decorative photograph of a lecture
+// theatre it does not have.
 ---
 
 <ContentLayout
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
-  heroImage={heroImage}
-  heroImageAlt="A lecture theatre reduced to flat gold and black shapes, rows of seats sweeping past the frame, in a two-ink risograph print"
   {...siteConfig}
 >
   <ul class="course-tags" aria-label="Course tags">
     {courseMeta.tags.map((tag) => <li>{tag}</li>)}
   </ul>
 
-  <!-- STARTER_CONTENT: replace the authored page below, then remove this comment. -->
-  <h2>What you will do</h2>
   <p>
-    Say what a student spends their time on — the making, reading, arguing or
-    measuring that fills the weeks. Name the artefact they walk out with.
+    Sleep eight hours. Eat breakfast. Walk ten thousand steps. Work in
+    twenty-five minute blocks. Avoid screens before bed.
+  </p>
+
+  <p>
+    Every one of those is a statement about a population, handed to you as an
+    instruction about your Tuesday. The step in between — the one where a
+    distribution becomes advice for a particular person — is never shown,
+    because it usually has not been taken. Ten thousand steps was the name of a
+    1965 pedometer. The twenty-five minute block was one student with a kitchen
+    timer who tested it on nobody but himself.
+  </p>
+
+  <p>
+    This course does the opposite. It treats each instruction as a hypothesis
+    and tests it on the only subject you have any standing to experiment on. The
+    unit of design is one day — not a habit, not a goal, not a life. Twenty-four
+    hours, taken apart and rebuilt, twelve times.
+  </p>
+
+  <h2>What you will actually do</h2>
+  <p>
+    Record one ordinary day and change nothing about it. Decide what "tired"
+    means precisely enough to write down. Measure one night with two instruments
+    and watch them disagree. Take something away and put it back. Try to
+    conceal a condition from yourself, and mostly fail. Run an experiment
+    twice, ten weeks apart, and get two different answers.
+  </p>
+
+  <p>
+    You will hand in a pre-registration before you collect any data, a portfolio
+    of protocols, one full report, and one replication. You are marked on the
+    quality of your reasoning and never on whether your day improved — see the
+    <a href={withBase("/policies/")}>policies</a> for why that distinction is not
+    negotiable here.
   </p>
 
   <h2>Who it is for</h2>
   <p>
-    Say who this is aimed at and what they need to already know. Be specific
-    enough that someone can rule themselves in or out without emailing you.
+    Anyone, in first year, with no background in statistics or physiology. Every
+    technical term is explained where you first meet it and collected in the
+    <a href={withBase("/glossary/")}>glossary</a>. If you find writing here that only
+    somebody already trained could follow, that is a fault in the course and we
+    would like to know.
+  </p>
+
+  <p>
+    It is not a wellbeing course and it will not make your days better. It is a
+    methods course that happens to use your own life as the material, which is
+    the only material available at this sample size.
+  </p>
+
+  <h2>Before you enrol</h2>
+  <p>
+    Four of the twelve labs ask you to change something about your sleep, your
+    eating or your caffeine. Each of those carries a stopping rule, a stated
+    limit on what the exercise must never become, and an alternative protocol
+    that teaches the same method without asking anything of your body. Taking
+    the alternative costs no marks, needs no reason, and requires no
+    explanation. All of that is printed on the week's own page rather than
+    buried in a handbook.
   </p>
 
   <h2>Where to go next</h2>
   <CardGrid columns={2}>
     <Card title={sessionLabels.plural} href="/sessions/">
-      <p>The weekly schedule and what happens in each teaching session.</p>
+      <p>The twelve weeks, and the method each one introduces.</p>
     </Card>
     <Card title="Assessment" href="/assessments/">
-      <p>What is marked, what it is worth, and when it is due.</p>
+      <p>Four pieces, what each is worth, and what is being judged.</p>
+    </Card>
+    <Card title="Glossary" href="/glossary/">
+      <p>Every technical word the course uses, in plain language.</p>
     </Card>
     <Card title="People" href="/people/">
-      <p>Who teaches the course and how to reach them.</p>
+      <p>Who runs which lab, and who to ask first.</p>
     </Card>
   </CardGrid>
 </ContentLayout>
