@@ -89,10 +89,16 @@ ${markers} {
 
 ${perIcon}
 
-/* The group of them, set off from the prose it follows. */
+/* The group of them, set off from the prose it follows.
+ *
+ * The rule was --at-bg-alt, which is a surface tint: against a near-white page
+ * it was all but invisible, so the one structural division on the page did not
+ * read as one. color-mix off currentColor is the convention the theme uses for
+ * its own rules, and it follows the text colour into dark mode instead of
+ * staying a light-mode tint. */
 .apparatus {
   margin-block-start: var(--at-spacing-2xl, 3rem);
-  border-block-start: 1px solid var(--at-bg-alt);
+  border-block-start: 1px solid color-mix(in srgb, currentColor 25%, transparent);
 }
 
 .apparatus > :first-child > h2 {
@@ -113,6 +119,21 @@ ${perIcon}
   margin-block-start: var(--at-spacing-xl);
   padding-block-start: 0;
   border-block-start: 0;
+}
+
+/* And its list is a list. The package styles it as a horizontal chip row —
+ * list-style: none, no indent, display: flex — which sat directly under
+ * Teaching team's ordinary bulleted list and made two lists of the same kind
+ * look like two different things.
+ *
+ * The revert keyword rather than hard-coded values: it drops the component's own
+ * declarations and lets the list land wherever every other list on the site
+ * lands, so the two cannot drift apart if list styling changes later. Checked
+ * after the change — both lists compute identically. */
+.apparatus .related-content.related-content ul {
+  display: revert;
+  list-style: revert;
+  padding-inline-start: revert;
 }
 `;
 

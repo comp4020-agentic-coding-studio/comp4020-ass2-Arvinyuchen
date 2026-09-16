@@ -62,10 +62,16 @@
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5'%3E%3Cpath d='M14 11.998C14 9.506 11.683 7 8.857 7H7.143C4.303 7 2 9.238 2 11.998c0 2.378 1.71 4.368 4 4.873a5.3 5.3 0 0 0 1.143.124'/%3E%3Cpath d='M10 11.998c0 2.491 2.317 4.997 5.143 4.997h1.714c2.84 0 5.143-2.237 5.143-4.997c0-2.379-1.71-4.37-4-4.874A5.3 5.3 0 0 0 16.857 7'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* The group of them, set off from the prose it follows. */
+/* The group of them, set off from the prose it follows.
+ *
+ * The rule was --at-bg-alt, which is a surface tint: against a near-white page
+ * it was all but invisible, so the one structural division on the page did not
+ * read as one. color-mix off currentColor is the convention the theme uses for
+ * its own rules, and it follows the text colour into dark mode instead of
+ * staying a light-mode tint. */
 .apparatus {
   margin-block-start: var(--at-spacing-2xl, 3rem);
-  border-block-start: 1px solid var(--at-bg-alt);
+  border-block-start: 1px solid color-mix(in srgb, currentColor 25%, transparent);
 }
 
 .apparatus > :first-child > h2 {
@@ -86,4 +92,19 @@
   margin-block-start: var(--at-spacing-xl);
   padding-block-start: 0;
   border-block-start: 0;
+}
+
+/* And its list is a list. The package styles it as a horizontal chip row —
+ * list-style: none, no indent, display: flex — which sat directly under
+ * Teaching team's ordinary bulleted list and made two lists of the same kind
+ * look like two different things.
+ *
+ * The revert keyword rather than hard-coded values: it drops the component's own
+ * declarations and lets the list land wherever every other list on the site
+ * lands, so the two cannot drift apart if list styling changes later. Checked
+ * after the change — both lists compute identically. */
+.apparatus .related-content.related-content ul {
+  display: revert;
+  list-style: revert;
+  padding-inline-start: revert;
 }
