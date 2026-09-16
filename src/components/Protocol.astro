@@ -1,0 +1,82 @@
+---
+// A week's method, what it takes apart, what it builds on, and — for anything
+// above the lowest risk — the safety block.
+//
+// The duty-of-care fields are checked by the schema and by spec/, but a check
+// only guarantees they exist in the data. This component is what gets them in
+// front of the student who needs them, which is the point of collecting them.
+import { getPublishedCollection } from "astro-course-university/content";
+import type { CollectionEntry } from "astro:content";
+import Callout from "astro-theme-university/components/Callout.astro";
+import { withBase } from "astro-theme-university/url";
+
+interface Props {
+  week: CollectionEntry<"sessions">;
+}
+
+const { week } = Astro.props;
+const { method, component, needs, risk, stopping_rule, harm_boundary, opt_out } = week.data;
+
+// `needs` holds week numbers, so resolve them to real pages to link.
+const all = await getPublishedCollection("sessions");
+const byWeek = new Map(all.map((entry) => [entry.data.week, entry]));
+const prerequisites = (needs ?? [])
+  .map((number) => byWeek.get(number))
+  .filter((entry): entry is CollectionEntry<"sessions"> => entry !== undefined)
+  .sort((a, b) => a.data.week - b.data.week);
+
+const takesCare = risk === "med" || risk === "high";
+---
+
+<section aria-labelledby="protocol">
+  <h2 id="protocol">The protocol</h2>
+
+  <dl>
+    {method && (
+      <>
+        <dt>Method</dt>
+        <dd>{method}</dd>
+      </>
+    )}
+    {component && (
+      <>
+        <dt>What it takes apart</dt>
+        <dd>{component}</dd>
+      </>
+    )}
+    <dt>Risk</dt>
+    <dd>{risk ?? "not yet assessed"}</dd>
+    {prerequisites.length > 0 && (
+      <>
+        <dt>Builds on</dt>
+        <dd>
+          {prerequisites.map((entry, index) => (
+            <>
+              {index > 0 && ", "}
+              <a href={withBase(`/sessions/${entry.id}/`)}>
+                week {entry.data.week}
+              </a>
+            </>
+          ))}
+        </dd>
+      </>
+    )}
+  </dl>
+
+  {
+    takesCare && (
+      <Callout type="warning">
+        <h3>Before you run this</h3>
+        {stopping_rule && (
+          <p><strong>When to stop.</strong> {stopping_rule}</p>
+        )}
+        {harm_boundary && (
+          <p><strong>What this is not.</strong> {harm_boundary}</p>
+        )}
+        {opt_out && (
+          <p><strong>If this one isn't for you.</strong> {opt_out}</p>
+        )}
+      </Callout>
+    )
+  }
+</section>

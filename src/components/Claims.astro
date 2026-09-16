@@ -1,0 +1,78 @@
+---
+// The week's claims, with their sample sizes on the page.
+//
+// This component is the course's own argument applied to itself. Rule 2 says
+// that anything asserting an effect has to show how many people were measured
+// and whether they were blinded. Collecting that in frontmatter satisfies the
+// check; printing it here is what makes the site honest, because a course that
+// tells students to always ask for the number and then keeps its own numbers in
+// a config file has not actually made the case.
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  claims: CollectionEntry<"sessions">["data"]["claims"];
+}
+
+const { claims } = Astro.props;
+const effects = (claims ?? []).filter((claim) => claim.kind === "effect");
+const history = (claims ?? []).filter((claim) => claim.kind === "history");
+
+const sampleSize = (n: number | "unreported"): string =>
+  n === "unreported" ? "not reported" : n.toLocaleString("en-AU");
+
+const blinding = (blinded: boolean | "n/a"): string =>
+  blinded === "n/a" ? "not applicable" : blinded ? "blinded" : "not blinded";
+---
+
+{
+  (effects.length > 0 || history.length > 0) && (
+    <section aria-labelledby="what-we-know">
+      <h2 id="what-we-know">What we actually know</h2>
+
+      {effects.length > 0 && (
+        <table>
+          <caption>
+            Claims about effects. Every one shows the number of people it rests
+            on, because that is the first thing this course asks you to look for.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Claim</th>
+              <th scope="col">People measured</th>
+              <th scope="col">Blinding</th>
+              <th scope="col">Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            {effects.map((claim) => (
+              <tr>
+                <td>{claim.text}</td>
+                <td>{sampleSize(claim.n)}</td>
+                <td>{blinding(claim.blinded)}</td>
+                <td>{claim.source}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {history.length > 0 && (
+        <>
+          <h3>And what is just history</h3>
+          <p>
+            These are claims about what happened, not about what works. They
+            carry a source and no sample size, because there is nothing here that
+            was measured.
+          </p>
+          <ul>
+            {history.map((claim) => (
+              <li>
+                {claim.text} <cite>{claim.source}</cite>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  )
+}
