@@ -3,10 +3,14 @@ import { slopBranding } from "astro-theme-slop";
 import { courseMeta } from "./course-config";
 
 // The underlying collection and URL remain `sessions`; these labels are the
-// language students see. Change them to Studios, Tutorials, Expeditions, etc.
+// language students see.
+//
+// "Lab" rather than "Session" or "Seminar", because the weekly meeting is where
+// an experiment actually gets run — students arrive with a record and leave
+// with a result, which is not what either of the other words promises.
 export const sessionLabels = {
-  singular: "Session",
-  plural: "Sessions",
+  singular: "Lab",
+  plural: "Labs",
 } as const;
 
 export const graphCollections = ["sessions", "assessments", "lectures", "people"];

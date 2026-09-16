@@ -6,13 +6,31 @@ import { sessionLabels, siteConfig } from "../../site-config";
 
 <ContentLayout
   title={sessionLabels.plural}
-  description={`The twelve-week teaching schedule: what happens in each ${sessionLabels.singular.toLowerCase()}, what to prepare, and what leaves the room.`}
+  description="Twelve weeks, twelve methods, one day taken apart and rebuilt"
   {...siteConfig}
 >
   <p>
-    The internal collection and URL stay <code>sessions</code>. Set the visible
-    singular and plural names once in <code>src/site-config.ts</code> and use
-    the language your course deserves everywhere readers see it.
+    Each week is a lab. You arrive with a record of your own day and leave with
+    a result about it — or, more often than you would like, with a reason the
+    result cannot be trusted.
   </p>
+
+  <p>
+    The twelve weeks are not twelve topics. They are twelve <em>methods</em>,
+    each introduced once and each depending on the ones before it, so the order
+    is not a matter of taste: you cannot take something away and put it back
+    before you have decided what you are measuring, and you cannot understand
+    why your worst day improved until you have watched a whole class's worst
+    days improve together.
+  </p>
+
+  <p>
+    Four of the weeks ask you to change something about your sleep, your eating
+    or your caffeine. Those four carry a stopping rule, a limit and an
+    alternative protocol for anyone who should not take part — printed on the
+    page, not in a handbook. The alternative is never a lesser version of the
+    week. In one case it teaches the lesson better.
+  </p>
+
   <SessionsGrid />
 </ContentLayout>
