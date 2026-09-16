@@ -1,0 +1,174 @@
+---
+// The whole course on one page: what is lectured, what is run in the lab, and
+// what is due, week by week.
+//
+// Built from the three collections rather than written out, so it cannot drift
+// from them. That is also why there is no spec check for this page — a check
+// would only be testing the loop below against the data the loop reads.
+import { getPublishedCollection } from "astro-course-university/content";
+import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { withBase } from "astro-theme-university/url";
+import { formatCourseDate } from "../lib/dates";
+import { sessionLabels, siteConfig } from "../site-config";
+
+const [labs, lectures, assessments] = await Promise.all([
+  getPublishedCollection("sessions"),
+  getPublishedCollection("lectures"),
+  getPublishedCollection("assessments"),
+]);
+
+const weeks = [...labs].sort((a, b) => a.data.week - b.data.week);
+const lecturesIn = (week: number) => lectures.filter((entry) => entry.data.week === week);
+const dueIn = (week: number) => assessments.filter((entry) => entry.data.week === week);
+
+// The two-week teaching break falls after week 6. Showing it explains the jump
+// from 29 March to 19 April, which a reader would otherwise have to notice.
+const BREAK_AFTER = 6;
+const BREAK_DATES = "5 and 12 April 2027";
+
+const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 0);
+---
+
+<ContentLayout
+  title="Schedule"
+  description="The twelve weeks on one page — lectures, labs and everything that falls due"
+  {...siteConfig}
+>
+  <p>
+    Twelve teaching weeks, with a two-week break after week 6. Three lectures,
+    twelve labs, and four pieces of assessment totalling {totalWeight}%.
+  </p>
+
+  <p>
+    Each lab names the method it introduces, and no two are the same. The order
+    is not a matter of taste — a week can only build on methods introduced in an
+    earlier one, which is checked when the site builds.
+  </p>
+
+  <div
+    class="schedule-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Course schedule, week by week"
+  >
+    <table>
+      <caption>
+        Lectures, {sessionLabels.plural.toLowerCase()} and due dates for every
+        teaching week. A dash means nothing is scheduled in that column.
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Week</th>
+          <th scope="col">Starting</th>
+          <th scope="col">Lecture</th>
+          <th scope="col">{sessionLabels.singular}</th>
+          <th scope="col">Due</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          weeks.map((lab) => {
+            const week = lab.data.week;
+            const lecture = lecturesIn(week);
+            const due = dueIn(week);
+            return (
+              <>
+                <tr>
+                  <th scope="row">{week}</th>
+                  <td class="starting">{formatCourseDate(lab.data.date)}</td>
+                  <td>
+                    {lecture.length === 0 ? (
+                      <span class="none">—</span>
+                    ) : (
+                      lecture.map((entry) => (
+                        <a href={withBase(`/lectures/${entry.id}/`)}>{entry.data.title}</a>
+                      ))
+                    )}
+                  </td>
+                  <td>
+                    <a href={withBase(`/sessions/${lab.id}/`)}>{lab.data.title}</a>
+                    {lab.data.method && <small class="method">{lab.data.method}</small>}
+                  </td>
+                  <td>
+                    {due.length === 0 ? (
+                      <span class="none">—</span>
+                    ) : (
+                      due.map((entry) => (
+                        <span class="due">
+                          <a href={withBase(`/assessments/${entry.id}/`)}>{entry.data.title}</a>
+                          <small>{formatCourseDate(entry.data.due)} · {entry.data.weight}%</small>
+                        </span>
+                      ))
+                    )}
+                  </td>
+                </tr>
+                {week === BREAK_AFTER && (
+                  <tr class="teaching-break">
+                    <td colspan="5">Teaching break — {BREAK_DATES}</td>
+                  </tr>
+                )}
+              </>
+            );
+          })
+        }
+      </tbody>
+    </table>
+  </div>
+</ContentLayout>
+
+<style>
+  /* Five columns do not fit a phone, so the table scrolls inside this box and
+     the page never scrolls sideways. Focusable so the scroll is reachable from
+     the keyboard, with a visible ring, because a focusable element with no
+     focus style is a trap for anyone not using a mouse. */
+  .schedule-scroll {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .schedule-scroll:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 2px;
+  }
+
+  .schedule-scroll th[scope="row"] {
+    text-align: right;
+    color: var(--at-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .schedule-scroll td {
+    vertical-align: top;
+  }
+
+  /* Dates read badly broken across lines ("22 February / 2027"). Keeping them
+     on one line widens the table, which costs nothing here — it already
+     scrolls inside its own box on a narrow screen. */
+  .starting,
+  .due small {
+    white-space: nowrap;
+  }
+
+  /* The method and the due date sit under their link rather than beside it —
+     five columns is already the most a phone will take. */
+  .method,
+  .due small {
+    display: block;
+    color: var(--at-text-secondary);
+  }
+
+  .due + .due {
+    margin-block-start: 0.5rem;
+  }
+
+  .none {
+    color: var(--at-text-muted);
+  }
+
+  .teaching-break td {
+    text-align: center;
+    color: var(--at-text-secondary);
+    background: var(--at-bg-alt);
+    font-size: 0.9em;
+  }
+</style>

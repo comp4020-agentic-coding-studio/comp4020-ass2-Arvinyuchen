@@ -24,6 +24,10 @@ export const siteConfig = defineSiteConfig({
   name: "Slop University",
 
   links: [
+    // First, because "what is on this week" is the question a student asks
+    // most often, and the schedule is the only page that answers it in one
+    // look.
+    { text: "Schedule", href: "/schedule/" },
     { text: "Lectures", href: "/lectures/" },
     { text: sessionLabels.plural, href: "/sessions/" },
     { text: "Assessment", href: "/assessments/" },

@@ -1,8 +1,8 @@
 ---
-title: Why You Felt Better Anyway
+title: The Shape of the Data
 description: >-
-  The lecture on regression to the mean, and why almost every intervention
-  appears to work
+  Thirty days of one measure, the worst day marked, and what follows it — before
+  the effect is given a name
 week: 9
 teachers: [wren-halliday]
 date: 2027-05-03
