@@ -81,5 +81,3 @@ answer. The point is that a figure with no study behind it travelled around the
 world, got built into the default settings of millions of devices, and is now
 quoted back to you as though it were a finding about your body.
 
-Next week we start turning one of these instructions into something you could
-actually test.

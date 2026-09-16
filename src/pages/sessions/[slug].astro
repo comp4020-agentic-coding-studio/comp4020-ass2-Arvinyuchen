@@ -29,8 +29,7 @@ const { Content } = await render(session);
   <Content />
   <Claims claims={session.data.claims} />
   <SpecList spec={session.data.spec}>
-    What you bring to the session. Written so a reader can tell whether it has
-    been met without asking you.
+    What you bring to the lab.
   </SpecList>
   <TeachingTeam teachers={session.data.teachers} />
   <RelatedContent entry={session} collections={graphCollections} />

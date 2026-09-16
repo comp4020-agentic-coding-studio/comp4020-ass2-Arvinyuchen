@@ -58,8 +58,7 @@ few days and then flattened out — after a while, four hours and six hours felt
 about the same. Their measured performance did not flatten out. It kept
 declining, steadily, the whole time.
 
-Read that again, because it is the most inconvenient result in this course. The
-people in that study were not lying and they were not careless. They had simply
+The people in that study were not lying and they were not careless. They had simply
 lost the ability to feel the thing that was happening to them. If the only
 measure you carry is "ask yourself", there is a version of tiredness you are
 structurally unable to detect.

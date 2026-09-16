@@ -38,9 +38,8 @@ const { Content } = await render(assessment);
   <p><strong>Due:</strong> {formatCourseDate(assessment.data.due)} · <strong>Weight:</strong> {assessment.data.weight}%</p>
   <Content />
   <SpecList spec={assessment.data.spec}>
-    The brief poses the problem and leaves room for a response. The spec is the
-    fixed part: what a marker checks. Some lines can be checked mechanically;
-    the rest call for judgement.
+    What a marker checks. The brief above leaves room for a response; these
+    lines do not.
   </SpecList>
   {assessment.data.marking && <MarkingModel marking={assessment.data.marking} />}
   <RelatedContent entry={assessment} collections={graphCollections} />

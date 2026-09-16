@@ -112,7 +112,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     term: "regression to the mean",
     slug: "regression-to-the-mean",
     definition:
-      "Unusual measurements tend to be followed by ordinary ones. Because people start new routines on their worst days, almost any routine appears to help. This is the single most useful idea in the course.",
+      "Unusual measurements tend to be followed by ordinary ones. Because people start new routines on their worst days, almost any routine appears to help.",
   },
   {
     term: "non-stationary",

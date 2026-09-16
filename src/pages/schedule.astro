@@ -35,14 +35,10 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
   {...siteConfig}
 >
   <p>
-    Twelve teaching weeks, with a two-week break after week 6. Three lectures,
-    twelve labs, and four pieces of assessment totalling {totalWeight}%.
-  </p>
-
-  <p>
-    Each lab names the method it introduces, and no two are the same. The order
-    is not a matter of taste — a week can only build on methods introduced in an
-    earlier one, which is checked when the site builds.
+    Twelve teaching weeks with a two-week break after week 6: three lectures,
+    twelve labs, and four pieces of assessment totalling {totalWeight}%. Each
+    lab introduces one method, named under its title, and builds only on
+    methods from earlier weeks.
   </p>
 
   <div
@@ -52,10 +48,6 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
     aria-label="Course schedule, week by week"
   >
     <table>
-      <caption>
-        Lectures, {sessionLabels.plural.toLowerCase()} and due dates for every
-        teaching week. A dash means nothing is scheduled in that column.
-      </caption>
       <thead>
         <tr>
           <th scope="col">Week</th>

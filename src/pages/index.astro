@@ -4,7 +4,7 @@ import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { courseMeta } from "../course-config";
 import { withBase } from "astro-theme-university/url";
-import { sessionLabels, siteConfig } from "../site-config";
+import { siteConfig } from "../site-config";
 
 // No hero artwork, on purpose. A course arguing that confident presentation is
 // not evidence should not open with a decorative photograph of a lecture
@@ -21,19 +21,14 @@ import { sessionLabels, siteConfig } from "../site-config";
   </ul>
 
   <p>
-    Walk ten thousand steps. Avoid screens before bed. Every instruction you
-    have been given about your day is a statement about a population, handed to
-    you as an instruction about your Tuesday. The step in between — the one where a
-    distribution becomes advice for a particular person — is never shown,
-    because it usually has not been taken. Ten thousand steps was the name of a
+    The step in between — where a distribution becomes advice for a particular
+    person — is never shown, because it usually has not been taken. Ten thousand steps was the name of a
     1965 pedometer. The twenty-five minute block was one student with a kitchen
     timer who tested it on nobody but himself.
   </p>
 
   <p>
-    This course does the opposite. It treats each instruction as a hypothesis
-    and tests it on the only subject you have any standing to experiment on. The
-    unit of design is one day — not a habit, not a goal, not a life. Twenty-four
+    So the unit of design here is one day: not a habit, not a goal, not a life. Twenty-four
     hours, taken apart and rebuilt, twelve times.
   </p>
 
@@ -72,18 +67,17 @@ import { sessionLabels, siteConfig } from "../site-config";
   <h2>Before you enrol</h2>
   <p>
     Four of the twelve labs ask you to change something about your sleep, your
-    eating or your caffeine. Each of those carries a stopping rule, a stated
-    limit on what the exercise must never become, and an alternative protocol
-    that teaches the same method without asking anything of your body. Taking
-    the alternative costs no marks, needs no reason, and requires no
-    explanation. All of that is printed on the week's own page rather than
-    buried in a handbook.
+    eating or your caffeine. Each carries a stopping rule, a limit on what the
+    exercise must never become, and an alternative protocol that teaches the
+    same method without asking anything of your body. Taking the alternative
+    costs no marks and needs no reason. All of it is printed on the week's own
+    page, not buried in a handbook.
   </p>
 
   <h2>Where to go next</h2>
   <CardGrid columns={2}>
-    <Card title={sessionLabels.plural} href="/sessions/">
-      <p>The twelve weeks, and the method each one introduces.</p>
+    <Card title="Schedule" href="/schedule/">
+      <p>Every week's lecture, lab and due date in one table.</p>
     </Card>
     <Card title="Assessment" href="/assessments/">
       <p>Four pieces, what each is worth, and what is being judged.</p>

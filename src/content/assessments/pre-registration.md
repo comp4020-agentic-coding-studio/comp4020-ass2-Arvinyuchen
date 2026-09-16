@@ -52,7 +52,6 @@ knew. Writing it down in advance is the only way that sentence means anything.
 
 ## A note on what is being marked
 
-Your expectation does not have to be correct. You are not marked on whether the
-result came out the way you predicted, and a pre-registration whose prediction
-was comprehensively wrong can score full marks. You are marked on whether the
-document was specific enough to be wrong at all.
+Your expectation does not have to be correct — a comprehensively wrong
+prediction can score full marks. You are marked on whether the document was
+specific enough to be wrong at all.

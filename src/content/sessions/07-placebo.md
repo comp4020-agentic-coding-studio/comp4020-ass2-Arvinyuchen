@@ -90,4 +90,3 @@ carries some unknown amount of your own expectation baked into it, and the hones
 response is to say so in the report rather than to pretend the design was
 cleaner than it was.
 
-Next week we start on everything *else* that was happening at the same time.

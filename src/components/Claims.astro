@@ -37,8 +37,7 @@ const blinding = (blinded: boolean | "n/a"): string =>
         <div class="claims-scroll" tabindex="0" role="region" aria-label="Claims about effects">
         <table>
           <caption>
-            Claims about effects. Every one shows the number of people it rests
-            on, because that is the first thing this course asks you to look for.
+            Claims about effects, with the number of people each rests on.
           </caption>
           <thead>
             <tr>
@@ -66,9 +65,8 @@ const blinding = (blinded: boolean | "n/a"): string =>
         <>
           <h3>And what is just history</h3>
           <p>
-            These are claims about what happened, not about what works. They
-            carry a source and no sample size, because there is nothing here that
-            was measured.
+            Claims about what happened rather than what works: a source, and no
+            sample size, because nothing here was measured.
           </p>
           <ul>
             {history.map((claim) => (
