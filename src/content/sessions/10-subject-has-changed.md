@@ -23,6 +23,16 @@ opt_out: >-
   between your own two attempts, so any variable works as long as it is the
   same one.
 claims:
+  - kind: effect
+    text: >-
+      Continuous glucose monitoring across 46,898 meals found that responses to
+      the same standardised meal varied widely from person to person, which the
+      authors took as a limit on universal dietary advice.
+    n: 800
+    blinded: "n/a"
+    source: >-
+      Zeevi D et al., Personalized Nutrition by Prediction of Glycemic
+      Responses, Cell 2015;163(5):1079-1094
   - kind: history
     text: >-
       Santorio Santorio spent roughly thirty years weighing himself, his food

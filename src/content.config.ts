@@ -30,6 +30,12 @@ const effectClaim = z.strictObject({
   // A number, or an explicit admission that the source never published one.
   // Guessing would be the exact error this course is about.
   n: z.union([z.number().int().positive(), z.literal("unreported")]),
+  // What `n` counts. Defaults to people, because most claims count people —
+  // but a systematic review counts trials, a pooled analysis counts studies,
+  // and the fMRI demonstration in week 11 counts one salmon. Rendering all of
+  // those as "people" would have printed a false statement on the page, which
+  // is how this field came to exist.
+  unit: z.string().trim().min(1).default("people"),
   // "n/a" for observational work, which cannot be blinded. Pretending
   // otherwise is worse than admitting it.
   blinded: z.union([z.boolean(), z.literal("n/a")]),

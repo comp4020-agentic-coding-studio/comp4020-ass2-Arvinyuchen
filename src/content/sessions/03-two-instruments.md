@@ -22,6 +22,17 @@ opt_out:
   shared set of records from previous years — or compare a paper diary against
   your own morning recall, with no device at all.
 claims:
+  - kind: effect
+    text: >-
+      Wrist actigraphy and self-report disagreed about the same nights.
+      Measured sleep averaged 6.0 hours against 6.8 hours reported, the two
+      correlated at only 0.47, and people sleeping five hours over-reported by
+      about 1.2 hours.
+    n: 669
+    blinded: "n/a"
+    source: >-
+      Lauderdale DS, Knutson KL, Yan LL, Liu K, Rathouz PJ, Self-reported and
+      measured sleep duration, Epidemiology 2008;19(6):838-845
   - kind: history
     text:
       Sleep clinicians proposed the term "orthosomnia" in 2017 for patients

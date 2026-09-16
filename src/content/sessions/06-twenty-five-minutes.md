@@ -11,6 +11,16 @@ component: the work block
 needs: [5]
 risk: low
 claims:
+  - kind: effect
+    text: >-
+      Interrupted every two minutes, people finished the task in less time with
+      no loss of quality — and reported significantly more stress, frustration
+      and effort. Conditions were counterbalanced, which is this week's method.
+    n: 48
+    blinded: false
+    source: >-
+      Mark G, Gudith D, Klocke U, The cost of interrupted work, CHI 2008,
+      pages 107-110
   - kind: history
     text:
       The twenty-five minute interval was arrived at by one person testing

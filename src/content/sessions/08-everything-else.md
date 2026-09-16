@@ -11,6 +11,16 @@ component: the social evening
 needs: [5]
 risk: low
 claims:
+  - kind: effect
+    text: >-
+      Observational studies had found that women taking hormone therapy had
+      less coronary disease. The randomised trial found it caused more, along
+      with more breast cancer and more clots, and was stopped early.
+    n: 16608
+    blinded: true
+    source: >-
+      Rossouw JE et al., Risks and Benefits of Estrogen Plus Progestin in
+      Healthy Postmenopausal Women, JAMA 2002;288(3):321-333
   - kind: history
     text: >-
       In 1854 John Snow compared cholera deaths between households supplied by

@@ -35,8 +35,8 @@ const ordered = [...(claims ?? [])].sort((a, b) =>
   a.kind === b.kind ? 0 : a.kind === "effect" ? -1 : 1,
 );
 
-const sampleSize = (n: number | "unreported"): string =>
-  n === "unreported" ? "sample size never reported" : `${n.toLocaleString("en-AU")} people`;
+const sampleSize = (n: number | "unreported", unit: string): string =>
+  n === "unreported" ? "sample size never reported" : `${n.toLocaleString("en-AU")} ${unit}`;
 
 // "n/a" means blinding could not have applied. Saying so beats "not
 // applicable", which reports that a field is empty without saying why.
@@ -57,7 +57,7 @@ const blinding = (blinded: boolean | "n/a"): string =>
               {claim.kind === "effect" ? (
                 <>
                   <span class:list={["n", { unreported: claim.n === "unreported" }]}>
-                    {sampleSize(claim.n)}
+                    {sampleSize(claim.n, claim.unit)}
                   </span>
                   <span>{blinding(claim.blinded)}</span>
                 </>

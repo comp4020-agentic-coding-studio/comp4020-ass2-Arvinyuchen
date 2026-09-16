@@ -106,6 +106,22 @@ describe("rule 2: a claim carries its own evidence", () => {
     }
   });
 
+  // Tightened once every week had one. The schema comment promised this: the
+  // first version of rule 2 accepted any claim, which a week could satisfy
+  // with history alone and never show a measurement.
+  it("has every week rest on at least one measurement", () => {
+    for (const week of weeks) {
+      const claims = Array.isArray(week.meta?.claims) ? (week.meta.claims as unknown[]) : [];
+      const effects = claims.filter(
+        (raw) => str((raw as Record<string, unknown>)?.kind) === "effect",
+      );
+      expect(
+        effects.length,
+        `${week.id} makes no claim about an effect — history alone is not evidence that anything works`,
+      ).toBeGreaterThan(0);
+    }
+  });
+
   it("makes every claim about an effect state its sample size and blinding", () => {
     for (const week of weeks) {
       const claims = Array.isArray(week.meta?.claims) ? (week.meta.claims as unknown[]) : [];

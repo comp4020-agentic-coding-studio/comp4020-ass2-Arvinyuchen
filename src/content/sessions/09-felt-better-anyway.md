@@ -22,6 +22,19 @@ opt_out:
   Work from the anonymised class record from a previous year, which shows the
   effect perfectly well without using your own low points.
 claims:
+  - kind: effect
+    text: >-
+      Blood pressure regressed in both directions with no change of treatment.
+      Where baseline 24-hour systolic pressure was 150 mmHg or above, the mean
+      fell from 156 to 141 at follow-up; where it was under 120, it rose from
+      113 to 119.
+    n: 5
+    unit: pooled studies
+    blinded: "n/a"
+    source: >-
+      Moore MN et al., Regression to the mean of repeated ambulatory blood
+      pressure monitoring in five studies, Journal of Hypertension
+      2019;37(1):24-29
   - kind: history
     text:
       Galton named the pattern in 1886, measuring the heights of parents and

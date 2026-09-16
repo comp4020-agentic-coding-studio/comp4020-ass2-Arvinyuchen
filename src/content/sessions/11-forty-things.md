@@ -23,6 +23,18 @@ opt_out: >-
   Use the class's synthetic dataset, which is generated from pure noise. It
   produces the same spurious correlations and asks nothing of your own day.
 claims:
+  - kind: effect
+    text: >-
+      A dead salmon, scanned while shown photographs of people in social
+      situations, produced 16 significant voxels out of 8,064 under uncorrected
+      statistics. Correcting for the number of comparisons left none.
+    n: 1
+    unit: salmon
+    blinded: "n/a"
+    source: >-
+      Bennett CM, Baird AA, Miller MB, Wolford GL, Neural correlates of
+      interspecies perspective taking in the post-mortem Atlantic Salmon,
+      poster, Organization for Human Brain Mapping 2009
   - kind: history
     text: >-
       A group of neuroscientists scanned a dead Atlantic salmon in an fMRI

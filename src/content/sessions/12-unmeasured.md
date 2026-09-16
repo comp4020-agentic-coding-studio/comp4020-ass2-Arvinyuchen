@@ -11,6 +11,19 @@ component: the unmeasured day
 needs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 risk: low
 claims:
+  - kind: effect
+    text: >-
+      Among trials that had been registered properly, 31% published a different
+      primary outcome from the one they registered. Where the direction could
+      be judged, the change favoured a statistically significant result 83% of
+      the time.
+    n: 323
+    unit: trials
+    blinded: "n/a"
+    source: >-
+      Mathieu S, Boutron I, Moher D, Altman DG, Ravaud P, Comparison of
+      registered and published primary outcomes in randomized controlled
+      trials, JAMA 2009;302(9):977-984
   - kind: history
     text: >-
       Medical journal editors began requiring that trials be registered before

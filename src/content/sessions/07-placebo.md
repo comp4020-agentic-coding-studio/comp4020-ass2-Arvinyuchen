@@ -25,6 +25,18 @@ opt_out: >-
   playlists, two desk lamps at different temperatures, two teas that taste
   alike. The interesting part is the concealment, not the chemical.
 claims:
+  - kind: effect
+    text: >-
+      Across trials that randomised patients to a placebo or to nothing at all,
+      placebo had no significant effect on binary outcomes. The exception was
+      self-reported pain. Note that placebo against nothing is the one
+      comparison nobody can blind.
+    n: 114
+    unit: trials
+    blinded: false
+    source: >-
+      Hrobjartsson A, Gotzsche PC, Is the Placebo Powerless?, New England
+      Journal of Medicine 2001;344(21):1594-1602
   - kind: history
     text: >-
       The commission appointed by Louis XVI in 1784, with Benjamin Franklin

@@ -25,6 +25,16 @@ opt_out: >-
   Run the same design on something inert: your first coffee's timing, the
   radio on your commute, or a lamp. The method is the lesson, not the meal.
 claims:
+  - kind: effect
+    text: >-
+      Over sixteen weeks, being told to eat breakfast and being told to skip it
+      produced no significant difference in weight loss, and it made no
+      difference whether someone already ate breakfast.
+    n: 309
+    blinded: false
+    source: >-
+      Dhurandhar EJ et al., The effectiveness of breakfast recommendations on
+      weight loss, American Journal of Clinical Nutrition 2014;100(2):507-513
   - kind: history
     text: >-
       Barry Marshall drank a culture of Helicobacter pylori in 1984 to test

@@ -22,6 +22,17 @@ opt_out:
   Log a different observable instead — how often you open the fridge, how often
   you check the time — or work from a partner's log with their consent.
 claims:
+  - kind: effect
+    text: >-
+      Asked how many times a day they picked up their phone, people's estimates
+      did not correlate with what their phones had logged. Estimates of total
+      duration held up better. Note the sample size before you carry this
+      anywhere.
+    n: 23
+    blinded: false
+    source: >-
+      Andrews S, Ellis DA, Shaw H, Piwek L, Beyond Self-Report, PLOS ONE
+      2015;10(10):e0139004
   - kind: history
     text:
       The illumination experiments at Western Electric's Hawthorne Works between
