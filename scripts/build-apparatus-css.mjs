@@ -48,8 +48,8 @@ const perIcon = selectors
 const css = `/* Apparatus sections. GENERATED — see scripts/build-apparatus-css.mjs.
  *
  * A lab page had seven h2s at the same size doing two different jobs: three
- * were the lesson, four were the recurring machinery around it — the evidence
- * table, the spec, the teaching team, the related links. A reader could not
+ * were the lesson, four were the recurring machinery around it — the evidence,
+ * the spec, the teaching team, the related links. A reader could not
  * tell them apart, so the page shouted seven times at one volume.
  *
  * These four keep their h2 semantics, because they really are page-level

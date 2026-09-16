@@ -2,11 +2,25 @@
 // The week's claims, with their sample sizes on the page.
 //
 // This component is the course's own argument applied to itself. Rule 2 says
-// that anything asserting an effect has to show how many people were measured
-// and whether they were blinded. Collecting that in frontmatter satisfies the
-// check; printing it here is what makes the site honest, because a course that
-// tells students to always ask for the number and then keeps its own numbers in
-// a config file has not actually made the case.
+// anything asserting an effect has to show how many people were measured and
+// whether they were blinded. Collecting that in frontmatter satisfies the
+// check; printing it here is what makes the case.
+//
+// It was a four-column table, and a table was the wrong form. Most weeks make
+// one or two claims, so it was table machinery — head, scopes, caption,
+// horizontal scroller — wrapped around a single row. Worse, a row forces 140
+// characters of prose and a six-character number into one grid, so the column
+// widths had to satisfy both: that is why the table could not get narrower
+// than 580px and needed a scroller on a phone at all.
+//
+// Each claim is now a block. The claim gets the full measure as prose, and
+// beneath it a metadata line in the same label-value idiom as the protocol
+// strip at the top of the page. Effect claims and history claims take the same
+// shape, because they are the same kind of object, and differ in what the line
+// says and how the rule beside them is drawn.
+//
+// The sample size leads that line. A course whose first instruction is "ask
+// how many people were measured" should not bury the number mid-row.
 import type { CollectionEntry } from "astro:content";
 
 interface Props {
@@ -14,96 +28,127 @@ interface Props {
 }
 
 const { claims } = Astro.props;
-const effects = (claims ?? []).filter((claim) => claim.kind === "effect");
-const history = (claims ?? []).filter((claim) => claim.kind === "history");
+
+// Effects first, then history. The distinction is the teaching point, and
+// ordering carries it without needing a second heading.
+const ordered = [...(claims ?? [])].sort((a, b) =>
+  a.kind === b.kind ? 0 : a.kind === "effect" ? -1 : 1,
+);
 
 const sampleSize = (n: number | "unreported"): string =>
-  n === "unreported" ? "not reported" : n.toLocaleString("en-AU");
+  n === "unreported" ? "sample size never reported" : `${n.toLocaleString("en-AU")} people`;
 
+// "n/a" means blinding could not have applied. Saying so beats "not
+// applicable", which reports that a field is empty without saying why.
 const blinding = (blinded: boolean | "n/a"): string =>
-  blinded === "n/a" ? "not applicable" : blinded ? "blinded" : "not blinded";
+  blinded === "n/a" ? "blinding not possible" : blinded ? "blinded" : "not blinded";
 ---
 
 {
-  (effects.length > 0 || history.length > 0) && (
+  ordered.length > 0 && (
     <section class="claims-section" aria-labelledby="what-we-know">
       <h2 id="what-we-know">What we actually know</h2>
 
-      {effects.length > 0 && (
-        // The citations make this table wider than a phone. Without a scroll
-        // container it pushes the whole page sideways at 390px, which breaks
-        // the viewport rather than the table. tabindex makes the scroll
-        // reachable from the keyboard as well as by dragging.
-        <div class="claims-scroll" tabindex="0" role="region" aria-label="Claims about effects">
-        <table>
-          <caption>
-            Claims about effects, with the number of people each rests on.
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">Claim</th>
-              <th scope="col">People measured</th>
-              <th scope="col">Blinding</th>
-              <th scope="col">Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {effects.map((claim) => (
-              <tr>
-                <td>{claim.text}</td>
-                <td>{sampleSize(claim.n)}</td>
-                <td>{blinding(claim.blinded)}</td>
-                <td>{claim.source}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
-      )}
-
-      {history.length > 0 && (
-        <>
-          <h3>And what is just history</h3>
-          <p>
-            Claims about what happened rather than what works: a source, and no
-            sample size, because nothing here was measured.
-          </p>
-          <ul>
-            {history.map((claim) => (
-              <li>
-                {claim.text} <cite>{claim.source}</cite>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+      <ul class="claims">
+        {ordered.map((claim) => (
+          <li class:list={["claim", claim.kind]}>
+            <p class="claim-text">{claim.text}</p>
+            <p class="claim-facts">
+              {claim.kind === "effect" ? (
+                <>
+                  <span class:list={["n", { unreported: claim.n === "unreported" }]}>
+                    {sampleSize(claim.n)}
+                  </span>
+                  <span>{blinding(claim.blinded)}</span>
+                </>
+              ) : (
+                <span class="kind">Not a measurement</span>
+              )}
+            </p>
+            <cite class="claim-source">{claim.source}</cite>
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }
 
 <style>
-  /* The table scrolls inside this box; the page never scrolls sideways. */
-  .claims-scroll {
-    overflow-x: auto;
-    max-width: 100%;
+  .claims {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  /* A visible focus ring matters here: the container is focusable so it can be
-     scrolled by keyboard, and a focusable thing with no focus style is a trap
-     for anyone not using a mouse. */
-  .claims-scroll:focus-visible {
-    outline: 2px solid var(--at-primary);
-    outline-offset: 2px;
+  /* A rule down the side rather than a box: it ties the claim to its evidence
+     without drawing a card around every sentence. */
+  .claim {
+    padding-inline-start: var(--at-spacing-md);
+    border-inline-start: 2px solid var(--at-primary);
   }
 
-  .claims-scroll table {
-    margin-block: 0;
+  .claim + .claim {
+    margin-block-start: var(--at-spacing-lg);
   }
 
-  /* Citations are the reason the table is wide. Smaller type buys back room
-     without hiding the source, which is the one thing that must stay legible. */
-  .claims-scroll td:last-child {
-    font-size: 0.85em;
-    min-width: 14rem;
+  /* History is not evidence of an effect, and the rule says so before the text
+     does — dotted and quieter, so the two kinds are separable at a glance and
+     not only by reading the line underneath. */
+  .claim.history {
+    border-inline-start-style: dotted;
+    border-inline-start-color: var(--at-tertiary);
+  }
+
+  .claim-text {
+    margin-block: 0 0.35rem;
+  }
+
+  .claim-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.5em;
+    margin: 0;
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Separators are drawn, not typed. They are only ever between the two short
+     facts: the citation used to sit in this row too, and being long it wrapped
+     and dragged its middot onto the start of the next line. A long citation
+     and a six-character number do not belong in the same wrapping row. */
+  .claim-facts > :not(:first-child)::before {
+    content: "·";
+    margin-inline-end: 0.5em;
+    color: var(--at-text-muted);
+  }
+
+  .claim-source {
+    display: block;
+    margin-block-start: 0.15rem;
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
+    font-style: italic;
+    line-height: 1.45;
+  }
+
+  .n {
+    color: var(--at-text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A missing sample size is the interesting case, not something to hide: it
+     is marked so a reader spots it without reading the words. */
+  .n.unreported {
+    color: var(--at-text-secondary);
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .kind {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 </style>
