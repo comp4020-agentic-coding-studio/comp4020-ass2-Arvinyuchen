@@ -1,6 +1,5 @@
 import { defineSiteConfig } from "astro-theme-university/types";
 import { slopBranding } from "astro-theme-slop";
-import { courseMeta } from "./course-config";
 
 // The underlying collection and URL remain `sessions`; these labels are the
 // language students see.
@@ -36,6 +35,8 @@ export const siteConfig = defineSiteConfig({
   ],
 
   licence: "CC-BY-NC-SA-4.0",
-  socialImage: "/src/assets/images/card.png",
-  socialImageAlt: `A preview card for ${courseMeta.code}: ${courseMeta.title}`,
+  // No social card. The four starter images were deleted rather than
+  // replaced, and `socialImage` is optional in the theme's types — the trade
+  // is that links to this site get no preview image, which is a fair price for
+  // a course site that does not illustrate anything.
 });
