@@ -1,0 +1,84 @@
+---
+title: The Day You Didn't Design
+description:
+  We record one ordinary day and change nothing about it, which is harder than
+  it sounds
+week: 1
+date: 2027-02-22
+method: naturalistic-baseline
+component: the whole day
+needs: []
+risk: low
+claims:
+  - kind: history
+    text:
+      The 10,000-step target began as the name of a product. Yamasa sold Japan's
+      first consumer pedometer in 1965 as the manpo-kei, literally the
+      ten-thousand-step meter.
+    source: Yamasa Tokei Keiki, company history; manpo-kei trademark (1965)
+  - kind: effect
+    text:
+      In older women, the fall in mortality with more daily steps levelled off
+      at around 7,500 — well below the figure most wearables set by default.
+    n: 16741
+    blinded: "n/a"
+    source:
+      Lee IM et al., Association of Step Volume and Intensity With All-Cause
+      Mortality in Older Women, JAMA Internal Medicine 2019;179(8):1105-1112
+spec:
+  - you arrive with twenty-four continuous hours recorded
+  - the day you recorded is one you did not try to improve
+  - you can say what you decided not to write down, and why
+---
+
+This week we record a day and change nothing.
+
+That instruction is harder to follow than it reads. Most people, two or three
+hours into writing down their own day, begin quietly improving it — a slightly
+earlier start, one fewer detour, the walk they had been meaning to take. An
+improved day is a perfectly good thing to have. It is not the day you set out to
+describe.
+
+## What a baseline is for
+
+A [baseline](/glossary/#baseline) is your day as it already is, before anyone
+interferes with it. Every later week in this course compares something against
+this one, so if you spend week 1 tidying, you spend the remaining eleven weeks
+measuring against a day that never happened.
+
+There is no hypothesis this week. There is nothing to prove and nothing to beat.
+You are building the thing the rest of the course is measured against, and the
+only way to do that badly is to make it interesting.
+
+## What we do in the lab
+
+We record twenty-four hours at whatever resolution you can actually sustain —
+fifteen minutes is plenty, and an hour is not useless. Paper is fine. Your phone
+is fine. What matters is that the record is continuous and that you wrote it
+during the day rather than reconstructing it that night.
+
+Then we do the part that feels like nothing: we read our own days back to each
+other and notice what we left out. Everybody leaves something out. The
+interesting question is not what you did with your Tuesday, it is which parts of
+Tuesday you did not think were worth recording.
+
+## Where the advice came from
+
+The instructions you have been given about your day mostly arrived without a
+[sample size](/glossary/#sample-size) attached, and some of them arrived without
+any research behind them at all.
+
+Ten thousand steps is the clearest case. The number was a brand name before it
+was a health target: Yamasa launched Japan's first consumer pedometer in 1965 and
+called it the manpo-kei, the ten-thousand-step meter. It was chosen because it
+was round, memorable and easy to print. When researchers eventually went looking,
+the mortality benefit in older women flattened out somewhere near 7,500 steps a
+day — a number nobody has ever put on a box.
+
+This is not a course about steps, and the point is not that 7,500 is the real
+answer. The point is that a figure with no study behind it travelled around the
+world, got built into the default settings of millions of devices, and is now
+quoted back to you as though it were a finding about your body.
+
+Next week we start turning one of these instructions into something you could
+actually test.
