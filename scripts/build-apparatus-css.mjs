@@ -98,6 +98,22 @@ ${perIcon}
 .apparatus > :first-child > h2 {
   margin-block-start: var(--at-spacing-lg);
 }
+
+/* RelatedContent ships its own rule and 3rem of space above itself. Inside the
+ * group that renders as a second divider, so the block a reader is meant to
+ * take as one thing arrives as two. Suppress it here and let the group's own
+ * rule be the only one.
+ *
+ * The doubled class is deliberate. The package's style is Astro-scoped, so it
+ * lands at .related-content[data-astro-cid-…] — the same specificity as
+ * .apparatus .related-content, and a tie would be settled by whichever
+ * stylesheet the bundler happened to order last. Repeating the class wins
+ * outright instead of relying on that. */
+.apparatus .related-content.related-content {
+  margin-block-start: var(--at-spacing-xl);
+  padding-block-start: 0;
+  border-block-start: 0;
+}
 `;
 
 writeFileSync(new URL("../src/styles/apparatus.css", import.meta.url), css);

@@ -50,8 +50,11 @@ const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").
   }
 
   <Content />
-  <TeachingTeam teachers={lecture.data.teachers} />
-  <RelatedContent entry={lecture} collections={graphCollections} />
+
+  <div class="apparatus">
+    <TeachingTeam teachers={lecture.data.teachers} />
+    <RelatedContent entry={lecture} collections={graphCollections} />
+  </div>
 </BaseLayout>
 
 <style>
