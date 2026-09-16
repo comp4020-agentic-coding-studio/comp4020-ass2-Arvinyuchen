@@ -13,7 +13,7 @@ const people = teachers ? await getEntries(teachers) : [];
 
 {
   people.length > 0 && (
-    <section aria-labelledby="teaching-team">
+    <section class="teaching-team" aria-labelledby="teaching-team">
       <h2 id="teaching-team">Teaching team</h2>
       <ul>
         {people.map((person) => <li><a href={withBase(`/people/${person.id}/`)}>{person.data.title}</a> — {person.data.role}</li>)}

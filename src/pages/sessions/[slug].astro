@@ -8,6 +8,7 @@ import Claims from "../../components/Claims.astro";
 import Protocol from "../../components/Protocol.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
+import "../../styles/apparatus.css";
 import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
@@ -27,10 +28,10 @@ const { Content } = await render(session);
   <p><strong>{formatCourseDate(session.data.date)}</strong></p>
   <Protocol week={session} />
   <Content />
-  <Claims claims={session.data.claims} />
-  <SpecList spec={session.data.spec}>
-    What you bring to the lab.
-  </SpecList>
-  <TeachingTeam teachers={session.data.teachers} />
-  <RelatedContent entry={session} collections={graphCollections} />
+  <div class="apparatus">
+    <Claims claims={session.data.claims} />
+    <SpecList spec={session.data.spec}>What you bring to the lab.</SpecList>
+    <TeachingTeam teachers={session.data.teachers} />
+    <RelatedContent entry={session} collections={graphCollections} />
+  </div>
 </ContentLayout>
