@@ -1,0 +1,26 @@
+{
+  "_source": {
+    "dataset": "Strong recommendations from low certainty evidence: a cross-sectional analysis of a suite of national guidelines",
+    "publisher": "Chong MC, Sharp MK, Smith SM, O'Neill M, Ryan M, Lynch R, Mahtani KR, Clyne B, BMC Medical Research Methodology 2023;23:68",
+    "url": "https://doi.org/10.1186/s12874-023-01895-8",
+    "licence": "CC BY 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+    "period": "guidelines published 2019 to 2022, audited to 30 June 2022",
+    "conditions": "Irish NCEC National Clinical Guidelines that used GRADE. Of 29 available guidelines, 8 used GRADE and carried 240 recommendations; 38 were excluded for not being GRADE-rated, leaving 202 analysed.",
+    "how_these_numbers_were_made": "Counts transcribed from Table 3 of the paper, which breaks the 151 strong recommendations down by the certainty of the evidence behind them. No arithmetic of ours: the five counts sum to 151 and the percentages are the paper's own.",
+    "scope_note": "These are clinical guidelines, which are the most carefully graded kind of guidance there is. The figure says nothing about dietary or physical activity guidance, and the lecture does not let it. It is evidence about how far a strength rating and a certainty rating can come apart even where both are published, which is more than Australian consumer-facing guidance does at all."
+  },
+  "guidelines_analysed": 8,
+  "total_recommendations_analysed": 202,
+  "strong": 151,
+  "conditional": 51,
+  "discordant": 96,
+  "discordant_note": "Strong recommendations resting on low certainty, very low certainty, or no studies. The paper's term.",
+  "certainty_of_strong_recommendations": [
+    { "certainty": "High", "count": 24, "percent": 15.9, "discordant": false },
+    { "certainty": "Moderate", "count": 31, "percent": 20.5, "discordant": false },
+    { "certainty": "Low", "count": 18, "percent": 11.9, "discordant": true },
+    { "certainty": "Very low", "count": 60, "percent": 39.7, "discordant": true },
+    { "certainty": "No studies", "count": 18, "percent": 11.9, "discordant": true }
+  ]
+}
