@@ -62,7 +62,6 @@ import RelatedContent from "astro-course-university/components/RelatedContent.as
 import SpecList from "astro-course-university/components/SpecList.astro";
 import BaseLayout from "astro-theme-university/layouts/BaseLayout.astro";
 import Claims from "../../components/Claims.astro";
-import Protocol from "../../components/Protocol.astro";
 import Safety from "../../components/Safety.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
@@ -140,7 +139,6 @@ const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").
 
   <div class="apparatus">
     <Claims claims={session.data.claims} />
-    <Protocol week={session} />
     <TeachingTeam teachers={session.data.teachers} />
     <RelatedContent entry={session} collections={graphCollections} />
   </div>
