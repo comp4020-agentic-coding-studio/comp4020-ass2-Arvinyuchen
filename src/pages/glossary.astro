@@ -5,12 +5,65 @@
 // glossary a reader sees and the glossary the check enforces cannot drift
 // apart. Adding a term here is what makes the check start watching for its
 // first use.
+//
+// The week that introduces each term is computed below rather than copied from
+// the "which week introduces what" comment at the top of src/glossary.ts. That
+// comment is a second description of the same territory and can go stale
+// without anything noticing, which is what its own warning is about. Deriving
+// it from the week bodies means the page and the check answer the question the
+// same way by construction, and a term that moves weeks moves on this page too.
+import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
-import { glossaryTerms } from "../glossary";
+import { withBase } from "astro-theme-university/url";
+import { glossaryTerms, type GlossaryTerm } from "../glossary";
 import { siteConfig } from "../site-config";
 import SiteChrome from "../components/SiteChrome.astro";
 
 const terms = [...glossaryTerms].sort((a, b) => a.term.localeCompare(b.term));
+
+// Teaching order, so "the first week that uses it" is simply the first match.
+const weeks = (await getPublishedCollection("sessions")).sort(
+  (a, b) => a.data.week - b.data.week,
+);
+
+/** Whether a week's prose uses a term, under any of its spellings.
+ *
+ *  The pattern is built the same way spec/content-invariants.test.ts builds
+ *  it: word boundaries, all the aliases alternated, case-insensitive. The
+ *  spec matches against the body in dist/api, this matches against the body in
+ *  the content collection, and those are the same string, the API copies the
+ *  markdown through untouched once the frontmatter is off.
+ *
+ *  Keeping the two in step matters more than it looks. If this page were more
+ *  generous than the check it would credit a week the check does not, and a
+ *  reader following "introduced in week 5" would land on a week that never
+ *  says the word. */
+const usesTerm = (body: string, entry: GlossaryTerm): boolean => {
+  const spellings = [entry.term, ...(entry.aliases ?? [])];
+  const pattern = new RegExp(
+    `\\b(${spellings.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\b`,
+    "i",
+  );
+  return pattern.test(body);
+};
+
+// A term the course declares but has not used yet has no week to point at. The
+// spec skips those rather than failing them, so the page renders without the
+// line rather than inventing one.
+const entries = terms.map((entry) => {
+  const week = weeks.find((candidate) => usesTerm(candidate.body ?? "", entry));
+  return {
+    ...entry,
+    origin: week
+      ? {
+          href: withBase(`/sessions/${week.id}/`),
+          // The same "week N · title" shape the labs index uses on its cards,
+          // so the two places that name a week name it the same way.
+          label: `week ${week.data.week} · ${week.data.title}`,
+        }
+      : undefined,
+  };
+});
 ---
 
 <ContentLayout
@@ -26,17 +79,166 @@ const terms = [...glossaryTerms].sort((a, b) => a.term.localeCompare(b.term));
   </p>
 
   {
-    terms.length === 0 ? (
+    entries.length === 0 ? (
       <p>No terms yet.</p>
     ) : (
-      <dl>
-        {terms.map((entry) => (
-          <div id={entry.slug}>
+      <dl class="glossary">
+        {entries.map((entry) => (
+          <div class="entry" id={entry.slug}>
             <dt>{entry.term}</dt>
-            <dd>{entry.definition}</dd>
+            <dd>
+              <p class="definition">{entry.definition}</p>
+              {/* The origin line is written on one line because the anchor's
+                  text is whitespace sensitive: broken across lines the
+                  underline picks up a leading and a trailing space. */}
+              {entry.origin && (
+                <p class="origin">Introduced in <a href={entry.origin.href}>{entry.origin.label}</a></p>
+              )}
+            </dd>
           </div>
         ))}
       </dl>
     )
   }
 </ContentLayout>
+
+<style>
+  /* A reference list rather than a page of prose. Fourteen entries set as
+     plain dt/dd ran as one grey column in which every term looked like the
+     start of another paragraph, so finding one meant reading all of them.
+     What this adds is a rail: terms in a column of their own, hairlines
+     between entries, and one measure for the definitions. Nothing here is new
+     type or new colour, it is the theme's own tokens arranged so the page has
+     a structure to scan. */
+  .glossary {
+    /* The theme gives every dl a 1em bottom margin and nothing else. The
+       entries carry their own rhythm below, so this only sets the list off
+       from the paragraph above it. */
+    margin-block: var(--at-spacing-xl) 0;
+  }
+
+  /* One entry is one block, because a block is what a reader lands on and what
+     :target has to paint.
+
+     The inline padding with a matching negative margin lets that paint stand
+     clear of the text without moving it: the terms stay flush with the
+     paragraph above, and the highlight still gets air on both sides. The bleed
+     is half a gutter on purpose. Below 640px the theme drops --at-content-inset
+     to 0 and --at-gutter to 1rem, so anything wider than 1rem a side would push
+     the page into a sideways scroll at 390px, and 0.5rem leaves half of that
+     spare. */
+  .entry {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--at-spacing-xs);
+    padding-block: var(--at-spacing-lg);
+    padding-inline: var(--at-spacing-sm);
+    margin-inline: calc(-1 * var(--at-spacing-sm));
+    border-block-start: 1px solid var(--at-border);
+
+    /* The nav is sticky, so an anchored entry needs pushing clear of it.
+       The theme already sets scroll-padding-top on html to
+       --at-nav-height plus 1rem, which comes to 135px, and that is not enough:
+       --at-nav-height is 6.5rem, and the nav on this site is 164px because
+       site.css sends the links to a second row. Measured, not assumed, the
+       entry was landing 2px *under* the header.
+
+       Scroll margin adds to the scrollport's padding rather than replacing it,
+       so 4rem here makes 207px in total: 43px of air below the nav rather than
+       2px of overlap. Fixing --at-nav-height instead would have been the
+       tidier repair, but that token also drives the sticky offsets the theme
+       uses elsewhere, and this page is not the place to find out what else
+       moves. */
+    scroll-margin-block-start: var(--at-spacing-2xl);
+  }
+
+  /* Hairlines between entries, and one under the last so the list closes
+     instead of trailing off into the footer. */
+  .entry:last-child {
+    border-block-end: 1px solid var(--at-border);
+  }
+
+  /* The term carries weight rather than colour. The theme paints every heading
+     with --at-heading, which is the brand gold, and fourteen gold terms would
+     spend the page's one accent on the thing that needs it least: at 19px
+     semibold the gold also sits at roughly 3.4:1 on the light background,
+     which is fine for a display heading and not for a word this small. Weight
+     and position separate it from the definition, and gold is left free to
+     mean "this is the one you came for". */
+  dt {
+    font-size: var(--at-font-size-h4);
+    font-weight: 600;
+    line-height: var(--at-line-height-heading);
+    color: var(--at-text);
+    text-wrap: balance;
+  }
+
+  dd {
+    /* The UA indents every dd by 40px. In the two-column layout below that
+       would push the definition out of its own column. */
+    margin-inline: 0;
+
+    /* The theme's content column is 48rem, which is generous for prose. With
+       the rail taken out the definition already lands near 66 characters; this
+       holds that measure in the stacked layout, where the definition would
+       otherwise run the full width of the column. */
+    max-width: 36rem;
+  }
+
+  .definition {
+    margin-block: 0;
+  }
+
+  /* Where the course first says the word, computed from the week bodies at
+     build time. Small and secondary because it is provenance rather than
+     content, but on every entry, because rule 3 is the reason this page exists
+     and this line is the only place a reader can see the rule discharged. */
+  .origin {
+    margin-block: var(--at-spacing-sm) 0;
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  /* Arriving.
+
+     Every week links into this page as /glossary/#<slug>, and before this the
+     reader was dropped somewhere in a column of fourteen look-alike entries
+     with nothing to say which one had been asked for. This is the whole point
+     of the page as a destination rather than a list.
+
+     Drawn as an outline rather than a border or a thicker rule, because an
+     outline takes no space in the layout: the entry does not shift, the
+     hairlines do not move, and nothing below it reflows when the hash changes.
+     The 2px ring is a shape, so it survives greyscale and colour blindness on
+     its own, and the tint behind it is a second channel rather than the only
+     one. The tint is mixed off --at-primary rather than set as a light-mode
+     hex, so it follows the theme into dark mode the way the apparatus rule
+     does. */
+  .entry:target {
+    background: color-mix(in srgb, var(--at-primary) 12%, transparent);
+    outline: 2px solid var(--at-primary);
+    border-radius: var(--at-border-radius);
+  }
+
+  /* The rail. Held back until the content column is wide enough to give the
+     definition a real measure: the column runs roughly the viewport less 90px
+     above 640px, so below about 960px a 13rem rail would leave the definitions
+     under 40 characters wide, which is worse than stacking them.
+
+     Length units in a media *condition* resolve against 16px rather than the
+     theme's 18px root, which is why this one is written in px while the
+     lengths in the block are not. */
+  @media (width >= 960px) {
+    .entry {
+      grid-template-columns: 13rem minmax(0, 1fr);
+      column-gap: var(--at-spacing-xl);
+
+      /* Baseline rather than start: the term is 19px on a 1.25 line and the
+         definition is 18px on a 1.6 line, so aligning the boxes would leave
+         the term visibly high. Aligning the first baselines makes the pair
+         read as one row. */
+      align-items: baseline;
+    }
+  }
+</style>

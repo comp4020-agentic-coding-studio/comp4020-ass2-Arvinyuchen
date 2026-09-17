@@ -9,6 +9,36 @@
 
 @import "./apparatus.css";
 
+/* Anchor jumps have to land, and smooth scrolling stops them landing at all.
+ *
+ * Every week links into the glossary as /glossary/#term, and every lecture
+ * heading is linkable the same way. None of those jumps worked. The page
+ * arrived, :target matched the right element, and the scroll position stayed
+ * at zero, on a cold load and after a ClientRouter navigation alike.
+ *
+ * The cause is the theme's `scroll-behavior: smooth` meeting ClientRouter's
+ * scroll bookkeeping. Smooth makes the browser's scroll-to-the-fragment step
+ * asynchronous, and the router turns `history.scrollRestoration` back to
+ * "manual" in the same task that triggers it: on a cold load at module
+ * evaluation, and on a navigation two lines after it assigns `location.href`.
+ * The pending animation is cancelled before its first frame. Measured both
+ * ways on /glossary/#operationalise: with the behaviour left at smooth the
+ * scroll offset never moves off zero, and with it set to auto the same jump
+ * lands on the entry.
+ *
+ * So the animation is not the thing being given up here. It never ran. What
+ * this recovers is the jump itself, which is the whole of what an in-page link
+ * is for. The theme's scroll-padding-top is untouched and still holds the
+ * anchor clear of the sticky nav.
+ *
+ * Unlayered on purpose: the theme's rule lives in @layer at.base, so any
+ * unlayered author rule beats it whatever the selector, and this does not have
+ * to win a specificity argument to apply.
+ */
+html {
+  scroll-behavior: auto;
+}
+
 /* The nav wraps, and it should wrap tidily.
  *
  * .at-nav-inner sits in the content column (48rem), so the lockup plus seven
