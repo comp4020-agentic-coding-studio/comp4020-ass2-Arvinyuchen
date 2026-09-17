@@ -3,10 +3,10 @@
 // Two things go into that file and they come from different places. The
 // geometry is Natural Earth's 110m country outlines, projected and simplified
 // here. The guidance is the GUIDANCE table below, which is hand-entered: every
-// sentence in it was read off the page it cites, and every URL was checked for
-// a 200 before it was written down. Nothing in this file is derived from a
-// summary of a guideline; the classifying sentence is quoted so a reader can
-// disagree with the classification.
+// sentence in it was read off the page or the PDF it cites, and every URL was
+// checked for a 200 before it was written down. Nothing in this file is derived
+// from a summary of a guideline; the classifying sentence is quoted so a reader
+// can disagree with the classification.
 //
 // Run with:  node scripts/build-world-map.mjs [path-or-url-to-geojson]
 //
@@ -14,8 +14,10 @@
 // scripts/build-apparatus-css.mjs: the input is an external dataset that
 // changes only when the dataset does, and a generated file in the repo is
 // easier to review than a generator in the build. It also keeps the build
-// offline, which matters because two of the guidance publishers block and
-// throttle automated requests.
+// offline, which matters because several of the guidance publishers block and
+// throttle automated requests: health.govt.nz and healthnz.govt.nz sit behind a
+// challenge that refuses curl's default agent, and canada.ca refuses a spoofed
+// Chrome one.
 
 import { writeFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
@@ -143,131 +145,79 @@ const geometryToPath = (geometry, options) => {
 /* ------------------------------------------------------------------ *
  * The guidance
  *
- * `category` is how the document states when its advice applies, and nothing
- * else. It is not how strong the advice is, how much of the year it covers, or
- * whether the advice is any good.
+ * `category` is how much of the twenty-four hours one national document
+ * covers, and nothing else. It is not how strong the advice is, how recent
+ * it is, or whether the advice is any good.
  *
- *   season     names months or a season and leaves it there
- *   condition  names a trigger to check, and no season
- *   both       names a season and a trigger, in the same breath
- *   neither    states neither
+ *   whole     activity, sitting and sleep set together, at every age band
+ *   children  the integrated document exists, and stops before adulthood
+ *   waking    activity and sitting are recommendations, sleep is not
  *
- * The scheme started as the first three. New Zealand broke it on the first
- * reading: one sentence carries "from September to April" and "whenever UV
- * levels are 3 or higher", joined by "and", so both apply and neither is the
- * fallback. Rounding it into either box would have been a lie about the only
- * country in the set that does the thing the lecture is asking for. `both` was
- * added rather than New Zealand bent.
+ * The scheme started with two boxes, because the question came from the
+ * course's own premise: either a country's guidance treats the day as one
+ * unit or it does not. New Zealand broke that on the first reading. Its
+ * guideline for five to seventeen year olds is Canada's, adapted with
+ * permission, and covers the whole day; its adults get five activity
+ * statements with no sleep target anywhere in them. Calling that `whole`
+ * would have credited New Zealand with something its adults do not have, and
+ * calling it `waking` would have hidden a document that plainly exists. A
+ * third box was added rather than New Zealand bent.
  *
- * `neither` has no country in it. That is reported rather than hidden: the
- * five English-language bodies read here all state their timing somehow, and
- * an empty box is a finding about the sample, not a flaw in the scheme.
+ * Every box has a country in it. That is worth saying, because the previous
+ * version of this figure carried an empty one on purpose: three positions on
+ * this axis exhaust it, so a fourth would be invented rather than found.
  *
- * Exactly one document per country carries `classifies: true`, and its `quote`
- * is the sentence the category rests on. Quotes are verbatim, including the
- * publisher's own punctuation and spelling.
+ * Exactly one document per country carries `classifies: true`, and its
+ * `quote` is the sentence the category rests on. Quotes are verbatim,
+ * including the publisher's own punctuation and spelling.
+ *
+ * `gap` is where a country has no clean equivalent of NHMRC, the body whose
+ * guidelines are one of the three an Australian student starts from. It is
+ * recorded as an absence rather than filled with a near miss, and it says
+ * what was looked for so a reader can go and find what this reading missed.
  * ------------------------------------------------------------------ */
 const GUIDANCE = [
   {
     iso: "AU",
     name: "Australia",
-    category: "condition",
+    category: "whole",
     summary:
-      "A single numeric trigger, checked against the day's forecast, with no months attached.",
+      "Did not rebuild Canada's format so much as take it, and now publishes activity, sitting and sleep as one document for every age band.",
     documents: [
       {
-        publisher: "Cancer Council Australia",
-        title: "Vitamin D",
-        url: "https://www.cancer.org.au/cancer-information/causes-and-prevention/sun-safety/vitamin-d",
+        publisher: "Australian Government Department of Health, Disability and Ageing",
+        title: "24-hour movement guidelines for all Australians",
+        url: "https://www.health.gov.au/topics/physical-activity/24-hour-movement-guidelines-for-all-australians",
         quote:
-          "Sun protection is recommended when the UV Index is 3 or above, or when spending extended periods of time outdoors.",
+          "Australia’s 24-hour movement guidelines outline how much physical activity you should do, the importance of reducing the time you spend sitting or lying down, and how much sleep people should get.",
         classifies: true,
       },
       {
-        publisher: "Cancer Council Australia",
-        title: "Preventing skin cancer",
-        url: "https://www.cancer.org.au/cancer-information/causes-and-prevention/sun-safety/preventing-skin-cancer",
+        publisher: "Australian Government Department of Health, Disability and Ageing",
+        title:
+          "Australian 24-Hour Movement Guidelines for Adults (18-64 years) and Older Adults (65+ years): Guideline Development Report",
+        url: "https://www.health.gov.au/sites/default/files/2026-03/australian-24-hour-movement-guidelines-for-adults-18-to-64-years-and-older-adults-65-years.pdf",
+        // The adoption, in the guideline's own words. Worth quoting because
+        // "Australia adopted Canada's format" is otherwise a claim a reader has
+        // to take on trust from a secondary account.
         quote:
-          "Cancer Council recommends using sunscreen every day on days when the UV Index is forecast to be 3 or above.",
+          "The potential benefit for Australia was that it could leverage the considerable work done in Canada on the development of their 24-hour guidelines, which would allow Australia to complete what would normally be a much longer process, in considerably less time and requiring fewer resources.",
         classifies: false,
       },
       {
-        publisher: "Australian Radiation Protection and Nuclear Safety Agency",
-        title: "Sun protection using sunscreens",
-        url: "https://www.arpansa.gov.au/understanding-radiation/radiation-sources/more-radiation-sources/sun-protection-sunscreen",
-        quote:
-          "It is recommended that sunscreen is used as part of your morning routine on days when UV is forecast to reach 3 or above.",
-        classifies: false,
-      },
-    ],
-    // The three cards this figure replaced. They are the national documents an
-    // Australian student starts from, they are not about sun protection, and
-    // they were the only place on the site that named them, so they are carried
-    // here rather than dropped.
-    starting_points: [
-      {
-        title: "Australian Dietary Guidelines",
+        publisher: "National Health and Medical Research Council",
+        title: "Australian dietary guidelines",
         url: "https://www.eatforhealth.gov.au/guidelines/guidelines",
-        note: "Five recommendations, and a summary booklet where the practical tips sit. Worth noticing which of the two you are reading.",
-      },
-      {
-        title: "24-Hour Movement Guidelines",
-        url: "https://www.health.gov.au/topics/physical-activity/24-hour-movement-guidelines-for-all-australians?language=en",
-        note: "Activity, sedentary time and sleep in one document, split by age band. The step figure lives in the companion statement, not the recommendations.",
-      },
-      {
-        title: "NHMRC guidelines",
-        url: "https://www.nhmrc.gov.au/guidelines",
-        note: "Everything else the council publishes, alcohol included. Each carries the evidence it was built from, which is the part to read.",
-      },
-    ],
-  },
-  {
-    iso: "GB",
-    name: "United Kingdom",
-    category: "season",
-    summary:
-      "Named months, and the rule runs the other way: the shortfall is vitamin D rather than exposure.",
-    documents: [
-      {
-        publisher: "National Health Service",
-        title: "Vitamin D",
-        url: "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/",
         quote:
-          "Government advice is that everyone should consider taking a daily vitamin D supplement during the autumn and winter.",
-        classifies: true,
-      },
-      {
-        publisher: "National Health Service",
-        title: "Vitamin D: good sources, and advice for adults and children over 4 years old",
-        url: "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/",
-        quote:
-          "But between October and early March we do not make enough vitamin D from sunlight.",
+          "The Australian dietary guidelines (the guidelines) provide up-to-date advice about the amount and kinds of foods that we need to eat for health and wellbeing.",
         classifies: false,
       },
-    ],
-  },
-  {
-    iso: "US",
-    name: "United States",
-    category: "condition",
-    summary:
-      "The same numeric trigger as Australia, and the page says outright that the rule is not seasonal.",
-    documents: [
       {
-        publisher: "Centers for Disease Control and Prevention",
-        title: "Sun Safety Facts",
-        url: "https://www.cdc.gov/skin-cancer/sun-safety/index.html",
+        publisher: "National Health and Medical Research Council",
+        title: "Guidelines",
+        url: "https://www.nhmrc.gov.au/guidelines",
         quote:
-          "When the UV index is 3 or higher in your area, protect your skin from too much exposure to the sun.",
-        classifies: true,
-      },
-      {
-        publisher: "Centers for Disease Control and Prevention",
-        title: "Sun Safety Facts: overview",
-        url: "https://www.cdc.gov/skin-cancer/sun-safety/index.html",
-        quote:
-          "It's important to protect your skin from the sun all year, not just during the summer.",
+          "National Health and Medical Research Council (NHMRC) develops and supports high quality guidelines for clinical practice, public health, environmental health and ethics.",
         classifies: false,
       },
     ],
@@ -275,83 +225,191 @@ const GUIDANCE = [
   {
     iso: "CA",
     name: "Canada",
-    category: "condition",
+    category: "whole",
     summary:
-      "Every instruction on the page hangs off the index, and the page opens by refusing a season.",
+      "Wrote the format. The children's guideline was the first anywhere to set targets across a whole day, and the adult one followed it.",
     documents: [
       {
-        publisher: "Health Canada",
-        title: "Sun safety basics",
-        url: "https://www.canada.ca/en/health-canada/services/sun-safety/sun-safety-basics.html",
-        quote: "When the UV Index is 3 or higher, protect your skin as much as possible.",
+        publisher: "Canadian Society for Exercise Physiology",
+        title:
+          "Canadian 24-Hour Movement Guidelines for Adults aged 18-64 years: An Integration of Physical Activity, Sedentary Behaviour, and Sleep",
+        url: "https://csepguidelines.ca/guidelines/adults-18-64/",
+        quote:
+          "For health benefits, adults aged 18-64 years should be physically active each day, minimize sedentary behaviour, and achieve sufficient sleep.",
         classifies: true,
       },
       {
-        publisher: "Health Canada",
-        title: "Sun safety basics: protect against UV rays all year round",
-        url: "https://www.canada.ca/en/health-canada/services/sun-safety/sun-safety-basics.html",
+        publisher: "Canadian Society for Exercise Physiology",
+        title:
+          "Canadian 24-Hour Movement Guidelines for the Children and Youth (5-17 years): An Integration of Physical Activity, Sedentary Behaviour, and Sleep",
+        url: "https://csepguidelines.ca/guidelines/children-youth/",
+        // The origin claim, made by the body that made the guideline. Australia
+        // and New Zealand both trace back to this document.
         quote:
-          "It is important to protect against UV rays all year round, not just in the summer.",
+          "The Canadian 24-Hour Movement Guidelines for Children and Youth (ages 5-17 years) are the first evidence-based guidelines to address the whole day.",
+        classifies: false,
+      },
+      {
+        publisher: "Health Canada",
+        title: "Canada's food guide",
+        url: "https://www.canada.ca/en/health-canada/services/food-guide.html",
+        quote:
+          "Canada's food guide is the government of Canada's guidance on healthy eating for people in Canada aged 2 years and older.",
         classifies: false,
       },
     ],
+    gap: "Nothing found here fills NHMRC's slot. The movement guideline itself comes from a professional society rather than a health department, which is a difference in who gets to speak and not only in what is said.",
   },
   {
     iso: "NZ",
     name: "New Zealand",
-    category: "both",
+    category: "children",
     summary:
-      "One sentence carrying a season, a time of day and a trigger, so the reader is given the calendar and the check.",
+      "Took Canada's format for children and stopped there. Its adults get eating and activity bound into one document instead, with no sleep target in it.",
     documents: [
       {
-        publisher: "Health New Zealand, Te Whatu Ora",
-        title: "Be sun smart",
-        url: "https://www.healthnz.govt.nz/health-topics/keeping-healthy/healthy-homes-environments/water-activities/sun-safety/sun-smart",
+        publisher: "Ministry of Health Manatu Hauora",
+        title:
+          "Sit Less, Move More, Sleep Well: Physical Activity Guidelines for Children and Young People",
+        url: "https://static.info.content.health.nz/docs/health-pros/topics/nutrition/physical-activity-guidelines-children-young-people.pdf",
         quote:
-          "The best way to avoid too much UV light is to avoid the sun between 10am and 4pm from September to April, and whenever UV levels are 3 or higher.",
+          "For school-aged children and young people (aged 5 to 17 years) high levels of physical activity, low levels of sedentary behaviour and sufficient sleep each day achieves greater health benefits.",
         classifies: true,
       },
       {
-        publisher: "SunSmart New Zealand, Cancer Society of New Zealand",
-        title: "UV radiation",
-        url: "https://www.sunsmart.org.nz/sunsmart-facts/uv-radiation/",
-        // The season half of the pair, from a second body, which is what makes
-        // the "both" reading more than one page's phrasing. SunSmart's sharper
-        // sentences all set a time range with a spaced hyphen, and this project
-        // does not use dashes, so the one chosen is the clean one rather than
-        // a quote edited to fit a house style.
+        publisher: "Ministry of Health Manatu Hauora",
+        title: "Sit Less, Move More, Sleep Well: where the guidelines came from",
+        url: "https://static.info.content.health.nz/docs/health-pros/topics/nutrition/physical-activity-guidelines-children-young-people.pdf",
+        // Quoted without a closing full stop because the sentence does not have
+        // one: it runs straight into csep.ca/guidelines on the page.
         quote:
-          "You need to be careful when it\u2019s cool (and/or cloudy) outside from September to April.",
+          "The 24-hour Movement Guidelines for Children and Youth was developed in Canada, © 2016. They have been adapted with permission from the Canadian Society for Exercise Physiology",
+        classifies: false,
+      },
+      {
+        publisher: "Ministry of Health Manatu Hauora",
+        title: "Eating and Activity Guidelines for New Zealand Adults: Updated 2020",
+        url: "https://static.info.content.health.nz/docs/health-pros/topics/nutrition/eating-activity-guidelines-nz-adults.pdf",
+        // The other axis. Eating and activity arrive together, which no other
+        // country in this set does, and sleep is absent from all five Activity
+        // Statements in the document.
+        quote:
+          "The Eating and Activity Guidelines for New Zealand Adults (the Guidelines) provide evidence-based recommendations on healthy eating and physical activity for New Zealand adults.",
+        classifies: false,
+      },
+      {
+        publisher: "Health New Zealand Te Whatu Ora",
+        title: "Eating and activity guidelines",
+        url: "https://www.healthnz.govt.nz/health-professionals/guidance-standards/topic/nutrition/eating-and-activity-guidelines",
+        quote:
+          "These documents are an important tool for health professionals and others who provide advice on nutrition and physical activity.",
+        classifies: false,
+      },
+    ],
+    gap: "Nothing found here fills NHMRC's slot. Health New Zealand publishes a guidance library sorted by topic rather than developing guidelines to a standard of its own.",
+  },
+  {
+    iso: "GB",
+    name: "United Kingdom",
+    category: "waking",
+    summary:
+      "Activity and sitting across the whole life course, with sleep named among the benefits and never among the recommendations.",
+    documents: [
+      {
+        publisher: "UK Chief Medical Officers, Department of Health and Social Care",
+        title: "UK Chief Medical Officers' physical activity guidelines",
+        url: "https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report/uk-chief-medical-officers-physical-activity-guidelines",
+        quote:
+          "This report is a UK-wide document presenting the UK Chief Medical Officers’ physical activity guidelines for different groups, covering the volume, duration, frequency and type of physical activity required across the life course to achieve general health benefits.",
+        classifies: true,
+      },
+      {
+        publisher: "UK Chief Medical Officers, Department of Health and Social Care",
+        title: "UK Chief Medical Officers' physical activity guidelines: what is in scope",
+        url: "https://www.gov.uk/government/publications/physical-activity-guidelines-uk-chief-medical-officers-report/uk-chief-medical-officers-physical-activity-guidelines",
+        // Two of the three behaviours, which is what makes this a category and
+        // not an oversight: sedentary time is in scope and sleep is not.
+        quote: "The report also highlights the risks of inactivity and sedentary behaviour for health.",
+        classifies: false,
+      },
+      {
+        publisher: "Office for Health Improvement and Disparities",
+        title: "The Eatwell Guide",
+        url: "https://www.gov.uk/government/publications/the-eatwell-guide",
+        quote:
+          "The Eatwell Guide is a policy tool used to define government recommendations on eating healthily and achieving a balanced diet.",
+        classifies: false,
+      },
+      {
+        publisher: "National Institute for Health and Care Excellence",
+        title: "About our guidance",
+        url: "https://www.nice.org.uk/about/what-we-do/our-programmes/nice-guidance",
+        // The one country in this set with a clean equivalent of NHMRC's slot.
+        quote:
+          "We use the best available evidence to develop guidance to improve health and social care.",
         classifies: false,
       },
     ],
   },
+  {
+    iso: "US",
+    name: "United States",
+    category: "waking",
+    summary:
+      "The same shape as the United Kingdom: move more, sit less, and sleep counted as something activity improves rather than something to plan.",
+    documents: [
+      {
+        publisher: "US Department of Health and Human Services",
+        title: "Physical Activity Guidelines for Americans, 2nd edition",
+        url: "https://odphp.health.gov/sites/default/files/2019-09/Physical_Activity_Guidelines_2nd_edition.pdf",
+        quote:
+          "This second edition of the Physical Activity Guidelines for Americans provides science-based guidance to help people ages 3 years and older improve their health through participation in regular physical activity.",
+        classifies: true,
+      },
+      {
+        publisher: "US Department of Health and Human Services",
+        title: "Physical Activity Guidelines for Americans, 2nd edition: Key Guidelines for Adults",
+        // Same PDF as above, cited again because the sentence is in the PDF and
+        // not on the landing page that summarises it. Sitting is a target here
+        // and sleeping is not, which is what makes this a category rather than
+        // an omission.
+        url: "https://odphp.health.gov/sites/default/files/2019-09/Physical_Activity_Guidelines_2nd_edition.pdf",
+        quote: "Adults should move more and sit less throughout the day.",
+        classifies: false,
+      },
+      {
+        publisher: "Office of Disease Prevention and Health Promotion",
+        title: "Dietary Guidelines for Americans",
+        url: "https://odphp.health.gov/our-work/nutrition-physical-activity/dietary-guidelines",
+        quote:
+          "The Dietary Guidelines for Americans (Dietary Guidelines) provides advice on nutrition intake to meet nutrient needs, promote health, and prevent disease.",
+        classifies: false,
+      },
+    ],
+    gap: "Nothing found here fills NHMRC's slot. Two federal departments issue the dietary guidelines together and one of them issues the activity guidelines, and no single body across health topics turned up in this reading.",
+  },
 ];
 
-// Every category the figure can draw, in the order the legend reads them.
-// `neither` is here with no country in it on purpose: the legend has to show
-// the box the scheme offers, or a reader cannot tell an empty category from a
-// category nobody thought of.
+// Every category the figure can draw, in the order the legend reads them,
+// which is also the order of how much of the day they cover.
 const CATEGORIES = [
   {
-    id: "season",
-    label: "States a season",
-    description: "Names months or a season, and leaves the reader no condition to check.",
+    id: "whole",
+    label: "The whole day, every age",
+    description:
+      "Activity, sitting and sleep set together in one document, for every age band the guidance covers.",
   },
   {
-    id: "condition",
-    label: "States a condition",
-    description: "Names something to check on the day, and no months at all.",
+    id: "children",
+    label: "The whole day, children only",
+    description:
+      "An integrated document covers children. The adult guidance keeps activity and sitting and drops sleep.",
   },
   {
-    id: "both",
-    label: "States both",
-    description: "Names a season and a condition together, so the calendar and the check arrive at once.",
-  },
-  {
-    id: "neither",
-    label: "States neither",
-    description: "Says when to act without naming months or a condition. No country read here does this.",
+    id: "waking",
+    label: "The waking hours only",
+    description:
+      "Activity and sitting are recommendations. Sleep appears among the benefits claimed, never among the targets set.",
   },
 ];
 
@@ -452,7 +510,7 @@ const countries = GUIDANCE.map((entry) => {
 const data = {
   _source: {
     dataset:
-      "Natural Earth 110m admin 0 countries, carrying how five national bodies state when their sun protection or vitamin D advice applies",
+      "Natural Earth 110m admin 0 countries, carrying how much of a twenty-four hour day the national movement guidance of five countries covers, alongside the dietary guidance each country publishes",
     publisher:
       "Natural Earth for the geometry, Tom Patterson and Nathaniel Vaughn Kelso. Each guidance sentence is credited to its own issuing body in countries[].documents[].publisher.",
     url: GEOJSON_URL,
@@ -460,10 +518,10 @@ const data = {
       "Public domain for the geometry. Guidance sentences are short verbatim quotations from public health pages, used for study and credited to the publisher and page they came from.",
     licence_url: "https://www.naturalearthdata.com/about/terms-of-use/",
     period: `Natural Earth ${GEOMETRY_VERSION}; guidance pages as published and retrieved on ${RETRIEVED}`,
-    how_these_numbers_were_made: `Coordinates are longitude and latitude on an equirectangular projection: longitude -180 to 180 maps linearly to x 0 to ${WIDTH}, latitude ${LAT_TOP} to ${LAT_BOTTOM} maps linearly to y 0 to ${HEIGHT}. Antarctica is dropped. Every ring is decimated by keeping a point only once it has moved at least ${CONTEXT.minStep} units (${FOCUS.minStep} for the five named countries), then rounded to one decimal place, then discarded if its bounding box is under ${CONTEXT.minBbox} square units (${FOCUS.minBbox} for the five). ${dropped} context countries fell below that and are not drawn. The categories are not derived from the geometry: each is read off one sentence of one document, quoted verbatim under the country with the URL it was read from, and every URL was checked for a 200 response on ${RETRIEVED}.`,
+    how_these_numbers_were_made: `Coordinates are longitude and latitude on an equirectangular projection: longitude -180 to 180 maps linearly to x 0 to ${WIDTH}, latitude ${LAT_TOP} to ${LAT_BOTTOM} maps linearly to y 0 to ${HEIGHT}. Antarctica is dropped. Every ring is decimated by keeping a point only once it has moved at least ${CONTEXT.minStep} units (${FOCUS.minStep} for the five named countries), then rounded to one decimal place, then discarded if its bounding box is under ${CONTEXT.minBbox} square units (${FOCUS.minBbox} for the five). ${dropped} context countries fell below that and are not drawn. The categories are not derived from the geometry: each is read off one sentence of one document, quoted verbatim under the country with the URL it was read from, and every URL was checked for a 200 response on ${RETRIEVED} using a browser user agent.`,
     retrieved: RETRIEVED,
     classification_note:
-      "category records how a document states its timing, not how strong, how broad or how good the advice is. A country is classified from the sentence marked classifies: true and from nothing else.",
+      "category records how much of the twenty-four hours one national movement document covers, not how strong, how recent or how good the advice is. A country is classified from the sentence marked classifies: true and from nothing else. Where a country has no clean equivalent of NHMRC, that is recorded in gap as an absence rather than filled with a near miss.",
   },
   projection: {
     kind: "equirectangular",
