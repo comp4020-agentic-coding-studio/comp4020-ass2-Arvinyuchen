@@ -343,19 +343,26 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
     display: block;
   }
 
-  /* The heading belongs to the band under it, so the gap above it is roughly
-     twice the gap below: proximity is doing the grouping that the old even
-     spacing left to the reader. The hairline is the band boundary; the first
-     band needs none, because the painted header row is already its boundary. */
+  /* The heading belongs to the band under it, so the gap above it is twice the
+     gap below: proximity groups the heading with the band it opens, and the
+     ratio has to be a ratio rather than a cliff. It was 36px against 9px,
+     which is 4 to 1, and at that distance the gap below stops reading as
+     grouping and starts reading as a collision, because the heading is three
+     lines tall and the third of them is a sentence. 36px against 18px keeps
+     the heading nearer its own band than the one above without crowding the
+     first week. The hairline is the band boundary; the first band needs none,
+     because the painted header row is already its boundary, and it opens on
+     27px so that it too sits closer to its weeks than to the row of column
+     names. */
   .phase-row th {
-    padding-block: var(--at-spacing-xl) var(--at-spacing-sm);
+    padding-block: var(--at-spacing-xl) var(--at-spacing-md);
     border-block-start: 1px solid var(--at-border);
     text-align: start;
     font-weight: 400;
   }
 
   .band:first-of-type .phase-row th {
-    padding-block-start: var(--at-spacing-md);
+    padding-block-start: var(--at-spacing-lg);
     border-block-start: none;
   }
 
@@ -369,12 +376,27 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
     gap: 0 0.6em;
   }
 
+  /* The band name is a section heading, not a field label.
+   *
+   * It was set in the small uppercase register this site uses for apparatus
+   * captions, TEACHING TEAM and RELATED, which is right for a caption over a
+   * block of metadata and wrong here: at 0.75rem it was smaller than the
+   * sentence explaining it, smaller than the week rows under it, and smaller
+   * than every other word in its own heading. A reader looking for where
+   * Change begins was looking for the largest word on the page and finding the
+   * smallest one.
+   *
+   * So it takes the register of the thing it actually is. At 1.2rem it is the
+   * largest text in the table, above the 1rem of a week number and well above
+   * the 0.85rem of its own blurb, and the tracked uppercase goes with it:
+   * sentence case separates the heading from the small uppercase move name
+   * under every week number, which is the other half of this design and has to
+   * stay readable as a label rather than compete as a second heading. */
   .phase-label {
     color: var(--at-primary);
-    font-size: 0.75rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    line-height: 1.2;
   }
 
   .phase-weeks,
