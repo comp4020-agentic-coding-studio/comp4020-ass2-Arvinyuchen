@@ -26,12 +26,18 @@ export interface GlossaryTerm {
 // may not mention it in passing, because week 7 is where it gets explained.
 //
 // Which week introduces what:
-//   1  baseline, sample size          7  blinding, placebo, mesmerism
+//   1  baseline                       7  blinding, placebo, mesmerism
 //   2  operationalise                 8  confounding
 //   3  orthosomnia                    9  regression to the mean
 //   4  reactivity                    10  non-stationary
 //   5  withdrawal design             11  multiple comparisons
-//   6  counterbalancing, pre-registration
+//   6  counterbalancing, pre-registration, sample size
+//
+// "sample size" is the one term introduced by a lecture rather than by a lab.
+// It was week 1's, in the section about where the ten thousand step figure
+// came from, and that section went when the week 1 lab merged into a single
+// section. Week 6's lecture is now the first place in the course a reader
+// meets the term, and it links it; no lab uses the words at all.
 export const glossaryTerms: GlossaryTerm[] = [
   {
     term: "baseline",

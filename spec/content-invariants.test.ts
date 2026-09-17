@@ -118,9 +118,37 @@ describe("rule 1: no experiment ships without a way to stop", () => {
   });
 });
 
+// Weeks that assert nothing, and so owe no receipts.
+//
+// The rule used to read "every week carries at least one claim, and one of
+// them is a measurement", which is stronger than rule 2 actually says. Rule 2
+// is conditional: it obliges a page that says something has an effect. A lab
+// that says nothing has an effect owes the reader no numbers, and requiring
+// some anyway is how a week ends up carrying evidence for sentences it does
+// not contain.
+//
+// Week 1 is the week that made the difference visible. Its lab records one
+// ordinary day and argues for none of it: the two sections merged into one,
+// and the steps material that used to sit at the foot of the page, which was
+// the week's only assertion, went with the merge. Its two claims backed
+// sentences that are no longer there, so the page was printing a bibliography
+// for an argument it had stopped making.
+//
+// The exemption is a list and not a condition read off the prose, because no
+// check can look at a paragraph and tell an assertion from a description:
+// spec/FALSIFICATION.md records the same limit for the effect/history split.
+// Naming the week here is the deliberate act rule 2 asks for. A week cannot
+// fall out of the rule by quietly deleting a field, only by someone adding its
+// id to this line and saying why, and the check below makes sure an exempt
+// week really does assert nothing rather than using the exemption to keep a
+// claim with its numbers missing.
+const ASSERTS_NOTHING = new Set(["sessions/01-baseline"]);
+
 describe("rule 2: a claim carries its own evidence", () => {
-  it("gives every week at least one structured claim", () => {
-    for (const week of weeks) {
+  const asserting = weeks.filter((week) => !ASSERTS_NOTHING.has(week.id));
+
+  it("gives every week that asserts something at least one structured claim", () => {
+    for (const week of asserting) {
       const claims = week.meta?.claims;
       expect(Array.isArray(claims), `${week.id} must declare a claims array`).toBe(true);
       expect(
@@ -133,8 +161,8 @@ describe("rule 2: a claim carries its own evidence", () => {
   // Tightened once every week had one. The schema comment promised this: the
   // first version of rule 2 accepted any claim, which a week could satisfy
   // with history alone and never show a measurement.
-  it("has every week rest on at least one measurement", () => {
-    for (const week of weeks) {
+  it("has every week that asserts something rest on at least one measurement", () => {
+    for (const week of asserting) {
       const claims = Array.isArray(week.meta?.claims) ? (week.meta.claims as unknown[]) : [];
       const effects = claims.filter(
         (raw) => str((raw as Record<string, unknown>)?.kind) === "effect",
@@ -143,6 +171,21 @@ describe("rule 2: a claim carries its own evidence", () => {
         effects.length,
         `${week.id} makes no claim about an effect: history alone is not evidence that anything works`,
       ).toBeGreaterThan(0);
+    }
+  });
+
+  // The exemption is all or nothing. A week listed as asserting nothing that
+  // still carries a claim is either not exempt or not finished, and either way
+  // the list is the thing to change rather than the page.
+  it("leaves a week that asserts nothing carrying no claims at all", () => {
+    for (const id of ASSERTS_NOTHING) {
+      const week = weeks.find((candidate) => candidate.id === id);
+      expect(week, `${id} is listed as asserting nothing but is not one of the weeks`).toBeDefined();
+      const claims = Array.isArray(week?.meta?.claims) ? (week.meta.claims as unknown[]) : [];
+      expect(
+        claims.length,
+        `${id} is listed as asserting nothing, so it carries no claims: either drop the claims or take the week off that list`,
+      ).toBe(0);
     }
   });
 

@@ -11,22 +11,7 @@ method: naturalistic baseline
 component: the whole day
 needs: []
 risk: low
-claims:
-  - kind: history
-    text:
-      The 10,000-step target began as the name of a product. Yamasa sold Japan's
-      first consumer pedometer in 1965 as the manpo-kei, literally the
-      ten-thousand-step meter.
-    source: Yamasa Tokei Keiki, company history; manpo-kei trademark (1965)
-  - kind: effect
-    text:
-      In older women, the fall in mortality with more daily steps levelled off
-      at around 7,500, well below the figure most wearables set by default.
-    n: 16741
-    blinded: "n/a"
-    source:
-      Lee IM et al., Association of Step Volume and Intensity With All-Cause
-      Mortality in Older Women, JAMA Internal Medicine 2019;179(8):1105-1112
+claims: []
 spec:
   - you arrive with twenty-four continuous hours recorded
   - the day you recorded is one you did not try to improve
@@ -34,14 +19,6 @@ spec:
 ---
 
 import DayRecorder from "../../components/DayRecorder.astro";
-
-This week we record a day and change nothing.
-
-That instruction is harder to follow than it reads. Most people, two or three
-hours into writing down their own day, begin quietly improving it: a slightly
-earlier start, one fewer detour, the walk they had been meaning to take. An
-improved day is a perfectly good thing to have. It is not the day you set out to
-describe.
 
 ## What we do in the lab
 
@@ -76,22 +53,3 @@ the lot when the tab closes, so print the sheet or save it as a PDF before you
 leave the page.
 
 <DayRecorder />
-
-## Where the advice came from
-
-The instructions you have been given about your day mostly arrived without a
-[sample size](/glossary/#sample-size) attached, and some of them arrived without
-any research behind them at all.
-
-Ten thousand steps is the clearest case. The number was a brand name before it
-was a health target: Yamasa launched Japan's first consumer pedometer in 1965 and
-called it the manpo-kei, the ten-thousand-step meter. It was chosen because it
-was round, memorable and easy to print. When researchers eventually went looking,
-the mortality benefit in older women flattened out somewhere near 7,500 steps a
-day: a number nobody has ever put on a box.
-
-This is not a course about steps, and the point is not that 7,500 is the real
-answer. The point is that a figure with no study behind it travelled around the
-world, got built into the default settings of millions of devices, and is now
-quoted back to you as though it were a finding about your body.
-

@@ -87,6 +87,15 @@ check.
    not a measurement, and recording it as an unreported sample size would
    misrepresent why the number is absent.
 
+   A week that asserts nothing owes no receipts. Week 1 records one ordinary
+   day and argues for none of it, so it carries no claims and prints no
+   evidence block. That exemption is a named list in the check rather than a
+   field a week can quietly leave empty: a week leaves rule 2 by being written
+   into the list with a reason, and a week on the list carries no claims at
+   all. The obligation is on a page that says something has an effect, and
+   making every week produce a claim regardless is what leaves a page carrying
+   evidence for sentences it does not contain.
+
 3. **Plain language.** Every technical term is explained the first time a
    reader meets it, by linking to the glossary. The reader is a smart stranger
    with no background in statistics or physiology. Writing that only an expert
