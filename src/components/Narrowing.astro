@@ -1,0 +1,134 @@
+---
+// A figure for an argument rather than for data.
+//
+// The section it sits in says guidance narrows from everyone to a group you
+// belong to, and that this course carries the same move one step further.
+// That is a shape, so it is drawn. Each rung is one of the three reasons the
+// section gives: age, place, season, and then the step guidance cannot take.
+//
+// Built from HTML and CSS rather than SVG on purpose. The labels are the
+// content and they should be real text: selectable, scalable with the reader's
+// font size, and read in order by a screen reader without any of the
+// aria-label duplication an SVG would need. The bars are empty spans, so they
+// are drawn but never announced.
+//
+// The widths are deliberately not data. They say "smaller each time" and
+// nothing more, which is all the argument claims.
+interface Step {
+  label: string;
+  width: number;
+  reason?: string;
+  last?: boolean;
+}
+
+const steps: Step[] = [
+  { label: "everyone", width: 100 },
+  { label: "adults", width: 76, reason: "who you are" },
+  { label: "adults in Australia", width: 54, reason: "where you are" },
+  { label: "in Hobart, in July", width: 33, reason: "when it is" },
+  { label: "you", width: 13, reason: "this course", last: true },
+];
+---
+
+<figure class="narrowing">
+  <ol>
+    {
+      steps.map((step) => (
+        <li class:list={{ last: step.last }}>
+          <span class="label">{step.label}</span>
+          <span class="bar" style={`--w: ${step.width}%`} />
+          <span class="reason">{step.reason}</span>
+        </li>
+      ))
+    }
+  </ol>
+  <figcaption>
+    Guidance makes the first four narrowings for you, each justified by general
+    information about the group. The fifth is the one it cannot make, and the
+    one this course teaches.
+  </figcaption>
+</figure>
+
+<style>
+  .narrowing {
+    margin-block: var(--at-spacing-lg);
+    margin-inline: 0;
+  }
+
+  .narrowing ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    /* Label, bar, reason. The label column sizes to the longest label so the
+       bars all start from the same edge, which is what makes the shape
+       readable at a glance. */
+    grid-template-columns: max-content 1fr max-content;
+    align-items: center;
+    gap: 0.4rem 1rem;
+  }
+
+  /* The three spans inside each row are the grid items, not the li. Without
+     this the li itself occupies one cell and the rows wrap across the columns,
+     which produced bars of 124, 432, 73, 41 and 74 pixels: not even
+     descending, let alone the shape the figure is claiming. */
+  .narrowing li {
+    display: contents;
+  }
+
+  .label {
+    font-size: 0.9rem;
+  }
+
+  .bar {
+    display: block;
+    width: var(--w);
+    height: 0.75rem;
+    border-radius: 2px;
+    background: currentColor;
+    opacity: 0.22;
+  }
+
+  .reason {
+    color: var(--at-text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* The last rung is the course. Colour and weight rather than size alone, so
+     it still reads if the bars are invisible to you. */
+  .last .label {
+    font-weight: 600;
+  }
+
+  .last .bar {
+    background: var(--at-primary);
+    opacity: 1;
+  }
+
+  .last .reason {
+    color: var(--at-primary);
+  }
+
+  .narrowing figcaption {
+    margin-block-start: var(--at-spacing-md);
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  /* On a phone the three columns will not fit, so the reason moves under its
+     label and the bar spans the row. */
+  @media (width < 34rem) {
+    .narrowing ol {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+
+    .reason {
+      margin-block-end: 0.5rem;
+    }
+  }
+</style>
