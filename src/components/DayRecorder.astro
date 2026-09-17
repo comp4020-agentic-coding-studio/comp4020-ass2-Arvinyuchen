@@ -1,6 +1,6 @@
 ---
 // The week 1 sheet: twenty-four hours drawn as a vertical timeline, and what
-// you would mark for a later week. It keeps nothing.
+// you mark as something you might change. It keeps nothing.
 //
 // Why a tool at all on a week that says paper is fine. The lab asks for a
 // continuous twenty-four hours written during the day, and the way that goes
@@ -126,8 +126,8 @@ const PAPER_ROWS = 14;
   <h3 id="recorder-title">The day sheet</h3>
 
   <p class="recorder-lead">
-    Twenty-four hours, drawn, and what you would mark for a later week. Fill it in as the day
-    goes. It saves nothing.
+    Twenty-four hours, drawn, and what you might change. Fill it in as the day goes. It saves
+    nothing.
   </p>
 
   <div class="recorder-live" data-live>
@@ -183,8 +183,12 @@ const PAPER_ROWS = 14;
     <p class="recorder-help" data-floored hidden></p>
 
     <p class="recorder-help">
-      Ticking <b>later</b> marks a block for weeks 5 to 7, where the course teaches changing
-      something. It changes nothing now.
+      Tick <b>change</b> on a block you would be willing to run differently and could actually
+      reach. That is narrower than a block you dislike: the hour you resent is often the one
+      somebody else's timetable fixed, and the one you could actually move is duller. The tick
+      changes nothing about today. Week 1 is a baseline, and a baseline you have begun improving is
+      not one, so the block goes down as it happened. Weeks 5 to 7 are the course's Change move,
+      where you choose one thing and alter it. The tick is a note to yourself then, not a plan now.
     </p>
 
     <h4>Taking it away</h4>
@@ -225,7 +229,7 @@ const PAPER_ROWS = 14;
         <tr>
           <th scope="col">Starts</th>
           <th scope="col">What you were doing</th>
-          <th scope="col">For a later week</th>
+          <th scope="col">Might change</th>
         </tr>
       </thead>
       <tbody>
@@ -260,9 +264,9 @@ const PAPER_ROWS = 14;
         <label class="tl-flag">
           <input type="checkbox" data-flag />
           <span
-            ><span class="recorder-hidden">Mark this block for a </span><span class="tl-flag-word"
-              >later</span
-            ><span class="recorder-hidden"> week</span></span
+            ><span class="recorder-hidden">Mark this block as one you might </span><span
+              class="tl-flag-word">change</span
+            ><span class="recorder-hidden"> in weeks 5 to 7</span></span
           >
         </label>
         <button type="button" class="tl-remove" data-action="remove">
@@ -571,7 +575,8 @@ const PAPER_ROWS = 14;
   /* Below 30rem the word goes and the checkbox stays, because the activity
      field is the thing that has to be typeable and 81px is not a field. The
      word is only ever clipped, never removed, so the control keeps the same
-     accessible name at every width: "Mark this block for a later week". */
+     accessible name at every width: "Mark this block as one you might change
+     in weeks 5 to 7". */
   @media (width < 30rem) {
     .tl-flag-word {
       position: absolute;
@@ -1092,7 +1097,7 @@ const PAPER_ROWS = 14;
     }
 
     const marked = blocks.filter((block) => flagOf(block).checked).length;
-    const marks = `${plural(marked, "block")} marked for a later week`;
+    const marks = `Might change: ${plural(marked, "block")}`;
     const totalLine = root.querySelector<HTMLElement>("[data-total]");
     if (totalLine) {
       if (blocks.length === 0) {
@@ -1150,7 +1155,7 @@ const PAPER_ROWS = 14;
       ["Starts", "sheet-col-time"],
       ["Runs for", "sheet-col-span"],
       ["What I was doing", "sheet-col-what"],
-      ["For a later week", "sheet-col-mark"],
+      ["Might change", "sheet-col-mark"],
     ] as const) {
       const cell = make("th", className, label);
       cell.setAttribute("scope", "col");
