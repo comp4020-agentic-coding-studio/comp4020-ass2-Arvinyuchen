@@ -1,0 +1,152 @@
+---
+// The duty of care, for any week above the lowest risk level.
+//
+// Rule 1 in CLAUDE.md is the one rule that outranks how the page looks: a week
+// that asks a student to change their sleep, their eating or their caffeine
+// owes them a stopping rule, a boundary the experiment must never cross, and
+// something else to do if they should not take part at all. The schema refuses
+// to build such a week without all three (src/content.config.ts), and
+// spec/content-invariants.test.ts checks it again. Both of those only prove
+// the strings exist in the data. This component is the part that puts them in
+// front of the person who needs them.
+//
+// It used to be three paragraphs inside the theme's warning Callout, each led
+// by a bold run-in: **When to stop.** followed by the sentence. That reads
+// fine and skims badly, which is the wrong way round for safety. A student who
+// has opened the page to check whether they can run this week is not reading,
+// they are looking, and a bold phrase inside a paragraph of the same size and
+// colour does not catch a look. The three fields are term and description
+// pairs, so they are a <dl> now, with the terms set in their own column beside
+// the text, in the same small uppercase label every other label/value pair on
+// the page uses. The eye lands on WHEN TO STOP without reading a word of the
+// sentence.
+//
+// The Callout itself is gone too. It draws a 1px rule along the top and tints
+// the background, which on this brand is a warm gold page meeting a warm amber
+// tint: the box barely separated from the page. What replaces it is the same
+// tint plus a border all the way round and a 4px bar down the leading edge, so
+// the block has an outline rather than a wash. Nothing here invents a colour;
+// --at-warning and --at-warning-soft are the theme's own semantic pair, and
+// both are light-dark() so the block follows the theme switch.
+import type { CollectionEntry } from "astro:content";
+import Icon from "astro-theme-university/components/Icon.astro";
+
+interface Props {
+  week: CollectionEntry<"sessions">;
+}
+
+const { week } = Astro.props;
+const { risk, stopping_rule, harm_boundary, opt_out } = week.data;
+
+// Only med and high carry the three fields. A low risk week states its risk on
+// the metadata line under the title, with every other week, and has nothing
+// further to say. Kept as a list of pairs rather than three hand-written blocks
+// so the markup cannot drift from one field to the next.
+const fields: [term: string, description: string | undefined][] = [
+  ["When to stop", stopping_rule],
+  ["What this is not", harm_boundary],
+  ["If this one isn't for you", opt_out],
+];
+
+const shown = fields.flatMap(([term, description]) =>
+  description?.trim() ? [{ term, description }] : [],
+);
+const takesCare = (risk === "med" || risk === "high") && shown.length > 0;
+---
+
+{
+  takesCare && (
+    <section class="safety" aria-labelledby="before-you-run-this">
+      <h2 id="before-you-run-this">
+        <Icon name="warning-triangle" /> Before you run this
+      </h2>
+      <dl>
+        {shown.map((field) => (
+          <div>
+            <dt>{field.term}</dt>
+            <dd>{field.description}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  )
+}
+
+<style>
+  /* Outline, not a wash. The border is the warning colour at 45%, which is
+     visible against both the near-white page and the near-black one without
+     being a second heading in its own right; the bar on the leading edge is
+     the colour at full strength and is what actually marks the block out at a
+     glance. Both derive from --at-warning, so the theme switch carries them. */
+  .safety {
+    margin-block: var(--at-spacing-lg) var(--at-spacing-xl);
+    padding: var(--at-spacing-md) var(--at-spacing-lg);
+    border: 1px solid color-mix(in srgb, var(--at-warning) 45%, transparent);
+    border-inline-start: 4px solid var(--at-warning);
+    background: var(--at-warning-soft);
+  }
+
+  /* An h2 because it is a page-level section and the outline should say so,
+     but not at h2 size: at 1.875rem it competed with the lesson's own
+     headings, and this is a warning rather than a chapter. The warning colour
+     separates it from the gold every other heading on the page is set in,
+     which was the other half of why it did not read as a different kind of
+     thing. */
+  .safety h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    margin-block: 0 var(--at-spacing-md);
+    color: var(--at-warning);
+    font-size: var(--at-font-size-h3);
+    line-height: 1.25;
+  }
+
+  .safety dl {
+    margin: 0;
+  }
+
+  /* Labels beside the data, the same arrangement the lecture figures use. The
+     label column is 10rem: "If this one isn't for you" takes two lines in it,
+     which is fine, and a wider column would eat the measure of the sentence
+     that matters. Below 34rem there is no room for two columns, so the pairs
+     stack and the label sits above its sentence. */
+  .safety dl > div + div {
+    margin-block-start: var(--at-spacing-md);
+    padding-block-start: var(--at-spacing-md);
+    border-block-start: 1px solid color-mix(in srgb, var(--at-warning) 30%, transparent);
+  }
+
+  @media (width >= 34rem) {
+    .safety dl > div {
+      display: grid;
+      grid-template-columns: 10rem 1fr;
+      gap: 0 var(--at-spacing-md);
+    }
+  }
+
+  /* Full-strength text, not --at-text-secondary. These are the labels a reader
+     is scanning for, and at 0.75rem a secondary grey on a tinted background is
+     both quieter than it should be and the kind of small low-contrast text
+     that fails a contrast check. */
+  .safety dt {
+    color: var(--at-text);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+
+  .safety dd {
+    margin: 0;
+  }
+
+  /* Stacked, the label needs a little air under it; side by side it does not,
+     because the column already separates them. */
+  @media (width < 34rem) {
+    .safety dd {
+      margin-block-start: 0.15rem;
+    }
+  }
+</style>

@@ -1,24 +1,26 @@
 /* Apparatus sections. GENERATED, see scripts/build-apparatus-css.mjs.
  *
  * A lab page had seven h2s at the same size doing two different jobs: three
- * were the lesson, four were the recurring machinery around it, the evidence,
- * the spec, the teaching team, the related links. A reader could not
- * tell them apart, so the page shouted seven times at one volume.
+ * were the lesson, the rest were the recurring machinery around it, the
+ * evidence, the spec, the protocol, the teaching team, the related links. A
+ * reader could not tell them apart, so the page shouted at one volume
+ * throughout.
  *
- * These four keep their h2 semantics, because they really are page-level
+ * These five keep their h2 semantics, because they really are page-level
  * sections and the document outline should say so. What changes is weight:
  * they read as small labels, so the only full-size headings left on a page are
  * the ones carrying the teaching.
  *
- * The icons are masks rather than markup because two of the four sections are
+ * The icons are masks rather than markup because two of the five sections are
  * rendered by package components whose h2 cannot be reached from here. Driving
- * all four from CSS keeps them identical instead of icons-on-some. They are
+ * all five from CSS keeps them identical instead of icons on some. They are
  * decorative (::before content is not announced) and the label text carries
  * the meaning on its own.
  */
 
 .claims-section > h2,
 .spec-list > h2,
+.protocol-section > h2,
 .teaching-team > h2,
 .related-content > h2 {
   display: flex;
@@ -41,6 +43,7 @@
 
 .claims-section > h2::before,
 .spec-list > h2::before,
+.protocol-section > h2::before,
 .teaching-team > h2::before,
 .related-content > h2::before {
   content: "";
@@ -61,6 +64,10 @@
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M9 6h11M3.8 5.8l.8.8l2-2m-2.8 7.2l.8.8l2-2m-2.8 7.2l.8.8l2-2M9 12h11M9 18h11'/%3E%3C/svg%3E");
 }
 
+.protocol-section > h2::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-linejoin='round' stroke-width='1.5'%3E%3Cpath d='M18.5 15h-13'/%3E%3Cpath stroke-linecap='round' d='M16 4H8m1 .5v5.76a2 2 0 0 1-.481 1.302L3.48 17.438A2 2 0 0 0 3 18.74V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-.26a2 2 0 0 0-.482-1.302l-5.036-5.876A2 2 0 0 1 15 10.26V4.5m-3 4.51l.01-.011M11 2.01l.01-.011'/%3E%3C/g%3E%3C/svg%3E");
+}
+
 .teaching-team > h2::before {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-width='1.5'%3E%3Cpath d='M1 20v-1a7 7 0 0 1 7-7v0a7 7 0 0 1 7 7v1'/%3E%3Cpath d='M13 14v0a5 5 0 0 1 5-5v0a5 5 0 0 1 5 5v.5'/%3E%3Cpath stroke-linejoin='round' d='M8 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8m10-3a3 3 0 1 0 0-6a3 3 0 0 0 0 6'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -77,6 +84,12 @@
  * its own rules, and it follows the text colour into dark mode instead of
  * staying a light-mode tint. */
 .apparatus {
+  /* One indent for everything itemised inside the block, declared once here
+   * and read by the sections that have to line up with each other, including
+   * Claims.astro, which is a scoped component and cannot see this file's
+   * selectors but can read this property. */
+  --apparatus-indent: 1.2em;
+
   margin-block-start: var(--at-spacing-2xl, 3rem);
   border-block-start: 1px solid color-mix(in srgb, currentColor 25%, transparent);
 }
@@ -85,10 +98,64 @@
   margin-block-start: var(--at-spacing-lg);
 }
 
-/* RelatedContent ships its own rule and 3rem of space above itself. Inside the
- * group that renders as a second divider, so the block a reader is meant to
- * take as one thing arrives as two. Suppress it here and let the group's own
- * rule be the only one.
+/* Each section divided from the next.
+ *
+ * Five labelled blocks stacked in a column with nothing between them read as
+ * one block with five labels in it, which is exactly how the apparatus looked:
+ * the teaching team's bulleted list sat under the spec's bulleted list at the
+ * same size and the same indent, and the only thing saying where one ended and
+ * the next began was a line of small uppercase text. A hairline is the
+ * cheapest thing that says these are separate, and --at-divider is the theme's
+ * own token for it, light-dark() so it follows the theme switch.
+ *
+ * The border earns its keep twice: it also stops each section's label margin
+ * collapsing up through the top of the section, which is what turns that
+ * margin into the space above the label rather than space that lands
+ * somewhere else on the page. */
+.apparatus > * + * {
+  border-block-start: 1px solid var(--at-divider);
+}
+
+/* And spaced evenly on both sides of it. Each section ends on whatever its
+ * last element happened to leave behind, which was 1em under a list and
+ * nothing at all under the claims, so the hairline sat 12px below one section
+ * and 18px below the next while always sitting 32px above the label after it.
+ * Dropping the trailing margin and setting the gap on the section itself makes
+ * every division the same on all twelve pages. */
+.apparatus > * {
+  padding-block-end: var(--at-spacing-lg);
+}
+
+.apparatus > * > :last-child {
+  margin-block-end: 0;
+}
+
+/* One left edge for the itemised content.
+ *
+ * The four blocks disagreed about where their content started: the claims sat
+ * 18px in behind a rule, the bulleted lists 40px in at the browser default,
+ * and the spec's preamble sentence flush at 0. Three left edges inside one
+ * block is what made it read as a pile rather than a set. Labels, preambles
+ * and label/value pairs start at the content edge; anything itemised is
+ * indented by the one indent above, with its markers hanging in that space. */
+.apparatus ul {
+  padding-inline-start: var(--apparatus-indent);
+}
+
+/* The spec's preamble belongs to its label, not to the page. At body size it
+ * was a paragraph of prose in a block that holds no prose, which is why the
+ * section read as though the lesson had started again. */
+.spec-list > p {
+  margin-block: 0 var(--at-spacing-sm);
+  color: var(--at-text-secondary);
+  font-size: 0.9rem;
+}
+
+/* RelatedContent ships its own rule and 3rem of space above itself, neither of
+ * which matches what the four sections beside it now do. The rule is redrawn
+ * here in the divider's own token and the space is handed back to the label's
+ * margin, so the last section in the group is spaced and divided like the rest
+ * of it rather than like a block that arrived from somewhere else.
  *
  * The doubled class is deliberate. The package's style is Astro-scoped, so it
  * lands at .related-content[data-astro-cid-…], the same specificity as
@@ -96,9 +163,9 @@
  * stylesheet the bundler happened to order last. Repeating the class wins
  * outright instead of relying on that. */
 .apparatus .related-content.related-content {
-  margin-block-start: var(--at-spacing-xl);
+  margin-block-start: 0;
   padding-block-start: 0;
-  border-block-start: 0;
+  border-block-start: 1px solid var(--at-divider);
 }
 
 /* And its list is a list. The package styles it as a horizontal chip row, with
@@ -120,5 +187,11 @@
 .apparatus .related-content ul {
   display: revert !important;
   list-style: revert !important;
-  padding-inline-start: revert !important;
+
+  /* The indent is the shared token rather than "revert", unlike the two above
+   * it. "revert" would hand this list back to the UA default of 40px, which is
+   * where every list on the site used to land and is no longer where the lists
+   * beside it land. Reverting to a value nothing else uses any more would put
+   * the drift back rather than remove it. */
+  padding-inline-start: var(--apparatus-indent) !important;
 }

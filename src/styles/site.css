@@ -95,6 +95,38 @@ html {
   }
 }
 
+/* The one line of metadata under a page title.
+ *
+ * Global rather than scoped to a route, because two routes now render it and
+ * the whole point of it is that they agree. It was written twice: once in the
+ * lecture route, once (as a bold paragraph holding only the date, in a third
+ * typographic register) in the lab route. Two copies of a convention are two
+ * things that drift, and these already had.
+ *
+ * What goes in it is what a reader checks before deciding to start, and
+ * nothing else: when it runs, how long the page takes, and, on a lab, how
+ * risky the week's experiment is. The separators are drawn rather than typed
+ * so a route can add or drop a field without minding the punctuation.
+ *
+ * It sits tight under the title on purpose. The negative top margin cancels
+ * the heading's own 0.5em bottom margin, so the line reads as part of the
+ * title block rather than as the first paragraph of the page.
+ */
+.page-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5em;
+  margin-block: calc(var(--at-spacing-sm) * -1) var(--at-spacing-lg);
+  color: var(--at-text-secondary);
+  font-size: 0.9rem;
+}
+
+.page-meta > :not(:first-child)::before {
+  content: "·";
+  margin-inline-end: 0.5em;
+  color: var(--at-text-muted);
+}
+
 /* The footer's legal row held one stray "|" separator and, until the toggle
    moved up, the theme switch. With the button gone there is nothing left in
    it but the pipe. */

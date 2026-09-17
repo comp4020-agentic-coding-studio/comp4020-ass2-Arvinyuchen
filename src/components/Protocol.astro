@@ -1,19 +1,28 @@
 ---
-// A week's method, what it takes apart, what it builds on, and for anything
-// above the lowest risk, the safety block.
+// A week's method, what it takes apart, and what it builds on.
 //
-// This used to be an h2 headed "The protocol" above a definition list, which
-// put a block of metadata between the reader and the first line of the lesson.
-// It is now a strip of label/value pairs directly under the date: it reads as
-// a spec sheet, takes three lines instead of ten, and gets out of the way.
+// This has moved twice. It started as an h2 headed "The protocol" above a
+// definition list, which put ten lines of metadata between the reader and the
+// first line of the lesson. It became a strip of label/value pairs under the
+// date, which was three lines instead of ten but was still a block of
+// reference material sitting in the reading position.
 //
-// The safety block keeps full prominence. The duty-of-care fields are checked
-// by the schema and by spec/, but a check only proves they exist in the data.
-// This is what puts them in front of the student who needs them.
+// It is apparatus, so it now lives with the apparatus at the foot of the page,
+// alongside the evidence, the spec, the teaching team and the related links. A
+// lab page is three layers: the title and what a reader needs to decide
+// whether to start, the lesson, and everything the lesson refers to. Method
+// and component are the third kind. Risk is not, and it left with the move: it
+// is on the title line now, beside the date, because a student deciding
+// whether they can run this week must not have to reach the foot of the page
+// to find out.
+//
+// `needs` keeps its own row. It is the only field here whose length is
+// unbounded: week 1 has none and week 12 builds on all eleven earlier weeks,
+// which ran to two lines of links and dragged everything after it out of
+// position. Giving it the whole row means the two fixed fields are always the
+// first line, on all twelve weeks.
 import { getPublishedCollection } from "astro-course-university/content";
 import type { CollectionEntry } from "astro:content";
-import Callout from "astro-theme-university/components/Callout.astro";
-import Icon from "astro-theme-university/components/Icon.astro";
 import { withBase } from "astro-theme-university/url";
 
 interface Props {
@@ -21,7 +30,7 @@ interface Props {
 }
 
 const { week } = Astro.props;
-const { method, component, needs, risk, stopping_rule, harm_boundary, opt_out } = week.data;
+const { method, component, needs } = week.data;
 
 // `needs` holds week numbers, so resolve them to real pages to link.
 const all = await getPublishedCollection("sessions");
@@ -31,94 +40,71 @@ const prerequisites = (needs ?? [])
   .filter((entry): entry is CollectionEntry<"sessions"> => entry !== undefined)
   .sort((a, b) => a.data.week - b.data.week);
 
-const takesCare = risk === "med" || risk === "high";
+const anything = Boolean(method || component || prerequisites.length > 0);
 ---
 
-<dl class="protocol" aria-label="Protocol">
-  {
-    method && (
-      <div>
-        <dt>Method</dt>
-        <dd>{method}</dd>
-      </div>
-    )
-  }
-  {
-    component && (
-      <div>
-        <dt>Takes apart</dt>
-        <dd>{component}</dd>
-      </div>
-    )
-  }
-  {
-    prerequisites.length > 0 && (
-      <div>
-        <dt>Builds on</dt>
-        <dd>
-          {prerequisites.map((entry, index) => (
-            <>
-              {index > 0 && ", "}
-              <a href={withBase(`/sessions/${entry.id}/`)}>week {entry.data.week}</a>
-            </>
-          ))}
-        </dd>
-      </div>
-    )
-  }
-  {
-    risk && (
-      <div>
-        <dt>Risk</dt>
-        <dd class={`risk risk-${risk}`}>{risk === "med" ? "medium" : risk}</dd>
-      </div>
-    )
-  }
-</dl>
-
 {
-  takesCare && (
-    <Callout type="warning">
-      <h2 class="safety-heading">
-        <Icon name="warning-triangle" /> Before you run this
-      </h2>
-      {stopping_rule && (
-        <p>
-          <strong>When to stop.</strong> {stopping_rule}
-        </p>
-      )}
-      {harm_boundary && (
-        <p>
-          <strong>What this is not.</strong> {harm_boundary}
-        </p>
-      )}
-      {opt_out && (
-        <p>
-          <strong>If this one isn't for you.</strong> {opt_out}
-        </p>
-      )}
-    </Callout>
+  anything && (
+    <section class="protocol-section" aria-labelledby="the-protocol">
+      <h2 id="the-protocol">The protocol</h2>
+      <dl class="protocol">
+        {method && (
+          <div>
+            <dt>Method</dt>
+            <dd>{method}</dd>
+          </div>
+        )}
+        {component && (
+          <div>
+            <dt>Takes apart</dt>
+            <dd>{component}</dd>
+          </div>
+        )}
+        {prerequisites.length > 0 && (
+          <div class="builds-on">
+            <dt>Builds on</dt>
+            <dd>
+              {prerequisites.map((entry, index) => (
+                <>
+                  {index > 0 && ", "}
+                  <a href={withBase(`/sessions/${entry.id}/`)}>week {entry.data.week}</a>
+                </>
+              ))}
+            </dd>
+          </div>
+        )}
+      </dl>
+    </section>
   )
 }
 
 <style>
-  /* A spec sheet, not a section: label above value, wrapping across the
-     column, so four facts take three lines rather than ten. */
+  /* A spec sheet: label above value, wrapping across the column. Two short
+     facts on one line rather than two rows of a table, because a two-row table
+     of two cells is table machinery around nothing. */
   .protocol {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem 2rem;
-    margin-block: 0 var(--at-spacing-lg);
-    padding-block-end: var(--at-spacing-md);
-    border-block-end: 1px solid var(--at-bg-alt);
+    gap: var(--at-spacing-md) var(--at-spacing-xl);
+    margin-block: 0 1em;
   }
 
-  .protocol div {
+  .protocol > div {
     display: flex;
     flex-direction: column;
     gap: 0.1rem;
   }
 
+  /* The whole row, and last, whatever the source order. `order` alone would
+     move it; the full basis is what stops the two fixed cells wrapping up
+     beside it on a wide screen and reintroducing the drift. */
+  .protocol .builds-on {
+    order: 1;
+    flex-basis: 100%;
+  }
+
+  /* The same small uppercase label the rest of the page's label/value pairs
+     use, so a reader meets one idiom and not three. */
   .protocol dt {
     color: var(--at-text-secondary);
     font-size: 0.75rem;
@@ -129,29 +115,5 @@ const takesCare = risk === "med" || risk === "high";
   .protocol dd {
     margin: 0;
     font-variant-numeric: tabular-nums;
-  }
-
-  /* Risk is the one value a reader scans for, so it is the one that is
-     allowed to look different. Weight rather than colour, because colour
-     alone would not survive a greyscale print or a colour-blind reader. */
-  .risk {
-    font-weight: 600;
-  }
-
-  .risk-high::before,
-  .risk-med::before {
-    content: "▲ ";
-    color: var(--at-primary);
-  }
-
-  /* The callout supplies the box; this is the icon and the label inside it.
-     Sized down from a normal h2, it is a warning, not a chapter. */
-  .safety-heading {
-    display: flex;
-    align-items: center;
-    gap: 0.45em;
-    margin-block: 0 var(--at-spacing-sm);
-    font-size: var(--at-font-size-h3);
-    line-height: 1.25;
   }
 </style>

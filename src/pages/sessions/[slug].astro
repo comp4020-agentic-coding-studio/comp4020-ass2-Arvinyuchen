@@ -1,13 +1,39 @@
 ---
+// A lab page, laid out the way a lecture page is.
+//
+// The two used to diverge for no reason a reader could see. Lectures had
+// already been through several rounds of this work and had settled on three
+// layers: a title with a single quiet line of metadata under it, the lesson,
+// and one clearly separated block of apparatus at the foot. Labs still opened
+// with a subtitle, a bold date on a line of its own, and a four cell grid of
+// METHOD, TAKES APART, BUILDS ON and RISK, so a reader met four typographic
+// registers before the first sentence of the lesson. This uses BaseLayout and
+// the same three layers.
+//
+// BaseLayout rather than ContentLayout for the same reason the lecture route
+// gives: ContentLayout renders `description` twice, once as the meta
+// description and once as a visible lead paragraph, with no way to keep the
+// first without the second. The description is still doing its real jobs, on
+// the session cards and in search results.
+//
+// Risk is the one thing that could not simply move to the foot with the rest
+// of the old grid. Rule 1 says every week states how risky its experiment is,
+// and on week 9 the word "medium" appeared exactly once in the whole built
+// page: in that grid. spec/content-invariants.test.ts reads risk from the
+// course API rather than from the HTML, so deleting the grid would have left
+// every check green while the reader lost the fact. It is on the metadata line
+// under the title now, which is earlier and more prominent than where it was.
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
 import RelatedContent from "astro-course-university/components/RelatedContent.astro";
 import SpecList from "astro-course-university/components/SpecList.astro";
-import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import BaseLayout from "astro-theme-university/layouts/BaseLayout.astro";
 import Claims from "../../components/Claims.astro";
 import Protocol from "../../components/Protocol.astro";
+import Safety from "../../components/Safety.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
+import { readingMinutes } from "../../lib/reading-time";
 import SiteChrome from "../../components/SiteChrome.astro";
 import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
 
@@ -18,21 +44,81 @@ export async function getStaticPaths() {
 
 const { session } = Astro.props;
 const { Content } = await render(session);
+const title = `Week ${session.data.week} ${sessionLabels.singular}: ${session.data.title}`;
+const minutes = readingMinutes(session.body ?? "");
+const risk = session.data.risk;
+
+// "med" is a storage value, not a word to print at a reader.
+const riskWord = risk === "med" ? "medium" : risk;
+
+// Matches the name ContentLayout derives, so the view transition from the lab
+// card on the index page still lands on this heading.
+const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").replace(/\//g, "-")}`;
 ---
 
-<ContentLayout
-  title={`Week ${session.data.week} ${sessionLabels.singular}: ${session.data.title}`}
-  description={session.data.description}
-  {...siteConfig}
->
+<BaseLayout title={title} description={session.data.description ?? undefined} {...siteConfig}>
   <SiteChrome />
-  <p><strong>{formatCourseDate(session.data.date)}</strong></p>
-  <Protocol week={session} />
+  <h1 transition:name={transitionName}>{title}</h1>
+
+  <p class="page-meta">
+    <span>{formatCourseDate(session.data.date)}</span>
+    <span>{minutes} min read</span>
+    {
+      risk && (
+        <span class:list={["risk", `risk-${risk}`]}>
+          <span class="risk-marker" aria-hidden="true" />
+          {`${riskWord} risk`}
+        </span>
+      )
+    }
+  </p>
+
+  <Safety week={session} />
   <Content />
+
   <div class="apparatus">
     <Claims claims={session.data.claims} />
     <SpecList spec={session.data.spec}>What you bring to the lab.</SpecList>
+    <Protocol week={session} />
     <TeachingTeam teachers={session.data.teachers} />
     <RelatedContent entry={session} collections={graphCollections} />
   </div>
-</ContentLayout>
+</BaseLayout>
+
+<style>
+  /* Risk is the one value on the metadata line a reader is scanning for, and
+     it carries three channels rather than one, because a reader who cannot
+     separate the theme's warm gold from the theme's warm amber, or who is
+     reading a greyscale print, still has to be able to tell a high risk week
+     from a low one.
+     Weight is the first: the level is semibold where the date and the reading
+     time are not. The marker is the second, and it is a shape rather than a
+     colour: nothing at low, a hollow triangle at medium, a solid one at high.
+     Colour is the third, and deliberately --at-warning rather than the brand
+     gold, because it is the colour of the heading of the safety block further
+     down that says what to do about it.
+     The marker is a child element and not a ::before on the risk span. The
+     separator middots on this line are already ::before on every child after
+     the first, and an element has only one. */
+  .risk {
+    color: var(--at-text);
+    font-weight: 600;
+  }
+
+  .risk-med,
+  .risk-high {
+    color: var(--at-warning);
+  }
+
+  .risk-marker::before {
+    margin-inline-end: 0.3em;
+  }
+
+  .risk-med .risk-marker::before {
+    content: "▵";
+  }
+
+  .risk-high .risk-marker::before {
+    content: "▲";
+  }
+</style>

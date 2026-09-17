@@ -37,7 +37,7 @@ const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").
   <SiteChrome />
   <h1 transition:name={transitionName}>{title}</h1>
 
-  <p class="lecture-meta">
+  <p class="page-meta">
     <span>{formatCourseDate(lecture.data.date)}</span>
     <span>{minutes} min read</span>
   </p>
@@ -59,23 +59,10 @@ const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").
 </BaseLayout>
 
 <style>
-  /* Sits directly under the title where the subtitle used to be: what a reader
-     checks before deciding to start, and nothing else. */
-  .lecture-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 0.5em;
-    margin-block: calc(var(--at-spacing-sm) * -1) var(--at-spacing-lg);
-    color: var(--at-text-secondary);
-    font-size: 0.9rem;
-  }
-
-  .lecture-meta > :not(:first-child)::before {
-    content: "·";
-    margin-inline-end: 0.5em;
-    color: var(--at-text-muted);
-  }
-
+  /* The metadata line under the title is .page-meta, in src/styles/site.css.
+     It used to be defined here, and then a second time in the lab route, where
+     it had already drifted into a bold date on a line of its own. Two routes
+     render the same line, so one rule defines it. */
   .lecture-slides {
     margin-block: 0 var(--at-spacing-lg);
   }

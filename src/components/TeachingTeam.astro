@@ -17,8 +17,24 @@ const people = teachers ? await getEntries(teachers) : [];
     <section class="teaching-team" aria-labelledby="teaching-team">
       <h2 id="teaching-team">Teaching team</h2>
       <ul>
-        {people.map((person) => <li><a href={withBase(`/people/${person.id}/`)}>{person.data.title}</a> ({roleLabel(person.data.role)})</li>)}
+        {people.map((person) => (
+          <li>
+            <a href={withBase(`/people/${person.id}/`)}>{person.data.title}</a><span class="role">, {roleLabel(person.data.role)}</span>
+          </li>
+        ))}
       </ul>
     </section>
   )
 }
+
+<style>
+  /* The role was bracketed at body size, so "(tutor)" carried the same weight
+     as the person's name and the brackets were doing the work of saying which
+     of the two was which. Quiet and smaller says it better, and the line still
+     reads as a sentence when a screen reader flattens the styling away, which
+     is why the comma stayed and the brackets did not. */
+  .role {
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+  }
+</style>

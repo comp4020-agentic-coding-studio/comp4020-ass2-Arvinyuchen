@@ -81,9 +81,16 @@ const blinding = (blinded: boolean | "n/a"): string =>
   }
 
   /* A rule down the side rather than a box: it ties the claim to its evidence
-     without drawing a card around every sentence. */
+     without drawing a card around every sentence.
+
+     The inset is --apparatus-indent, declared on .apparatus in
+     src/styles/apparatus.css and read through the cascade rather than
+     copied, because the one thing it has to do is agree with the indent of
+     the bulleted lists in the sections below. It was --at-spacing-md, which
+     is 16px against their 40px, so the claims and the spec started their
+     text at two different left edges inside a block meant to read as one. */
   .claim {
-    padding-inline-start: var(--at-spacing-md);
+    padding-inline-start: var(--apparatus-indent, 1.2em);
     border-inline-start: 2px solid var(--at-primary);
   }
 
