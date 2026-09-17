@@ -114,5 +114,22 @@ check.
   expose.
 - **Prefer cutting to padding.** A shorter course that holds together beats a
   complete-looking one that does not.
+- **No dashes.** Not em dashes, not en dashes, not hyphens standing in for
+  punctuation. Use a colon, a comma, brackets, or rewrite the sentence. A
+  quoted source sentence keeps whatever punctuation the source used, because
+  altering a quote to suit a house rule is worse than the dash. The check in
+  `spec/content-invariants.test.ts` enforces this for prose; quoted material in
+  `src/data/*.json` is exempt for that reason.
+- **A figure earns its place.** A concept gets a figure when it has a shape
+  prose states in sequence but cannot show at once, *and* there are real values
+  or the figure claims none. No figure is invented from a qualitative statement.
+  If the data cannot be obtained, the page ships without the figure.
+- **Captions carry how to read the figure and the citation, nothing else.** Any
+  number read off a figure belongs in body prose at body size. A finding in the
+  smallest type on the page is a finding nobody reads.
+- **Paragraphs are units of argument.** Lecture prose runs at least 25 words a
+  paragraph, checked. A single stranded sentence is a formatting habit, not a
+  point. Labs are exempt: a protocol step is an instruction and "This week you
+  do not measure anything." is doing its whole job in seven words.
 - **Fix the harness, not the instance.** When something slips through, add or
   tighten a check rather than patching the single page.

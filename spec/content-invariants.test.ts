@@ -303,6 +303,43 @@ describe("rule 3: a stranger can read this course", () => {
   });
 });
 
+describe("house style", () => {
+  // A standing instruction from the course author, and one that was held for
+  // most of this project by memory alone, which is not a mechanism. It survived
+  // two rounds of "please stop using dashes" and would not have survived a
+  // third participant or a fresh session.
+  //
+  // Only the unambiguous ones are checked. An en dash or an em dash in prose is
+  // always a choice; a hyphen is not, since it is load bearing in compound
+  // words, and a check that failed on "cloud-free" would be turned off within a
+  // day. CLAUDE.md states the fuller rule for a human to follow.
+  //
+  // src/data is exempt on purpose. Those files carry sentences quoted verbatim
+  // from national guidance, and editing a source's punctuation to satisfy a
+  // house rule would be a worse fault than the dash.
+  it("keeps dashes out of prose", () => {
+    const files = [
+      ...globSync("src/content/**/*.md"),
+      ...globSync("src/content/**/*.mdx"),
+      ...globSync("src/pages/**/*.astro"),
+      ...globSync("src/pages/**/*.md"),
+      ...globSync("src/pages/**/*.mdx"),
+    ];
+    expect(files.length, "no prose files found: this check is pointing at nothing").toBeGreaterThan(0);
+
+    for (const file of files) {
+      const text = readFileSync(file, "utf8");
+      text.split("\n").forEach((line, index) => {
+        const found = line.match(/[\u2013\u2014]/);
+        expect(
+          found,
+          `${file}:${index + 1} uses ${found?.[0] === "\u2014" ? "an em dash" : "an en dash"}: ${line.trim().slice(0, 70)}`,
+        ).toBeNull();
+      });
+    }
+  });
+});
+
 describe("rule 4: nothing is taught before what it depends on", () => {
   it("has every week declare what it builds on", () => {
     for (const week of weeks) {
