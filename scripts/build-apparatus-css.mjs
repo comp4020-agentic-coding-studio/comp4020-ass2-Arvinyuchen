@@ -36,7 +36,6 @@ const ICONS = {
   ".week-summary": "compass",
   ".spec-list": "task-list",
   ".claims-section": "stats-report",
-  ".protocol-section": "flask",
   ".teaching-team": "group",
   ".related-content": "link",
 };
@@ -63,7 +62,7 @@ const css = `/* Section labels, and the apparatus block. GENERATED, see
  *
  * A lab page had seven h2s at the same size doing two different jobs: three
  * were the lesson, the rest were the recurring machinery around it, the
- * evidence, the spec, the protocol, the teaching team, the related links. A
+ * evidence, the spec, the teaching team, the related links. A
  * reader could not tell them apart, so the page shouted at one volume
  * throughout.
  *

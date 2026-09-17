@@ -3,7 +3,7 @@
  *
  * A lab page had seven h2s at the same size doing two different jobs: three
  * were the lesson, the rest were the recurring machinery around it, the
- * evidence, the spec, the protocol, the teaching team, the related links. A
+ * evidence, the spec, the teaching team, the related links. A
  * reader could not tell them apart, so the page shouted at one volume
  * throughout.
  *
@@ -29,7 +29,6 @@
 .week-summary > h2,
 .spec-list > h2,
 .claims-section > h2,
-.protocol-section > h2,
 .teaching-team > h2,
 .related-content > h2 {
   display: flex;
@@ -53,7 +52,6 @@
 .week-summary > h2::before,
 .spec-list > h2::before,
 .claims-section > h2::before,
-.protocol-section > h2::before,
 .teaching-team > h2::before,
 .related-content > h2::before {
   content: "";
@@ -76,10 +74,6 @@
 
 .claims-section > h2::before {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M10 9H6m9.5 2a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5M6 6h3m9 12l-4.5-3l-2.5 2l-5-4'/%3E%3Cpath d='M3 20.4V3.6a.6.6 0 0 1 .6-.6h16.8a.6.6 0 0 1 .6.6v16.8a.6.6 0 0 1-.6.6H3.6a.6.6 0 0 1-.6-.6Z'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-.protocol-section > h2::before {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-linejoin='round' stroke-width='1.5'%3E%3Cpath d='M18.5 15h-13'/%3E%3Cpath stroke-linecap='round' d='M16 4H8m1 .5v5.76a2 2 0 0 1-.481 1.302L3.48 17.438A2 2 0 0 0 3 18.74V19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-.26a2 2 0 0 0-.482-1.302l-5.036-5.876A2 2 0 0 1 15 10.26V4.5m-3 4.51l.01-.011M11 2.01l.01-.011'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .teaching-team > h2::before {
