@@ -176,12 +176,14 @@ const PAPER_ROWS = 14;
     </div>
 
     <div class="recorder-work">
-      <h4>The sheet</h4>
+      <div class="sheet-head">
+        <h4>The sheet</h4>
 
-      <label class="field day-date">
-        <span class="field-name">Date</span>
-        <input type="date" data-field="date" />
-      </label>
+        <label class="day-date">
+          <span class="field-name">Date</span>
+          <input type="date" data-field="date" />
+        </label>
+      </div>
 
       <div class="tl" data-timeline>
         <ol class="tl-blocks" data-blocks></ol>
@@ -212,19 +214,41 @@ const PAPER_ROWS = 14;
         <p class="tally-empty" data-tally-empty>Nothing recorded yet.</p>
 
         <div class="tally-figures" data-tally-figures hidden>
-          <p class="tally-head">
-            <span class="tally-value" data-tally-covered></span>
-            <span class="tally-of">of the twenty-four hours</span>
-            <span class="tally-state" data-tally-state></span>
-          </p>
-          <div class="tally-meter" aria-hidden="true">
-            <span class="tally-meter-fill" data-tally-fill></span>
+          <div class="tally-row">
+            <div class="tally-cell tally-day" data-tally-day>
+              <span class="tally-fill" aria-hidden="true"></span>
+              <p class="tally-face">
+                <span class="tally-line"><span class="tally-value" data-tally-covered></span></span>
+                <span class="tally-line tally-caption">
+                  <span class="tally-unit">of 24 hrs</span>
+                  <span class="tally-state" data-tally-state></span>
+                </span>
+              </p>
+              <p class="tally-face tally-face-over" aria-hidden="true">
+                <span class="tally-line"><span class="tally-value" data-tally-covered></span></span>
+                <span class="tally-line tally-caption">
+                  <span class="tally-unit">of 24 hrs</span>
+                  <span class="tally-state" data-tally-state></span>
+                </span>
+              </p>
+            </div>
+
+            <div class="tally-cell tally-drawn">
+              <p class="tally-face">
+                <span class="tally-line"><span class="tally-count" data-tally-blocks></span></span>
+                <span class="tally-label" data-tally-blocks-label></span>
+              </p>
+            </div>
+
+            <div class="tally-cell tally-ticked">
+              <p class="tally-face">
+                <span class="tally-line"><span class="tally-count" data-tally-marked></span></span>
+                <span class="tally-label">ticked as change</span>
+              </p>
+            </div>
           </div>
+
           <p class="tally-rest" data-tally-rest></p>
-          <p class="tally-facts">
-            <span data-tally-blocks></span>
-            <span data-tally-marked hidden></span>
-          </p>
         </div>
 
         <p class="recorder-help tally-floored" data-floored hidden></p>
@@ -257,6 +281,8 @@ const PAPER_ROWS = 14;
       Print the page and write the day in with a pen: the lab counts that identically, and the
       ruled sheet below is what prints.
     </p>
+
+    <p class="paper-date">Date</p>
 
     <table class="paper-table">
       <caption>One day, in blocks. A block runs until the next one starts.</caption>
@@ -377,9 +403,32 @@ const PAPER_ROWS = 14;
     font-size: var(--at-font-size-sm);
   }
 
-  .field {
-    display: block;
-    margin-block-end: var(--at-spacing-sm);
+  /* The sheet's masthead: the zone heading on the left, the date in the
+   * corner, one line, with the sheet's own first rule under both.
+   *
+   * The date was a form row for several versions, a stacked uppercase label
+   * over a field on a line of its own under the heading, and it read as the
+   * orphan of a form rather than as a heading: four other fields were cut from
+   * this header earlier in the project and the one that stayed kept their
+   * layout, so the empty space beside it looked like something missing. It is
+   * not a form row. It is the one piece of metadata the sheet carries, and a
+   * day sheet on paper puts the date in the top corner, which is also where
+   * somebody filling in a printed form goes looking for it.
+   *
+   * Baseline alignment rather than centres, so the date sits on the heading's
+   * own line rather than beside its box, and it wraps to its own line under
+   * the heading when there is not room for both, which on the narrowest phone
+   * there is not. */
+  .sheet-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--at-spacing-xs) var(--at-spacing-md);
+  }
+
+  .recorder .sheet-head h4 {
+    margin: 0;
   }
 
   /* Keyboard help, behind a native disclosure.
@@ -552,8 +601,26 @@ const PAPER_ROWS = 14;
     font-weight: 600;
   }
 
+  /* The label rides beside the field instead of above it, because the stack
+     was what made one field look like the top of a form, and the field is
+     sized by its own content rather than stretched: a date input asks for
+     exactly the room dd/mm/yyyy and its picker glyph need, which is why the
+     width: 100% every other control in here takes is turned off for this one.
+     Ragged right edges against the wake time below were part of what looked
+     untidy, and this ends them by not aligning to that edge at all: the date
+     hangs off the right of the sheet, the clocks stay in the left gutter. */
   .day-date {
-    max-width: 11rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+  }
+
+  .day-date .field-name {
+    display: inline;
+  }
+
+  .recorder .day-date input {
+    width: auto;
   }
 
   /* The timeline.
@@ -929,21 +996,25 @@ const PAPER_ROWS = 14;
     border-inline-start-color: transparent;
   }
 
-  /* The figures under the sheet.
+  /* The figures under the sheet: three bounded cells and a sentence.
    *
-   * One thing is the headline and the rest are footnotes to it, which is the
-   * whole design. Coverage of the twenty-four hours leads because it is the
-   * week's own spec line and because it is the only figure here that cannot be
-   * gamed: splitting a block in two changes the count and leaves the coverage
-   * exactly where it was. Everything else is set small, in secondary ink, with
-   * no bar to fill and no target to hit. Eleven blocks is not better than six,
-   * and a sheet that implied otherwise would buy itself a more eventful day,
-   * which is the one failure week 1 warns about and week 4 writes a stopping
-   * rule for.
+   * Three things are counted here and the author asked for three cells with an
+   * edge around each, so the row is a row and not a paragraph of numbers.
+   * Coverage of the twenty-four hours leads because it is the week's own spec
+   * line and because it is the only figure here that cannot be gamed:
+   * splitting a block in two changes the count and leaves the coverage exactly
+   * where it was. The other two are plain facts. Eleven blocks is not better
+   * than six, and a sheet that implied otherwise would buy itself a more
+   * eventful day, which is the one failure week 1 warns about and week 4
+   * writes a stopping rule for. So neither of them gets a meter, a percentage
+   * or a target, and the third is the quietest thing in the row.
    *
-   * No border and no fill. The lab page allows one tinted box and the safety
-   * block has it; this is set apart by a hairline and by type instead, which
-   * also keeps it from reading as a scorecard panel.
+   * Flat and table like, which is the author's standing instruction about this
+   * region holding even though a boundary has now been asked for. One hairline
+   * around the row and one between the cells, drawn as a one pixel grid gap
+   * with the border colour behind it, so every edge is shared and none of them
+   * doubles up whatever way the row wraps. No radius and no shadow: three
+   * floating panels would be a dashboard, and this is a readout on a sheet.
    *
    * Not a live region, deliberately. layout() runs on every keystroke in a
    * time field, so a polite region here would recite the coverage after every
@@ -951,9 +1022,13 @@ const PAPER_ROWS = 14;
    * .recorder-status, which fires once per block opened, removed or closed.
    *
    * It does not print, and does not need a rule to say so: the print
-   * stylesheet hides .recorder-live, and the printed sheet states coverage in
-   * its own facts line, computed from the same fields. A student who fills the
-   * sheet on screen and prints it still gets the summary, set for paper. */
+   * stylesheet hides .recorder-live whole. That is the right answer as well as
+   * the free one. Without the script this row never leaves its hidden
+   * attribute, so what would print is three empty cells and a coverage figure
+   * computed from a sheet nobody has filled in; with the script, the rebuilt
+   * record carries coverage in its own facts line, in type set for paper. The
+   * row is a screen readout of a sheet in progress, and a sheet on paper is
+   * either finished or blank. */
   .tally {
     margin-block: 0 var(--at-spacing-md);
     padding-block-start: var(--at-spacing-sm);
@@ -967,36 +1042,132 @@ const PAPER_ROWS = 14;
     font-size: var(--at-font-size-sm);
   }
 
-  .tally-head {
+  /* The row. One cell over two by default, three across once all three fit.
+     Measured rather than guessed, in a same origin iframe at each width, since
+     Chrome will not make a window narrow enough to check a phone.
+
+     At a 390px viewport this region is 295px wide. Across three that is 98px a
+     cell, and the first cell's caption alone runs to 150px, so the day takes
+     the whole line and the two counts split the one under it. That is the
+     better shape for the meter as well, which wants length. Three across
+     arrives at the 40rem the timeline already breaks at, where the region is
+     545px.
+
+     Neither split is even. The first cell carries the headline and a state
+     word; of the other two the ticks have the longer label, so they take the
+     wider track both times.
+
+     The gap is the hairline: one pixel of the border colour showing between
+     opaque cells, plus a border around the outside. Borders on the cells
+     themselves would double at every shared edge and would need a different
+     rule for each way the row wraps. */
+  .tally-row {
+    --tally-pad-block: 0.55rem;
+    --tally-pad-inline: 0.7rem;
+
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 1px;
+    /* Clear air under the divider that closes the drawing. The divider stays,
+       because it is what separates the readout from the drawing whether or not
+       there is a row to draw, and because the empty sheet has no box of its
+       own. Set tight, the two would read as one doubled border rather than as
+       a rule and a table. */
+    margin-block-start: var(--at-spacing-sm);
+    border: 1px solid var(--at-border);
+    background: var(--at-border);
+  }
+
+  .tally-cell {
+    position: relative;
+    padding: var(--tally-pad-block) var(--tally-pad-inline);
+    background: var(--at-bg);
+  }
+
+  .tally-day {
+    grid-column: 1 / -1;
+  }
+
+  @media (width >= 40rem) {
+    .tally-row {
+      grid-template-columns: 1.4fr 1fr 1.15fr;
+    }
+
+    .tally-day {
+      grid-column: auto;
+    }
+  }
+
+  /* Two lines in every cell: the figure, then what it is. Kept to one type
+     size across the three so the row has a single baseline and reads as a row
+     rather than as three widgets. The first cell's caption line carries two
+     things, the unit and the state word, and the state takes the far end of
+     it: inside a bounded cell that reads as the cell's other corner rather
+     than as a stray, which is what it read as when the readout had no edges to
+     sit in. */
+  .tally-face {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0 0.5em;
+    flex-direction: column;
+    gap: 0.1rem;
     margin: 0;
   }
 
-  /* Large enough to be the one thing read first, and nowhere near a dashboard
-     hero: this is a readout under a lab exercise, not a scoreboard. */
-  .tally-value {
-    font-size: 1.5rem;
-    font-weight: 600;
-    line-height: 1.2;
+  .tally-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.4em;
   }
 
-  .tally-of {
+  .tally-caption .tally-state {
+    margin-inline-start: auto;
+  }
+
+  .tally-value,
+  .tally-count {
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  /* Weight and ink carry the ranking, since the size does not. Coverage is the
+     one figure a student cannot improve by recording differently, so it is the
+     only one set bold. The count of blocks is a fact at ordinary weight. The
+     ticks are a step quieter again: same size, same weight, secondary ink and
+     a muted label, because the tick is optional and a number nobody is being
+     scored on should not be the brightest thing in the row. */
+  .tally-value {
+    font-weight: 600;
+  }
+
+  .tally-ticked .tally-count {
+    color: var(--at-text-secondary);
+  }
+
+  .tally-unit,
+  .tally-label {
     color: var(--at-text-secondary);
     font-size: var(--at-font-size-sm);
+  }
+
+  .tally-ticked .tally-label {
+    color: var(--at-text-muted);
   }
 
   /* A state, not a statistic, so it is a word with a shape beside it and never
      a colour on its own: a ring while the day is open, the same ring filled
      once it is closed. The words are the channel that survives greyscale, a
      colourblind reader and forced colours; the dot is the thing the eye finds
-     from across the page. */
+     from across the page.
+
+     It stays a word even though the cell behind it now fills as the day gets
+     accounted for, and that is not redundancy for its own sake. A full cell
+     does mean a closed day, but a closed day is not the only way to fill the
+     cell: an open day can be pulled, typed or stepped to exactly twenty-four
+     hours, at which point the fill says closed and the sheet is not. The fill
+     is the coverage and only the coverage; this word is the state. */
   .tally-state {
     display: inline-flex;
     align-items: center;
-    margin-inline-start: auto;
     color: var(--at-text-secondary);
     font-size: var(--at-font-size-sm);
   }
@@ -1015,56 +1186,96 @@ const PAPER_ROWS = 14;
     background: var(--at-primary);
   }
 
-  /* On a phone the headline and its unit already fill the line, so the state
-     wraps. Pushed right it landed alone against the right edge, which read as
-     a stray; on its own full line at the left it reads as the next thing
-     down. Same breakpoint the flag word uses. */
-  @media (width < 30rem) {
-    .tally-state {
-      flex-basis: 100%;
-      margin-inline-start: 0;
-    }
-  }
+  /* The day laid flat, and the cell is the drawing. The reader has spent the
+     last ten minutes pulling a line down a page at a pixel to the minute, and
+     this is the same day wrapped into one box: empty at the start of it, full
+     when the twenty-four hours are all accounted for.
 
-  /* The day laid flat. Six pixels and a three pixel radius are the grip bar's
-     own dimensions, on purpose: the reader has spent the last ten minutes
-     pulling that shape down the page, and this is the same line wrapped into
-     twenty-four hours. The track is a light step of the one hue, so the fill
-     and the unfilled part read as the same scale rather than as two colours.
-     Marked aria-hidden: every number it draws is written out beside it. */
-  .tally-meter {
-    overflow: hidden;
-    height: 6px;
-    margin-block: var(--at-spacing-xs) 0;
-    border-radius: 3px;
-    background: color-mix(in srgb, var(--at-primary) 14%, transparent);
-  }
-
-  .tally-meter-fill {
-    display: block;
-    width: var(--covered, 0%);
-    height: 100%;
-    border-radius: 3px;
+     The fill is inside the padding box, so the cell's own hairline stays
+     drawn at every percentage and the boundary of the cell is never the
+     boundary of the fill. */
+  .tally-fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: var(--covered, 0%);
     background: var(--at-primary);
   }
 
+  /* Readability across the fill edge, which is the one hard problem in this
+     row.
+
+     The figure is painted twice. The copy in the flow is --at-text on the
+     cell's own surface; the copy above it is --at-on-primary, the theme's ink
+     for anything sitting on a brand fill, clipped to exactly the filled
+     region. Both the fill's width and the clip's edge resolve the same
+     --covered against the same box, so they land on the same pixel column.
+     Every glyph pixel left of that column is on-primary over primary, 7.1:1
+     with this brand's gold; every pixel right of it is text over background,
+     about 17:1. Neither ratio depends on where the edge is, so the guarantee
+     at one percent fill is the guarantee at ninety-nine.
+
+     What this replaces is a text shadow, which passes at whatever fill level
+     you happen to look at and fails at the others, and mix-blend-mode, which
+     produces a contrast the author cannot state. The copy is aria-hidden so
+     the figure is announced once.
+
+     Everything in the over copy is full strength on-primary, including the
+     parts that are secondary ink below. --at-on-primary is picked to clear
+     4.5:1 against the fill at full opacity and nothing guarantees it at 78%,
+     so on the filled side the hierarchy is carried by size and weight
+     alone. */
+  .tally-face-over {
+    position: absolute;
+    inset: 0;
+    padding: var(--tally-pad-block) var(--tally-pad-inline);
+    color: var(--at-on-primary);
+    clip-path: inset(0 calc(100% - var(--covered, 0%)) 0 0);
+  }
+
+  .tally-face-over :is(.tally-unit, .tally-state) {
+    color: inherit;
+  }
+
+  .tally-face-over .tally-state::before {
+    border-color: var(--at-on-primary);
+  }
+
+  .tally-face-over .tally-state[data-closed="true"]::before {
+    background: var(--at-on-primary);
+  }
+
+  /* Forced colours throw the fill away: a background colour is not something
+     the mode keeps, and the second copy of the figure would then be system ink
+     sitting exactly on top of system ink. So the copy goes and the meter falls
+     back to the six pixel bar this readout used to carry, along the foot of
+     the cell, drawn in the system's own text colour. */
+  @media (forced-colors: active) {
+    .tally-face-over {
+      display: none;
+    }
+
+    .tally-fill {
+      inset-block-start: auto;
+      block-size: 6px;
+      background: CanvasText;
+    }
+  }
+
+  /* What is left over, under the row rather than inside the first cell.
+
+     It belongs to coverage and it is the strongest line in the readout,
+     because it turns a percentage into an instruction to press the sleep
+     button. It is not in the cell for two reasons. It changes length as the
+     day fills, so a cell holding it would resize the whole row on every
+     keystroke. And it is a sentence: clipping a sentence in half down a
+     vertical seam is legible but restless, and this is the line a student is
+     meant to read rather than glance at. Under the row and against the same
+     left edge, it reads as the first cell continued. */
   .tally-rest {
     margin-block: var(--at-spacing-xs) 0;
     color: var(--at-text-secondary);
     font-size: var(--at-font-size-sm);
-  }
-
-  /* The facts nobody is being scored on. Same size as the rest line, one step
-     quieter than the headline, separated by the site's own middot. */
-  .tally-facts {
-    margin-block: 0.15rem 0;
-    color: var(--at-text-muted);
-    font-size: var(--at-font-size-sm);
-  }
-
-  .tally-facts > span + span::before {
-    content: "·";
-    margin-inline: 0.45em;
   }
 
   .recorder .tally-floored {
@@ -1150,6 +1361,25 @@ const PAPER_ROWS = 14;
 
   .recorder[data-scripted="true"] .recorder-paper {
     display: none;
+  }
+
+  /* The same masthead, for a pen. The blank sheet is what prints when the
+     script has not run, and it had a table with no date on it: the record the
+     script builds carries the date in its facts line, and the one somebody
+     fills in by hand had nowhere to write it. A word and a rule to write on,
+     in the same border the table below it uses. */
+  .paper-date {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-block: 0 var(--at-spacing-sm);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .paper-date::after {
+    content: "";
+    flex: 1;
+    border-block-end: 1px solid var(--at-border);
   }
 
   .paper-table {
@@ -1520,61 +1750,82 @@ const PAPER_ROWS = 14;
           : `${plural(floored, "block")} ran under half an hour and ${floored === 1 ? "is" : "are"} drawn half an hour tall: on ${floored === 1 ? "that one" : "those"} the two times are the record and the height is not.`;
     }
 
-    // The figures.
-    //
-    // One headline and three footnotes, sorted by whether the number is
-    // something a student could decide to go and get more of.
+    // The figures: three cells and the sentence under them.
     //
     // Coverage leads. It is the week's own spec line, twenty-four continuous
     // hours, and it is the only figure here that cannot be improved by
     // recording differently: splitting one block into three changes the count
-    // and leaves the coverage where it was. What is left over is named with
-    // the hours it runs between rather than as a bare number, because on this
-    // sheet the unrecorded time is never a hole in the middle. Blocks are
-    // drawn end to end from the wake line down, so the only thing missing is
-    // always the stretch from the last line back around to waking, and saying
-    // where it is turns a percentage into an instruction to press the sleep
-    // button.
+    // and leaves the coverage where it was. Its cell is the meter, filling
+    // from the left as the hours get accounted for, so an untouched sheet is
+    // an empty box and a day with nothing left over is a full one.
     //
-    // The count of blocks is a fact and not a score: eleven is not better than
-    // six, and a sheet that implied otherwise would be paid in a more eventful
-    // day. The count of marks is quieter still and is not rendered at all
-    // while it is zero, because "0 marked" is a nudge to go and mark
-    // something, and the tick is meant to be optional.
+    // That fill is the coverage and nothing else, which took checking, because
+    // a full cell looks like a closed day and one direction of that is true.
+    // Closing the day does always fill it: closeDay hands the sleep block
+    // exactly remainingMins, and nothing available afterwards changes the
+    // total, since the grip is hidden, the end time is read only, retime
+    // trades minutes between two blocks and removeBlock gives a removed
+    // block's minutes to its neighbour. The other direction fails. An open day
+    // can reach twenty-four hours three ways: a drag clamps to the room left
+    // rather than refusing it, retime clamps a last line the same way, and the
+    // half hour button takes whatever is left when less than half an hour
+    // remains. So the state is kept as a word beside the figure rather than
+    // left to the fill, which would read "closed" on a sheet that still has
+    // its sleep block to write.
+    //
+    // The other two cells are counts and are written as counts. Eleven blocks
+    // is not better than six. The ticks are a share of what is on the sheet
+    // rather than a bare number, which is what the author asked for and is
+    // also the reading that cannot turn into a target: the denominator moves
+    // every time a block opens, so there is no number to get to.
+    //
+    // Both copies of the coverage cell's text are written here. The second is
+    // the one clipped to the fill, and writing them through one call is what
+    // keeps them the same words.
     const marked = blocks.filter((block) => flagOf(block).checked).length;
     const emptyLine = root.querySelector<HTMLElement>("[data-tally-empty]");
     const figures = root.querySelector<HTMLElement>("[data-tally-figures]");
+    // A sheet with nothing on it gets the sentence instead of the row. Three
+    // cells reading nought, nought and nought of nought is a scorecard of not
+    // having started, and the third one is not even arithmetic.
     if (emptyLine) emptyLine.hidden = blocks.length > 0;
     if (figures) figures.hidden = blocks.length === 0;
 
-    const covered = root.querySelector<HTMLElement>("[data-tally-covered]");
-    if (covered) covered.textContent = formatSpan(offset);
-    const fill = root.querySelector<HTMLElement>("[data-tally-fill]");
-    if (fill) {
-      fill.style.setProperty("--covered", `${((offset / MINUTES_IN_DAY) * 100).toFixed(2)}%`);
+    const write = (selector: string, text: string): void => {
+      for (const node of root.querySelectorAll<HTMLElement>(selector)) node.textContent = text;
+    };
+
+    write("[data-tally-covered]", formatSpan(offset));
+    const day = root.querySelector<HTMLElement>("[data-tally-day]");
+    if (day) {
+      day.style.setProperty("--covered", `${((offset / MINUTES_IN_DAY) * 100).toFixed(2)}%`);
     }
 
-    const state = root.querySelector<HTMLElement>("[data-tally-state]");
-    if (state) {
-      state.textContent = closed ? "Day closed" : "Day open";
-      state.dataset.closed = String(closed);
+    write("[data-tally-state]", closed ? "Day closed" : "Day open");
+    for (const node of root.querySelectorAll<HTMLElement>("[data-tally-state]")) {
+      node.dataset.closed = String(closed);
     }
 
     const rest = root.querySelector<HTMLElement>("[data-tally-rest]");
     if (rest) {
+      // What is left over is named with the hours it runs between rather than
+      // as a bare number, because on this sheet the unrecorded time is never a
+      // hole in the middle. Blocks are drawn end to end from the wake line
+      // down, so the only thing missing is always the stretch from the last
+      // line back around to waking, and saying where it is turns a percentage
+      // into an instruction to press the sleep button. The full and open case
+      // is the one the fill cannot say, so the sentence says it.
       const sleep = closed ? minsOf(blocks[blocks.length - 1]) : 0;
       rest.textContent = closed
         ? `${formatSpan(sleep)} of it recorded as sleep.`
-        : `${formatSpan(MINUTES_IN_DAY - offset)} unaccounted for, from ${formatClock(wake + offset)} back around to ${formatClock(wake)}.`;
+        : offset >= MINUTES_IN_DAY
+          ? "Nothing unaccounted for, and the day is not closed: the blocks already fill the twenty-four hours."
+          : `${formatSpan(MINUTES_IN_DAY - offset)} unaccounted for, from ${formatClock(wake + offset)} back around to ${formatClock(wake)}.`;
     }
 
-    const blockCount = root.querySelector<HTMLElement>("[data-tally-blocks]");
-    if (blockCount) blockCount.textContent = plural(blocks.length, "block");
-    const markCount = root.querySelector<HTMLElement>("[data-tally-marked]");
-    if (markCount) {
-      markCount.hidden = marked === 0;
-      markCount.textContent = marked === 0 ? "" : `${marked} marked change`;
-    }
+    write("[data-tally-blocks]", String(blocks.length));
+    write("[data-tally-blocks-label]", blocks.length === 1 ? "block drawn" : "blocks drawn");
+    write("[data-tally-marked]", `${marked} of ${blocks.length}`);
 
     renderSheet(root);
   };
