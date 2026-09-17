@@ -328,6 +328,20 @@ const PAPER_ROWS = 14;
     text-transform: uppercase;
   }
 
+  /* The clocks.
+   *
+   * They stay native <input type="time">. Typing, the arrow keys, the
+   * reader's own twelve or twenty-four hour presentation, the phone's picker
+   * and a screen reader's field by field announcement all arrive with the
+   * element, and every one of them would have to be rebuilt, badly, on a div
+   * holding two number boxes. So everything here is paint on a native control
+   * and nothing else: no property below changes what the control does.
+   *
+   * Tabular figures because these are read as a column down the sheet rather
+   * than as single values. Proportional digits make a one narrower than a
+   * zero, so a day of blocks ticking over jitters sideways while you watch it.
+   * font-variant-numeric comes after `font: inherit` on purpose: the font
+   * shorthand resets the variant, so the order is what makes it stick. */
   .recorder input[type="time"],
   .recorder input[type="date"] {
     width: 100%;
@@ -338,6 +352,40 @@ const PAPER_ROWS = 14;
     color: var(--at-text);
     font: inherit;
     font-size: var(--at-font-size-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .recorder :is(input[type="time"], input[type="date"]):hover {
+    border-color: color-mix(in srgb, var(--at-primary) 50%, var(--at-border));
+  }
+
+  /* Focus on two channels: the ring the whole component shares, and the
+     field's own edge and fill. The ring is what clears the 3:1 an indicator
+     owes; the tint is what makes the field you are in findable in a column of
+     a dozen identical ones. Neither changes a border width or a padding, so
+     nothing on the sheet moves when focus lands. */
+  .recorder :is(input[type="time"], input[type="date"]):focus-visible {
+    border-color: var(--at-primary);
+    background: color-mix(in srgb, var(--at-primary) 8%, var(--at-bg));
+  }
+
+  /* The clock glyph. Chrome and Safari draw it, Firefox draws nothing at all
+     and never has, which is the rule for this pseudo element: it may be
+     painted and it may not be leaned on. Everything it opens is reachable by
+     typing and by the arrows, so a browser that ignores every line below
+     loses an affordance and no capability. Dimmed to about the weight of
+     secondary text so it stops out-inking the value beside it, and full
+     strength under the pointer or while the field holds focus. */
+  .recorder :is(input[type="time"], input[type="date"])::-webkit-calendar-picker-indicator {
+    margin-inline-start: 0.3rem;
+    padding: 0;
+    opacity: 0.45;
+    cursor: pointer;
+  }
+
+  .recorder
+    :is(input[type="time"], input[type="date"]):is(:hover, :focus-within)::-webkit-calendar-picker-indicator {
+    opacity: 1;
   }
 
   /* The checkboxes and radios take the brand gold, which is the one place a
@@ -462,10 +510,40 @@ const PAPER_ROWS = 14;
   }
 
   /* Sized to the floor: the whole row is 30px at its shortest and this is what
-     has to sit in it. */
+     has to sit in it.
+
+     The two clocks on this sheet are not the same object and are not painted
+     the same. A block's start time is one of a dozen in a repeating column,
+     read down rather than read alone, so it is set small and tight and its
+     picker glyph goes. The glyph is fourteen pixels of a hundred pixel gutter
+     field, it repeats on every row, and it is the one part of the control that
+     carries no information. Hiding it costs nothing: Firefox never drew it, a
+     phone opens its own picker on a tap on the field itself, and the arrows
+     and the keyboard reach every minute of the day either way. */
   .recorder .tl-time input {
     padding: 0.05rem 0.2rem;
     font-size: var(--at-font-size-xs);
+  }
+
+  .recorder .tl-block .tl-time input::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+
+  /* Drawn tight to the field. Two pixels out would put the ring on the line
+     above the block, and that line is a boundary in the drawing rather than
+     decoration. */
+  .recorder .tl-block .tl-time input:focus-visible {
+    outline-offset: 1px;
+  }
+
+  /* The wake time is the other case: one field, alone in the gutter, under a
+     label that is spelled out, in a row that has no duration to fit inside. It
+     takes the component's ordinary field size and keeps its glyph, because the
+     question the sheet opens with can afford the room and is the one clock
+     here a reader meets before they know what the sheet is. */
+  .recorder .tl-end .tl-time input {
+    padding: 0.25rem 0.4rem;
+    font-size: var(--at-font-size-sm);
   }
 
   /* Clipped on every row but the first. The gutter is a column of times under
