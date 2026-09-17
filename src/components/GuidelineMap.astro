@@ -53,8 +53,8 @@ const panelId = (iso: string): string => `guideline-${iso.toLowerCase()}`;
                hatch follows the page into dark mode with everything else. -->
           <pattern
             id="gm-hatch"
-            width="8"
-            height="8"
+            width="4.5"
+            height="4.5"
             patternUnits="userSpaceOnUse"
             patternTransform="rotate(45)"
           >
@@ -313,9 +313,15 @@ const panelId = (iso: string): string => `guideline-${iso.toLowerCase()}`;
     pointer-events: none;
   }
 
+  /* Tile and stroke are set by the smallest country that has to carry the
+     mark, not by the largest. At an 8 unit tile the hatch read cleanly on
+     Canada at 236 units across and vanished on New Zealand at 32, whose
+     landmass is two thin diagonal islands, so barely one stripe fell inside
+     it. New Zealand is the country that broke the three-category scheme, so
+     it is the one country whose mark most needs to be legible. */
   .hatch-line {
     stroke: currentColor;
-    stroke-width: 2.2;
+    stroke-width: 1.3;
   }
 
   .leader {
