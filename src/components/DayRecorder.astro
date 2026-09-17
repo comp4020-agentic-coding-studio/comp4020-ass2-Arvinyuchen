@@ -1,0 +1,1223 @@
+---
+// The week 1 sheet: twenty-four hours, what you would flag for later, and what
+// you decided not to write down. It keeps nothing.
+//
+// Why a tool at all on a week that says paper is fine. The lab asks for a
+// continuous twenty-four hours written during the day, and the two ways that
+// goes wrong are both structural rather than motivational: the record ends up
+// with holes in it, and the third thing the lab actually assesses, what you
+// left out and why, gets remembered as an afterthought at midnight because
+// nothing ever asked for it. This asks for it, in its own section, with the
+// same weight as the day.
+//
+// The clock is a ring, and that is the whole design.
+//
+// A block records only when it starts. It runs until the next block starts,
+// and the last block runs back around to the first, so a sheet with four
+// blocks on it covers twenty-four hours exactly as surely as one with twenty.
+// Three things fall out of that and each of them was a problem before:
+//
+//   - Gaps cannot happen. Spec line one is satisfied by construction rather
+//     than by the student adding up their own day at the end.
+//   - Sleep is one block. An eleven at night to seven in the morning row is
+//     one row, not the thirty-two fifteen-minute cells a grid would have
+//     demanded.
+//   - Nobody types an end time. Half the typing in a naive two-time-field
+//     version is a restatement of the row above it.
+//
+// The cost is that the sheet never tells you the day is incomplete, because by
+// its own arithmetic it never is. That is honest here: an unrecorded stretch
+// shows up as a single very long block with nothing written against it, which
+// is a truer description of an hour you did not record than a gap would be,
+// and it is exactly the kind of thing the omissions field then asks about.
+//
+// Speed, which is the requirement that shaped the rest.
+//
+// The target is a couple of minutes for a whole day, so a sentence per hour is
+// already too slow and anything with a mouse in the loop is much too slow.
+// Enter in a block starts the next one, prefilled at one resolution step later
+// and focused, so a day is typed as: what you were doing, Enter, what you were
+// doing, Enter. The resolution select is not decoration: it sets that step, so
+// a student working at fifteen minutes gets fifteen-minute steps. Repeat
+// copies a block's text into the next one, for the activity that comes back
+// four times in a day.
+//
+// What it does not do is store anything. There is no network call, no
+// localStorage, no sessionStorage, no cookie and deliberately no <form>
+// element, because a form with no action submits to the current URL and would
+// put a student's day in their browser history as a query string. The printed
+// file is the only copy. The course's own policy page promises that the
+// records a student makes are theirs, and a page on the same site that quietly
+// kept a copy would make that promise a lie.
+//
+// PDF export is window.print() and a print stylesheet, on purpose. This site
+// has never shipped a client library and a PDF library would be the largest
+// dependency in the repo, for a job the browser already does under Save as
+// PDF. What print gets instead is a real layout: the script keeps a plain
+// printable sheet in sync with the fields, and @media print hides the site
+// chrome, the lesson and the form itself, so the file is a record rather than
+// a screenshot of a web page.
+//
+// With no JavaScript the page is still useful, which is what the blank sheet
+// at the foot is for. It is ordinary markup, it prints as a ruled template,
+// and the script hides it once it has run. Blank rows are what a student with
+// scripts off, or with the script failing, or with a preference for a pen,
+// takes into the lab.
+import { withBase } from "astro-theme-university/url";
+
+// The seeded ladder. Four rows rather than a full day of them: enough to show
+// what a block is and that the last one wraps, few enough that nobody reads
+// them as a suggested shape for their Tuesday. Seven in the morning is the
+// visible, editable first row, not a claim about when anyone gets up.
+const SEED_START = 7 * 60;
+const SEED_BLOCKS = 4;
+const clock = (minutes: number): string =>
+  `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+const seeded = Array.from({ length: SEED_BLOCKS }, (_, index) => clock(SEED_START + index * 60));
+
+// Fourteen ruled rows on the paper sheet. A day at the resolution this lab
+// asks for runs to ten or a dozen blocks once sleep is one of them, and
+// fourteen still leaves room under the table for the two omission prompts on a
+// single printed page.
+const PAPER_ROWS = 14;
+---
+
+<section class="recorder" data-day-recorder aria-labelledby="recorder-title">
+  <h3 id="recorder-title">The day sheet</h3>
+
+  <p class="recorder-lead">
+    Twenty-four hours, what you would flag for a later week, and what you decided not to write
+    down. Fill it in as the day goes. It saves nothing.
+  </p>
+
+  <div class="recorder-live" data-live>
+    <h4>The day</h4>
+
+    <div class="day-fields">
+      <label class="field">
+        <span class="field-name">Date</span>
+        <input type="date" data-field="date" />
+      </label>
+      <label class="field">
+        <span class="field-name">How often you wrote something down</span>
+        <select data-field="resolution">
+          <option value="15">every 15 minutes</option>
+          <option value="30">every half hour</option>
+          <option value="60" selected>about every hour</option>
+          <option value="90">whenever I got to it</option>
+        </select>
+      </label>
+    </div>
+
+    <fieldset class="when-written">
+      <legend>When you wrote it</legend>
+      <label class="choice">
+        <input type="radio" name="recorder-written" value="as the day went" data-written />
+        <span>as the day went</span>
+      </label>
+      <label class="choice">
+        <input type="radio" name="recorder-written" value="partly at the time, partly later" data-written />
+        <span>partly at the time, partly later</span>
+      </label>
+      <label class="choice">
+        <input type="radio" name="recorder-written" value="afterwards, from memory" data-written />
+        <span>afterwards, from memory</span>
+      </label>
+    </fieldset>
+
+    <h4>The twenty-four hours</h4>
+
+    <p class="recorder-help">
+      A block runs until the next one starts, and the last block runs back around to the first, so
+      the sheet always closes a full day. Sleep is one block. Enter walks the start time, then what
+      you were doing, then the next block's start time, and makes a new block when you reach the
+      end, timed one step on from the one before it.
+    </p>
+
+    <p class="recorder-help">
+      Marking a block changes nothing. This week changes nothing: that is the exercise, and a day
+      you tidied while recording it is not the day you set out to describe. A mark is a note to
+      yourself about where a change might go in weeks 5 to 7, which is where changing something is
+      the actual work.
+    </p>
+
+    <div class="blocks-head" aria-hidden="true">
+      <span>Starts</span>
+      <span>What you were doing</span>
+      <span>For a later week</span>
+      <span></span>
+    </div>
+
+    <ol class="blocks" data-blocks>
+      {
+        seeded.map((time) => (
+          <li class="block" data-block>
+            <label class="field field-time">
+              <span class="field-name">Starts at</span>
+              <input type="time" data-time value={time} />
+            </label>
+            <label class="field field-what">
+              <span class="field-name">What you were doing</span>
+              <input type="text" data-what autocomplete="off" />
+            </label>
+            <label class="field field-flag">
+              <input type="checkbox" data-flag />
+              <span class="field-name">For a later week</span>
+            </label>
+            <p class="block-tools">
+              <button type="button" data-action="repeat">
+                Repeat<span class="recorder-hidden"> this block in the next one</span>
+              </button>
+              <button type="button" data-action="remove">
+                Remove<span class="recorder-hidden"> this block</span>
+              </button>
+            </p>
+            <p class="block-span" data-span />
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="blocks-tools">
+      <button type="button" data-action="add">Add a block</button>
+      <button type="button" data-action="sort" hidden>Put the blocks in clock order</button>
+    </p>
+
+    <p class="blocks-total" data-total></p>
+
+    <h4>What you decided not to write down</h4>
+
+    <p class="recorder-help">
+      Everybody leaves something out, and in the lab we read that part back to each other. It is a
+      finding rather than a hole in your homework, so it goes on the sheet beside the day itself.
+      Blocks you could not face writing down, the parts you judged too ordinary to record, the
+      thing you would rather nobody read: all of it counts, and you can say what you left out
+      without saying what it was.
+    </p>
+
+    <label class="field">
+      <span class="field-name">What you left out</span>
+      <textarea rows="3" data-field="omitted"></textarea>
+    </label>
+    <label class="field">
+      <span class="field-name">Why it did not seem worth recording</span>
+      <textarea rows="3" data-field="why"></textarea>
+    </label>
+
+    <h4>Taking it away</h4>
+
+    <p class="recorder-privacy">
+      Nothing here is saved. This page sends nothing anywhere, writes nothing to this browser, and
+      loses the lot when the tab is closed or reloaded. The file you print is the only copy and it
+      is yours, which is what the course's policy on
+      <a href={withBase("/policies/#the-records-you-make-are-yours")}>the records you make</a> says
+      too.
+    </p>
+
+    <p class="recorder-tools">
+      <button type="button" class="print-button" data-action="print">
+        Print the sheet, or save it as a PDF
+      </button>
+    </p>
+
+    <p class="recorder-help">
+      Your browser's print dialogue has a Save as PDF destination. The printed sheet carries the
+      day, the marks and the omissions, and none of the page around them.
+    </p>
+
+    <p class="recorder-status" role="status" data-status></p>
+  </div>
+
+  <div class="recorder-paper" data-paper>
+    <h4>The same sheet, to fill in by hand</h4>
+    <p class="recorder-help">
+      If the buttons above do nothing, scripts are not running here. Print the page and write the
+      day in with a pen: the lab counts that identically, and the ruled sheet below is what prints.
+    </p>
+
+    <table class="paper-table">
+      <caption>One day, in blocks. A block runs until the next one starts.</caption>
+      <thead>
+        <tr>
+          <th scope="col">Starts</th>
+          <th scope="col">What you were doing</th>
+          <th scope="col">For a later week</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          Array.from({ length: PAPER_ROWS }, (_, index) => (
+            <tr>
+              <th scope="row"><span class="recorder-hidden">Block {index + 1}</span></th>
+              <td></td>
+              <td></td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+
+    <h5>What you decided not to write down</h5>
+    <p class="paper-rule"></p>
+    <p class="paper-rule"></p>
+    <h5>Why it did not seem worth recording</h5>
+    <p class="paper-rule"></p>
+    <p class="paper-rule"></p>
+  </div>
+
+  <div class="recorder-sheet" data-sheet></div>
+</section>
+
+<style>
+  /* The block sits in the lesson, so it is outlined rather than filled: the
+     only tinted box on a lab page is the safety block, and a second one would
+     compete with it. Border and radius are the theme's, so light and dark
+     arrive without a second palette. */
+  .recorder {
+    margin-block: var(--at-spacing-xl);
+    padding: var(--at-spacing-lg);
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+  }
+
+  .recorder h3 {
+    margin-block: 0 var(--at-spacing-xs);
+  }
+
+  .recorder h4 {
+    margin-block: var(--at-spacing-xl) var(--at-spacing-xs);
+  }
+
+  .recorder h4:first-child {
+    margin-block-start: 0;
+  }
+
+  .recorder-lead {
+    margin-block: 0 var(--at-spacing-lg);
+    color: var(--at-text-secondary);
+  }
+
+  /* Instructions, not prose: one step smaller and quieter than the lesson
+     around them, and never carrying a fact that is not also in a control. */
+  .recorder-help {
+    margin-block: var(--at-spacing-xs) var(--at-spacing-md);
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .field {
+    display: block;
+    margin-block-end: var(--at-spacing-sm);
+  }
+
+  .field-name {
+    display: block;
+    color: var(--at-text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+
+  .recorder input[type="text"],
+  .recorder input[type="time"],
+  .recorder input[type="date"],
+  .recorder select,
+  .recorder textarea {
+    width: 100%;
+    padding: 0.3rem 0.45rem;
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg);
+    color: var(--at-text);
+    font: inherit;
+    font-size: var(--at-font-size-sm);
+  }
+
+  .recorder textarea {
+    resize: vertical;
+  }
+
+  /* The checkboxes and radios take the brand gold, which is the one place a
+     colour is allowed to carry a state here, and never the only place: the
+     control's own tick is the channel that does the work. */
+  .recorder input[type="checkbox"],
+  .recorder input[type="radio"] {
+    accent-color: var(--at-primary);
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 0;
+  }
+
+  /* Stated rather than inherited. The theme's focus ring is set on its own
+     components, and every control in here is an unstyled element the theme
+     never sees; a form this size is exactly where a missing ring strands a
+     keyboard user. Gold against either page colour clears the 3:1 that a
+     non-text indicator owes. */
+  .recorder :is(input, select, textarea, button, a):focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 2px;
+  }
+
+  .recorder button {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-alt);
+    color: var(--at-text);
+    font: inherit;
+    font-size: var(--at-font-size-sm);
+    cursor: pointer;
+  }
+
+  .recorder button:hover {
+    border-color: var(--at-primary);
+  }
+
+  /* The export is the only action on the sheet that produces something, so it
+     is the only one with the brand on it. The gold is the border and not the
+     text: at 3.5:1 against the page it is sound as an edge and short of the
+     4.5:1 that the words inside it owe a reader. */
+  .recorder .print-button {
+    border-color: var(--at-primary);
+    border-width: 2px;
+    font-weight: 600;
+  }
+
+  .day-fields {
+    display: grid;
+    gap: 0 var(--at-spacing-md);
+    grid-template-columns: 1fr;
+  }
+
+  .when-written {
+    margin: 0 0 var(--at-spacing-sm);
+    padding: 0;
+    border: 0;
+  }
+
+  .when-written legend {
+    padding: 0;
+    color: var(--at-text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding-block: 0.1rem;
+    font-size: var(--at-font-size-sm);
+  }
+
+  .blocks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .blocks-head {
+    display: none;
+  }
+
+  /* Narrow, a block is two columns and three rows: the start and the mark, the
+     activity across the width, and the span with the two row buttons beside
+     it. One column and five rows was the first attempt and ran to 234px a
+     block at 390px, which is three blocks to a screen and a day that takes
+     eight scrolls to read back. This is 130px. */
+  .block {
+    display: grid;
+    align-items: end;
+    gap: 0.15rem var(--at-spacing-sm);
+    padding-block: var(--at-spacing-sm);
+    border-block-start: 1px solid var(--at-divider);
+    grid-template-areas: "time flag" "what what" "runs tools";
+    grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr);
+  }
+
+  .block:last-child {
+    border-block-end: 1px solid var(--at-divider);
+  }
+
+  .field-time {
+    grid-area: time;
+  }
+
+  .field-what {
+    grid-area: what;
+  }
+
+  .field-flag {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    grid-area: flag;
+  }
+
+  .field-flag .field-name {
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: var(--at-font-size-sm);
+  }
+
+  .block .field {
+    margin-block-end: 0;
+  }
+
+  /* The per-row labels are the whole cost of the narrow layout: two lines of
+     them a block. Tightened rather than dropped, because dropping them is
+     dropping the accessible name with them. */
+  .block .field-name {
+    line-height: 1.35;
+  }
+
+  .block-tools {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--at-spacing-xs);
+    margin: 0.2rem 0 0;
+    grid-area: tools;
+  }
+
+  /* Where the block ends and how long it ran, computed from the next block's
+     start. It is the only feedback the sheet gives that the day closes, and it
+     is text rather than a bar, because a bar would need a width and a width
+     would need a colour to mean anything. */
+  /* The area is named "runs" and not "span": grid-area: span is invalid, since
+     span is a keyword in the grid placement grammar, so the declaration was
+     dropped and this line was auto-placed into the first cell of the second
+     row. It rendered in the 7.5rem start-time column and wrapped "runs to
+     07:00, back around to the first block, 22 h 45 min" over three lines. */
+  .block-span {
+    align-self: center;
+    margin: 0;
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-xs);
+    font-variant-numeric: tabular-nums;
+    grid-area: runs;
+  }
+
+  /* A marked block takes a gold edge, and the checkbox beside it stays ticked:
+     two channels, so the mark survives a greyscale print and a reader who
+     cannot separate the gold from the border grey. */
+  .block.is-marked {
+    border-inline-start: 3px solid var(--at-primary);
+    padding-inline-start: var(--at-spacing-sm);
+  }
+
+  .blocks-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--at-spacing-xs);
+    margin-block: var(--at-spacing-sm) var(--at-spacing-xs);
+  }
+
+  .blocks-total {
+    margin-block: 0 var(--at-spacing-sm);
+    font-size: var(--at-font-size-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .blocks-total.is-broken {
+    color: var(--at-warning);
+    font-weight: 600;
+  }
+
+  .recorder-privacy {
+    margin-block: var(--at-spacing-xs) var(--at-spacing-md);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .recorder-tools {
+    margin-block: 0 var(--at-spacing-xs);
+  }
+
+  /* Announced and shown. Everything the buttons do happens somewhere other
+     than where the pointer was, so a line that only screen readers heard would
+     leave everyone else guessing where the block went. */
+  .recorder-status {
+    min-height: 1.5em;
+    margin-block: 0;
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .recorder-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Wide enough for the columns, which is where the per-row labels stop
+     earning their space and the heading row takes over. They are clipped
+     rather than removed, so the accessible name of every control is the same
+     sentence at both widths. */
+  @media (width >= 40rem) {
+    .day-fields {
+      grid-template-columns: 11rem minmax(0, 1fr);
+    }
+
+    .when-written {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 var(--at-spacing-md);
+    }
+
+    .blocks-head {
+      display: grid;
+      gap: var(--at-spacing-sm);
+      grid-template-columns: 7.5rem minmax(0, 1fr) 8rem auto;
+      padding-block-end: 0.2rem;
+      color: var(--at-text-secondary);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .block {
+      align-items: center;
+      grid-template-areas: "time what flag tools" "runs runs runs runs";
+      grid-template-columns: 7.5rem minmax(0, 1fr) 8rem auto;
+    }
+
+    .block .field-name {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .block-tools {
+      margin-block-start: 0;
+    }
+
+    .block-span {
+      padding-block-start: 0.15rem;
+    }
+  }
+
+  /* The blank sheet, which is what a reader without scripts gets. The script
+     hides it the moment it runs, so with scripts it is neither seen nor
+     printed. */
+  .recorder-paper {
+    margin-block-start: var(--at-spacing-xl);
+    padding-block-start: var(--at-spacing-md);
+    border-block-start: 1px solid var(--at-divider);
+  }
+
+  .recorder[data-scripted="true"] .recorder-paper {
+    display: none;
+  }
+
+  .paper-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--at-font-size-sm);
+  }
+
+  .paper-table :is(th, td) {
+    padding: 0.55rem 0.4rem;
+    border: 1px solid var(--at-border);
+    text-align: start;
+  }
+
+  .paper-table tbody th {
+    width: 7rem;
+  }
+
+  .paper-table tbody td:last-child {
+    width: 8rem;
+  }
+
+  .paper-rule {
+    margin-block: 0 0.9rem;
+    border-block-end: 1px solid var(--at-border);
+  }
+
+  /* The printed sheet is built by the script and is the only thing on the
+     paper. Off screen entirely until the print stylesheet asks for it. */
+  .recorder-sheet {
+    display: none;
+  }
+
+  /* What prints.
+   *
+   * The brief for the file was that it be a record and not a screenshot of a
+   * form, so everything that is not the record goes: the site's nav, search
+   * and footer, the lesson around the sheet, and the form itself, whose input
+   * boxes print as empty rectangles and whose textareas clip whatever does not
+   * fit their three rows. What is left is one of two things. With the script
+   * running it is the sheet, rebuilt from the fields on every change, so the
+   * print dialogue and Ctrl+P agree with each other whether or not the browser
+   * fires beforeprint. Without it, it is the blank ruled template.
+   *
+   * The hiding is done by structure rather than by naming the theme's classes:
+   * everything in the body that is not the main region, and everything in the
+   * main region that is not this component. That survives a theme upgrade
+   * renaming its own furniture, and these rules only ever ship on the one page
+   * that includes this component.
+   *
+   * Colour is the one place this file leaves the tokens, and it has to. The
+   * page's text colour is a light-dark() pair, so a reader in dark mode prints
+   * near-white text, which arrives as a blank sheet of paper on any printer
+   * that is not also asked to flood the page with ink. Black on white, stated.
+   */
+  @media print {
+    :global(body > *:not(#main)) {
+      display: none !important;
+    }
+
+    :global(#main > *:not(.recorder)) {
+      display: none !important;
+    }
+
+    .recorder {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      color: #000;
+      background: #fff;
+    }
+
+    .recorder-live,
+    .recorder > h3,
+    .recorder > .recorder-lead {
+      display: none;
+    }
+
+    .recorder[data-scripted="true"] .recorder-sheet {
+      display: block;
+    }
+  }
+
+  @page {
+    margin: 18mm;
+  }
+
+  /* The sheet itself, styled through :global because the script builds these
+     elements and Astro's scope attribute only lands on markup that was in the
+     template. Scoped through the wrapper, which was, so the names cannot leak
+     to the rest of the page. */
+  .recorder-sheet :global(.sheet-course) {
+    margin: 0;
+    font-size: 9pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .recorder-sheet :global(.sheet-title) {
+    margin: 0 0 2mm;
+    font-size: 16pt;
+  }
+
+  .recorder-sheet :global(.sheet-facts) {
+    margin: 0 0 4mm;
+    font-size: 10pt;
+  }
+
+  .recorder-sheet :global(.sheet-table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+  }
+
+  .recorder-sheet :global(.sheet-table :is(th, td)) {
+    padding: 1.6mm 2mm;
+    border: 0.4pt solid #000;
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .recorder-sheet :global(.sheet-table thead th) {
+    font-size: 8pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Stated because the theme is still in force on this element and prints a
+     gold fill behind the header row, a tint behind every second row, and gold
+     headings. Simulated the print rules on screen to find it: the record came
+     out as a block of brand colour with the day inside it. A sheet somebody
+     prints is ink they paid for, and this one is a form. */
+  .recorder-sheet :global(.sheet-title),
+  .recorder-sheet :global(.sheet-section) {
+    color: #000;
+  }
+
+  .recorder-sheet :global(.sheet-table tr),
+  .recorder-sheet :global(.sheet-table :is(th, td)) {
+    color: #000;
+    background: #fff;
+  }
+
+  .recorder-sheet :global(.sheet-col-time),
+  .recorder-sheet :global(.sheet-col-span) {
+    width: 18mm;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .recorder-sheet :global(.sheet-col-mark) {
+    width: 26mm;
+  }
+
+  .recorder-sheet :global(.sheet-section) {
+    margin: 6mm 0 1.5mm;
+    font-size: 11pt;
+  }
+
+  .recorder-sheet :global(.sheet-answer) {
+    margin: 0 0 3mm;
+    font-size: 10pt;
+    white-space: pre-wrap;
+  }
+
+  .recorder-sheet :global(.sheet-blank) {
+    font-style: italic;
+  }
+
+  .recorder-sheet :global(.sheet-foot) {
+    margin: 8mm 0 0;
+    padding-block-start: 2mm;
+    border-block-start: 0.4pt solid #000;
+    font-size: 8pt;
+  }
+</style>
+
+<script>
+  // Wiring only. Everything the sheet knows is in the DOM: there is no model
+  // held alongside it, because a second copy of a student's day is a second
+  // thing that could be persisted by accident, and because the printed sheet
+  // is rebuilt from the fields rather than from a cache of them.
+
+  const MINUTES_IN_DAY = 1440;
+
+  // Reassigned by every wiring pass and read by the three listeners that live
+  // on window and document. Those cannot be registered inside the pass:
+  // window outlives a ClientRouter swap while the document does not, so a
+  // listener registered per pass would accumulate one copy per navigation,
+  // each holding a detached copy of the sheet.
+  let recorder: HTMLElement | null = null;
+
+  const blocksOf = (root: HTMLElement): HTMLLIElement[] =>
+    Array.from(root.querySelectorAll<HTMLLIElement>("[data-block]"));
+
+  const timeOf = (block: Element): HTMLInputElement =>
+    block.querySelector("[data-time]") as HTMLInputElement;
+
+  const whatOf = (block: Element): HTMLInputElement =>
+    block.querySelector("[data-what]") as HTMLInputElement;
+
+  const flagOf = (block: Element): HTMLInputElement =>
+    block.querySelector("[data-flag]") as HTMLInputElement;
+
+  const fieldOf = (root: HTMLElement, name: string): HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null =>
+    root.querySelector(`[data-field="${name}"]`);
+
+  /** "07:15" to 435. Null for an empty or half-typed field. */
+  const parseClock = (value: string): number | null => {
+    const found = /^(\d{1,2}):(\d{2})$/.exec(value.trim());
+    if (!found) return null;
+    const minutes = Number(found[1]) * 60 + Number(found[2]);
+    return minutes >= 0 && minutes < MINUTES_IN_DAY ? minutes : null;
+  };
+
+  const formatClock = (minutes: number): string => {
+    const wrapped = ((minutes % MINUTES_IN_DAY) + MINUTES_IN_DAY) % MINUTES_IN_DAY;
+    return `${String(Math.floor(wrapped / 60)).padStart(2, "0")}:${String(wrapped % 60).padStart(2, "0")}`;
+  };
+
+  const formatSpan = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const rest = minutes % 60;
+    if (hours === 0) return `${rest} min`;
+    if (rest === 0) return `${hours} h`;
+    return `${hours} h ${rest} min`;
+  };
+
+  /** The step Enter and Add use, from the resolution select. */
+  const stepOf = (root: HTMLElement): number => {
+    const select = fieldOf(root, "resolution") as HTMLSelectElement | null;
+    const step = Number(select?.value ?? 60);
+    return Number.isFinite(step) && step > 0 ? step : 60;
+  };
+
+  /** Anything a student would be sorry to lose. Recomputed rather than
+   * tracked, so clearing the last field also clears the unload warning. */
+  const hasContent = (root: HTMLElement): boolean => {
+    const typed = Array.from(root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+      "[data-what], [data-field='omitted'], [data-field='why'], [data-field='date']",
+    )).some((input) => input.value.trim().length > 0);
+    if (typed) return true;
+    return blocksOf(root).some((block) => flagOf(block).checked);
+  };
+
+  const announce = (root: HTMLElement, message: string): void => {
+    const status = root.querySelector<HTMLElement>("[data-status]");
+    if (status) status.textContent = message;
+  };
+
+  /**
+   * The ring, measured. Each block runs to the next one's start and the last
+   * runs back to the first, so the spans always add to a whole number of days:
+   * one, if the blocks are in clock order, and more than one if they are not,
+   * since every descent in the sequence adds another lap. That is what the
+   * count of laps is for. It is the only way the sheet can be wrong, and it
+   * has a button that fixes it.
+   */
+  const measure = (root: HTMLElement) => {
+    const blocks = blocksOf(root);
+    const times = blocks.map((block) => parseClock(timeOf(block).value));
+    const known = times.filter((value): value is number => value !== null);
+    const spans: (number | null)[] = times.map((time, index) => {
+      if (time === null || known.length < 2) return null;
+      // The next block that has a time on it, wrapping to the front.
+      for (let step = 1; step <= times.length; step += 1) {
+        const next = times[(index + step) % times.length];
+        if (next !== null) return ((next - time) % MINUTES_IN_DAY + MINUTES_IN_DAY) % MINUTES_IN_DAY;
+      }
+      return null;
+    });
+    const total = spans.reduce<number>((sum, span) => sum + (span ?? 0), 0);
+    return { blocks, times, spans, total, single: known.length === 1 };
+  };
+
+  /** Redraw everything derived: the spans, the total, the marks, the sheet. */
+  const refresh = (root: HTMLElement): void => {
+    const { blocks, times, spans, total, single } = measure(root);
+
+    blocks.forEach((block, index) => {
+      const span = block.querySelector<HTMLElement>("[data-span]");
+      const time = times[index];
+      const length = spans[index];
+      const last = index === blocks.length - 1;
+      if (span) {
+        if (time === null) span.textContent = "no start time yet";
+        else if (single) span.textContent = "the only block, so it holds all 24 h";
+        else if (length === null) span.textContent = "";
+        else {
+          const ends = formatClock(time + length);
+          span.textContent = last
+            ? `runs to ${ends}, back around to the first block, ${formatSpan(length)}`
+            : `runs to ${ends}, ${formatSpan(length)}`;
+        }
+      }
+      block.classList.toggle("is-marked", flagOf(block).checked);
+    });
+
+    const marked = blocks.filter((block) => flagOf(block).checked).length;
+    const anyTime = times.some((time) => time !== null);
+    const covered = single ? MINUTES_IN_DAY : total;
+    const laps = covered / MINUTES_IN_DAY;
+    const ordered = laps <= 1;
+    const totalLine = root.querySelector<HTMLElement>("[data-total]");
+    if (totalLine) {
+      const marks = marked === 1 ? "1 block marked for a later week" : `${marked} blocks marked for a later week`;
+      if (!anyTime) {
+        totalLine.textContent = `${blocks.length} blocks, none of them timed yet. ${marks}.`;
+      } else if (ordered) {
+        totalLine.textContent = `${blocks.length} blocks, covering ${formatSpan(covered)}. ${marks}.`;
+      } else {
+        totalLine.textContent = `${blocks.length} blocks, but they run around the clock ${laps} times, so this is not one day yet: some of them are out of clock order.`;
+      }
+      totalLine.classList.toggle("is-broken", anyTime && !ordered);
+    }
+
+    const sort = root.querySelector<HTMLButtonElement>("[data-action='sort']");
+    if (sort) sort.hidden = ordered || !anyTime;
+
+    renderSheet(root);
+  };
+
+  /** A small element, with its text set safely. */
+  const make = (tag: string, className: string, text?: string): HTMLElement => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+
+  /**
+   * The printed sheet, rebuilt from the fields. Rebuilt on every change rather
+   * than on beforeprint alone: beforeprint is not reliable everywhere, and a
+   * student who reaches for Ctrl+P instead of the button must not get last
+   * minute's day. It is cheap, it is a dozen elements.
+   *
+   * textContent throughout, never innerHTML. What goes in here is what a
+   * student typed about their own day.
+   */
+  const renderSheet = (root: HTMLElement): void => {
+    const sheet = root.querySelector<HTMLElement>("[data-sheet]");
+    if (!sheet) return;
+    const { blocks, times, spans, total, single } = measure(root);
+
+    const date = (fieldOf(root, "date") as HTMLInputElement | null)?.value ?? "";
+    const resolution = (() => {
+      const select = fieldOf(root, "resolution") as HTMLSelectElement | null;
+      return select?.selectedOptions[0]?.textContent?.trim() ?? "";
+    })();
+    const written = root.querySelector<HTMLInputElement>("[data-written]:checked")?.value ?? "";
+
+    const facts = [
+      `Date: ${date || "not stated"}`,
+      `Written down: ${resolution || "not stated"}`,
+      `Written: ${written || "not stated"}`,
+      `Covers: ${formatSpan(single ? MINUTES_IN_DAY : total)} in ${blocks.length} blocks`,
+    ].join("  ·  ");
+
+    const table = make("table", "sheet-table");
+    const head = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    for (const [label, className] of [
+      ["Starts", "sheet-col-time"],
+      ["Runs for", "sheet-col-span"],
+      ["What I was doing", ""],
+      ["For a later week", "sheet-col-mark"],
+    ] as const) {
+      const cell = make("th", className, label);
+      cell.setAttribute("scope", "col");
+      headRow.append(cell);
+    }
+    head.append(headRow);
+    table.append(head);
+
+    const body = document.createElement("tbody");
+    blocks.forEach((block, index) => {
+      // A block with a start time and nothing written against it stays: an
+      // hour nobody recorded is a fact about the day, and it is the thing the
+      // omissions field then has to account for. A block with neither a time
+      // nor a word is just an Add a block somebody thought better of, and it
+      // does not go on the paper.
+      if (times[index] === null && whatOf(block).value.trim().length === 0) return;
+      const row = document.createElement("tr");
+      const time = times[index];
+      const length = single ? MINUTES_IN_DAY : spans[index];
+      row.append(make("td", "sheet-col-time", time === null ? "" : formatClock(time)));
+      row.append(make("td", "sheet-col-span", length === null ? "" : formatSpan(length)));
+      row.append(make("td", "", whatOf(block).value.trim()));
+      // The word, not a tick or a colour: this sheet is printed in black and
+      // read on paper, and "marked" survives both.
+      row.append(make("td", "sheet-col-mark", flagOf(block).checked ? "marked" : ""));
+      body.append(row);
+    });
+    table.append(body);
+
+    const answer = (value: string): HTMLElement =>
+      value.trim().length > 0
+        ? make("p", "sheet-answer", value.trim())
+        : make("p", "sheet-answer sheet-blank", "Left blank.");
+
+    const omitted = (fieldOf(root, "omitted") as HTMLTextAreaElement | null)?.value ?? "";
+    const why = (fieldOf(root, "why") as HTMLTextAreaElement | null)?.value ?? "";
+
+    sheet.replaceChildren(
+      make("p", "sheet-course", "SLOP1638 week 1 lab · baseline record"),
+      make("h2", "sheet-title", "One day, recorded and not improved"),
+      make("p", "sheet-facts", facts),
+      table,
+      make("h3", "sheet-section", "What I decided not to write down"),
+      answer(omitted),
+      make("h3", "sheet-section", "Why it did not seem worth recording"),
+      answer(why),
+      make(
+        "p",
+        "sheet-foot",
+        "Written on the week 1 day sheet, which saved no copy of any of this.",
+      ),
+    );
+  };
+
+  /** A fresh block after `after`, timed one resolution step on from it. */
+  const addBlock = (root: HTMLElement, after: HTMLLIElement | null, text = ""): HTMLLIElement => {
+    const blocks = blocksOf(root);
+    const model = blocks[0];
+    const block = model.cloneNode(true) as HTMLLIElement;
+    const previous = after ?? blocks[blocks.length - 1] ?? null;
+    const from = previous ? parseClock(timeOf(previous).value) : null;
+    timeOf(block).value = from === null ? "" : formatClock(from + stepOf(root));
+    whatOf(block).value = text;
+    flagOf(block).checked = false;
+    block.classList.remove("is-marked");
+    if (previous) previous.after(block);
+    else root.querySelector("[data-blocks]")?.append(block);
+    return block;
+  };
+
+  function setUpDayRecorder(): void {
+    const root = document.querySelector<HTMLElement>("[data-day-recorder]");
+    recorder = root;
+    if (!root) return;
+    // Already wired: this is a navigation that kept the element rather than
+    // replacing it, so there is nothing to bind and only the derived text to
+    // put back.
+    if (root.dataset.scripted === "true") {
+      refresh(root);
+      return;
+    }
+    // Also what hides the blank paper sheet, so the fallback is visible
+    // exactly when this line has not run.
+    root.dataset.scripted = "true";
+
+    root.addEventListener("input", () => refresh(root));
+    root.addEventListener("change", () => refresh(root));
+
+    // Enter is the whole speed argument, and it is one key rather than three.
+    //
+    // It walks the two fields that carry the day, start time then activity,
+    // and then on to the next block's start time, making that block if there
+    // is not one yet. So a day is typed as a single loop: four digits, Enter,
+    // what you were doing, Enter, four digits, Enter. The checkbox and the two
+    // row buttons are not in the loop, because marking a block and repeating
+    // one are not things that happen on every row. Tab still reaches them, in
+    // the order they are read in.
+    //
+    // Two earlier versions are in here by their absence. Enter landing on the
+    // activity field skipped the start time, which is the field that actually
+    // needs typing: the prefilled step is right for the block after an hour of
+    // desk work and wrong for almost everything else, and getting back to it
+    // meant a shift-Tab on nearly every row. And Enter inserting a block
+    // unconditionally put a second 08:00 above the seeded 08:00 every time
+    // somebody pressed it on the first row. Inserting belongs to Repeat and to
+    // Add a block; Enter only ever walks forward.
+    root.addEventListener("keydown", (event) => {
+      if (!(event instanceof KeyboardEvent) || event.key !== "Enter") return;
+      const target = event.target as HTMLElement | null;
+      const block = target?.closest<HTMLLIElement>("[data-block]");
+      if (!block || !target?.matches("[data-time], [data-what]")) return;
+      event.preventDefault();
+      if (target.matches("[data-time]")) {
+        whatOf(block).focus();
+        return;
+      }
+      const next = block.nextElementSibling as HTMLLIElement | null;
+      if (next?.matches("[data-block]")) {
+        timeOf(next).focus();
+        return;
+      }
+      const added = addBlock(root, block);
+      refresh(root);
+      timeOf(added).focus();
+      announce(root, "Block added.");
+    });
+
+    root.addEventListener("click", (event) => {
+      const button = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>("[data-action]");
+      if (!button) return;
+      const action = button.dataset.action;
+      const block = button.closest<HTMLLIElement>("[data-block]");
+
+      if (action === "add") {
+        const added = addBlock(root, null);
+        refresh(root);
+        whatOf(added).focus();
+        announce(root, "Block added at the end.");
+        return;
+      }
+
+      if (action === "repeat" && block) {
+        const added = addBlock(root, block, whatOf(block).value);
+        refresh(root);
+        whatOf(added).focus();
+        announce(root, `Repeated "${whatOf(block).value.trim() || "the empty block"}".`);
+        return;
+      }
+
+      if (action === "remove" && block) {
+        const blocks = blocksOf(root);
+        const index = blocks.indexOf(block);
+        const started = timeOf(block).value;
+        // Focus has to land somewhere before the element holding it leaves the
+        // document, or it falls to the body and a keyboard user starts the tab
+        // order again from the top of the page.
+        const next = blocks[index + 1] ?? blocks[index - 1] ?? null;
+        if (next) {
+          whatOf(next).focus();
+          block.remove();
+          announce(root, `Block starting ${started || "with no time"} removed.`);
+        } else {
+          // The last one standing is emptied instead, so the sheet always has
+          // a block to clone the next one from.
+          timeOf(block).value = "";
+          whatOf(block).value = "";
+          flagOf(block).checked = false;
+          whatOf(block).focus();
+          announce(root, "Last block emptied. The sheet keeps one block.");
+        }
+        refresh(root);
+        return;
+      }
+
+      if (action === "sort") {
+        const blocks = blocksOf(root);
+        const first = blocks[0];
+        const sorted = [...blocks].sort(
+          (a, b) => (parseClock(timeOf(a).value) ?? MINUTES_IN_DAY) - (parseClock(timeOf(b).value) ?? MINUTES_IN_DAY),
+        );
+        // Rotated so the day still starts where the student said it starts,
+        // rather than at whichever block happens to hold the smallest number.
+        const start = sorted.indexOf(first);
+        const rotated = [...sorted.slice(start), ...sorted.slice(0, start)];
+        const list = root.querySelector("[data-blocks]");
+        for (const item of rotated) list?.append(item);
+        refresh(root);
+        button.hidden = true;
+        whatOf(first).focus();
+        announce(root, "Blocks put in clock order, starting where the day started.");
+        return;
+      }
+
+      if (action === "print") {
+        renderSheet(root);
+        announce(root, "Sheet sent to the print dialogue. Nothing was saved: the file you keep is the only copy.");
+        window.print();
+        return;
+      }
+    });
+
+    refresh(root);
+  }
+
+  // A page that saves nothing owes a warning before it throws the lot away.
+  // This is the one case where beforeunload is not user hostile: the work is
+  // genuinely unrecoverable, and it fires only when there is something to lose.
+  window.addEventListener("beforeunload", (event) => {
+    if (!recorder?.isConnected || !hasContent(recorder)) return;
+    event.preventDefault();
+  });
+
+  // ClientRouter navigations never reach beforeunload: the router swaps the
+  // document in place. Cancelling its preparation event is what routes them
+  // back through the browser, since Astro falls back to assigning
+  // location.href when a listener prevents the default, and that is an
+  // ordinary navigation, which does fire beforeunload. One warning, the
+  // browser's own, on both paths.
+  document.addEventListener("astro:before-preparation", (event) => {
+    if (!recorder?.isConnected || !hasContent(recorder)) return;
+    event.preventDefault();
+  });
+
+  // Ctrl+P and the print menu skip the button, so the sheet is refreshed here
+  // too, and the status line is what tells a reader afterwards that the page
+  // still holds the only copy.
+  window.addEventListener("beforeprint", () => {
+    if (recorder?.isConnected) renderSheet(recorder);
+  });
+
+  window.addEventListener("afterprint", () => {
+    if (recorder?.isConnected) {
+      announce(recorder, "Print dialogue closed. Nothing was saved here: if you did not keep the file, the record is still only in this tab.");
+    }
+  });
+
+  setUpDayRecorder();
+  document.addEventListener("astro:page-load", setUpDayRecorder);
+</script>
