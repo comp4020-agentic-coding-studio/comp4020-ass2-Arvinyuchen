@@ -25,10 +25,12 @@
 // Canberra near miss, which put the figure's two sharpest points in the
 // smallest type on the page; those are body prose in the lecture now. Then it
 // held the two caveats, the 1.5 degree grid and the gap between a monthly
-// average and a daily forecast. Those are still recorded in
-// src/data/uv-index-bom.json under `grid` and `threshold_note`, but they are
-// no longer shown to a reader anywhere, and they are the honest part of this
-// figure. Worth putting back into the lecture's prose.
+// average and a daily forecast. Those are body prose in the lecture now, which
+// is where they belonged: as fine print they read as a disclaimer, and in the
+// paragraph after the table they do real work, because they are what stops the
+// Adelaide and Canberra comparison from claiming more than a coarse monthly
+// average can support. They are also still recorded in
+// src/data/uv-index-bom.json under `grid` and `threshold_note`.
 import data from "../data/uv-index-bom.json";
 
 const MONTH_LABELS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
