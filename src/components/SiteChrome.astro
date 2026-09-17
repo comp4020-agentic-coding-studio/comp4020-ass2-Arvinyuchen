@@ -25,7 +25,43 @@ import "../styles/site.css";
     toggle.classList.add("at-nav-theme-toggle");
   }
 
+  // Landing on a fragment, when the browser has given up on it.
+  //
+  // site.css explains why in-page jumps were dead site-wide: the theme's smooth
+  // scrolling made the fragment scroll asynchronous and ClientRouter cancelled
+  // it. Setting scroll-behavior to auto fixed the click-through case, and I
+  // checked and it genuinely does: following the glossary link out of week 2
+  // lands the entry 43px below the nav.
+  //
+  // It did not fix a cold load. Open /glossary/#operationalise directly, or
+  // reload it, and the scroll offset stays at exactly 0 with the entry 1525px
+  // down the page. Synchronous or not, the router resets the position during
+  // module evaluation, which happens after the browser has already done its
+  // fragment jump. That is the path a marker or anyone following a shared deep
+  // link arrives by, so it is the path that most needed to work.
+  //
+  // The guard is what keeps this from fighting the browser: it only acts when
+  // there is a hash, the element exists, and nothing has scrolled. When the
+  // browser did handle the jump, scrollY is not 0 and this does nothing.
+  // scrollIntoView honours scroll-margin and the scrollport's scroll-padding,
+  // so it lands in the same place the working path does rather than jamming the
+  // element under the header.
+  function landOnFragment() {
+    if (!location.hash || window.scrollY !== 0) return;
+    let target = null;
+    try {
+      target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    } catch {
+      return; // a malformed hash is not worth throwing over
+    }
+    if (target) target.scrollIntoView();
+  }
+
   liftThemeToggle();
+  landOnFragment();
   // ClientRouter swaps the document on navigation, so do it again after.
-  document.addEventListener("astro:page-load", liftThemeToggle);
+  document.addEventListener("astro:page-load", () => {
+    liftThemeToggle();
+    landOnFragment();
+  });
 </script>
