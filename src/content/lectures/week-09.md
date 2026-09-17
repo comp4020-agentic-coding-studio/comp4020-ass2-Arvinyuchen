@@ -12,9 +12,8 @@ related:
   - assessments/the-report
 ---
 
-The most useful hour in the course, and the most uncomfortable.
-
-We start with distributions rather than definitions: thirty days of one measure
+The most useful hour in the course, and the most uncomfortable one. We start
+with distributions rather than definitions: thirty days of one measure
 on a screen, the worst day marked, and what happens next. The effect is visible
 before any statistics are introduced, which is the point. This is not a subtle
 artefact that appears under analysis. It is the shape of the data.

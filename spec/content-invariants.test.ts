@@ -35,6 +35,22 @@ const bodyOf = (id: string): string => {
   return entry.body ?? "";
 };
 
+/** A node's body split into prose paragraphs, with everything that is not prose
+ * removed: frontmatter is already gone, and headings, imports, JSX blocks,
+ * lists, tables, blockquotes and fenced code are all dropped. What is left is
+ * what a reader sees as a paragraph. */
+const prosePargraphsOf = (id: string): string[] =>
+  bodyOf(id)
+    .replace(/```[\s\S]*?```/g, "")
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(
+      (block) =>
+        block.length > 0 &&
+        !/^(#|>|\||import\s|export\s|<|-|\*|\d+\.)/.test(block),
+    )
+    .map((block) => block.replace(/\s+/g, " "));
+
 const nodesOfType = (type: string): ApiNode[] => api.nodes.filter((node) => node.type === type);
 
 // The twelve weeks live in `sessions`: the weekly lab is where an experiment
@@ -43,6 +59,7 @@ const nodesOfType = (type: string): ApiNode[] => api.nodes.filter((node) => node
 // two pages saying overlapping things.
 const weeks = nodesOfType("sessions");
 const assessments = nodesOfType("assessments");
+const lectures = nodesOfType("lectures");
 
 const weekNumber = (node: ApiNode): number => Number(node.meta?.week);
 const str = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
@@ -53,6 +70,13 @@ const TEACHING_WEEKS = 12;
 // about how much jargon it carries. Twelve weeks of methods vocabulary below
 // this floor means terms are being quietly left undefined rather than named.
 const MINIMUM_GLOSSARY_TERMS = 8;
+
+// Set from the course's own prose rather than picked. After the week 1 rewrite
+// its shortest paragraph runs 33 words and its median is well above that,
+// while a stranded single sentence lands between 11 and 20. A floor of 25 sits
+// in the gap: it fails every one-line paragraph found on the site and passes
+// every real one.
+const MINIMUM_LECTURE_PARAGRAPH_WORDS = 25;
 
 // Appeals to authority that skip the number. Rule 2 exists to stop these.
 const UNQUALIFIED_APPEALS = [
@@ -185,6 +209,31 @@ describe("rule 3: a stranger can read this course", () => {
         entry.definition.trim().length,
         `"${entry.term}" needs a definition`,
       ).toBeGreaterThan(0);
+    }
+  });
+
+  // A lecture paragraph carrying one sentence is a formatting habit, not a
+  // unit of argument. The three blocks under "Find the guidelines that suit
+  // you" were each built as three beats and each beat was given its own
+  // paragraph, which on screen read as three stranded lines instead of one
+  // case: "The same rule gives different instructions at different latitudes."
+  // sitting alone above the evidence for it.
+  //
+  // Labs are deliberately exempt, and the exemption is the point rather than a
+  // loophole. A protocol step is an instruction, and "This week you do not
+  // measure anything." is doing its whole job in seven words. Lectures argue,
+  // so a lecture paragraph owes the reader a claim and its support together.
+  // If a lecture ever genuinely needs a one-line beat, move that line into a
+  // Callout, which is the component for exactly that and is not prose.
+  it("builds lecture paragraphs out of arguments, not single sentences", () => {
+    for (const lecture of lectures) {
+      prosePargraphsOf(lecture.id).forEach((paragraph) => {
+        const words = paragraph.split(/\s+/).filter(Boolean).length;
+        expect(
+          words,
+          `${lecture.id} has a ${words}-word paragraph: "${paragraph.slice(0, 60)}...". A lecture paragraph states a claim and supports it, so it runs to at least ${MINIMUM_LECTURE_PARAGRAPH_WORDS} words`,
+        ).toBeGreaterThanOrEqual(MINIMUM_LECTURE_PARAGRAPH_WORDS);
+      });
     }
   });
 
