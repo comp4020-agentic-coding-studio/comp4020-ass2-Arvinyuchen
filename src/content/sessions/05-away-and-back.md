@@ -7,7 +7,7 @@ week: 5
 teachers: [wren-halliday, priya-ramanathan]
 date: 2027-03-22
 phase: change
-method: aba-withdrawal
+method: ABA withdrawal design
 component: breakfast
 needs: [1, 2]
 risk: high

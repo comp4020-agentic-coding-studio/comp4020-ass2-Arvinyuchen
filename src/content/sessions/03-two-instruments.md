@@ -7,7 +7,7 @@ week: 3
 teachers: [wren-halliday, priya-ramanathan]
 date: 2027-03-08
 phase: realisation
-method: measurement-error
+method: measurement error
 component: sleep
 needs: [2]
 risk: high

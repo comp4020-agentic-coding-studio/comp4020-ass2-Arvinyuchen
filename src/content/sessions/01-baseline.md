@@ -7,7 +7,7 @@ week: 1
 teachers: [priya-ramanathan]
 date: 2027-02-22
 phase: realisation
-method: naturalistic-baseline
+method: naturalistic baseline
 component: the whole day
 needs: []
 risk: low

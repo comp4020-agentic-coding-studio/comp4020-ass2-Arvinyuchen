@@ -7,7 +7,7 @@ week: 11
 teachers: [wren-halliday, priya-ramanathan]
 date: 2027-05-17
 phase: rethinking
-method: multiple-comparisons
+method: multiple comparisons
 component: the dashboard
 needs: [2, 9]
 risk: high

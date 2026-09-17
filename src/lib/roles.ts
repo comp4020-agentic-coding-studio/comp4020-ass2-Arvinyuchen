@@ -4,7 +4,7 @@
 // tells a reader nothing, "guest lecturer" does.
 //
 // The labels are lowercase because the site renders every other field value
-// that way. The protocol strip on a lab page prints `measurement-error` and
+// that way. The protocol strip on a lab page prints `measurement error` and
 // `high` under uppercase letterspaced labels, and the course tags on the home
 // page are lowercase too. A role is a field value like any other, and
 // capitalising only this one would make it the single value on the site that
