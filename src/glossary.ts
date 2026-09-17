@@ -26,7 +26,7 @@ export interface GlossaryTerm {
 // may not mention it in passing, because week 7 is where it gets explained.
 //
 // Which week introduces what:
-//   1  baseline, sample size          7  blinding, placebo
+//   1  baseline, sample size          7  blinding, placebo, mesmerism
 //   2  operationalise                 8  confounding
 //   3  orthosomnia                    9  regression to the mean
 //   4  reactivity                    10  non-stationary
@@ -100,6 +100,22 @@ export const glossaryTerms: GlossaryTerm[] = [
     aliases: ["placebos"],
     definition:
       "A real effect produced by expecting an effect. It is not imaginary. It simply is not caused by the thing you believe caused it.",
+  },
+  {
+    term: "mesmerism",
+    slug: "mesmerism",
+    aliases: ["mesmerise", "mesmerised", "animal magnetism"],
+    // Week 7 tells the story of the 1784 commission but never says what the
+    // thing being tested actually claimed, which left the week's own example
+    // resting on a word the reader had to already know. Sourced from Urte
+    // Laukaityte, "Mesmerising Science: The Franklin Commission and the Modern
+    // Clinical Trial", The Public Domain Review, 20 November 2018:
+    // https://publicdomainreview.org/essay/mesmerising-science-the-franklin-commission-and-the-modern-clinical-trial
+    // which gives the claim as "a special kind of imperceptible magnetic fluid
+    // pervaded the universe" and "most if not all diseases were caused by an
+    // abnormal flow of this fluid inside the body".
+    definition:
+      "A treatment fashionable in Paris in the 1780s, whose practitioners held that an invisible fluid runs through every living body, that illness is that fluid flowing wrongly, and that passing their hands over a patient could put it right. No such fluid was ever found.",
   },
   {
     term: "confounding",

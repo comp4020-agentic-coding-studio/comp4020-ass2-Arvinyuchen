@@ -82,9 +82,9 @@ yourself something rare and worth having.
 ## The oldest version of this
 
 In 1784 Louis XVI appointed a commission (Franklin was on it) to investigate
-mesmerism, then fashionable in Paris and said to work by manipulating an
-invisible fluid. The commission's method was to blindfold subjects, so that they
-could not tell when the treatment was being applied.
+[mesmerism](/glossary/#mesmerism), then fashionable in Paris and said to work
+by manipulating an invisible fluid. The commission's method was to blindfold
+subjects, so that they could not tell when the treatment was being applied.
 
 The effects followed the subjects' beliefs, not the treatment. People convulsed
 when told they were being mesmerised and nothing was happening; nothing happened
