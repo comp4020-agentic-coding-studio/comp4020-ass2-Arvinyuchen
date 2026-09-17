@@ -38,14 +38,16 @@
 // Where the words go, which is a rule and not a preference. Everything that
 // tells a reader how to fill the sheet sits in one block above the drawing and
 // is met once, before they start: what the drawing is, the keyboard route
-// through it, and what the one tick column means. Beside a control there is
-// nothing but a short hint, a sentence attached to the button or the line it
-// is about. Nothing explanatory sits under the drawing, where it would be read
-// after the moment it could have helped, if it were read at all. What is under
-// the drawing is derived rather than explanatory: how many blocks there are,
-// how much of the day they cover, and the admission, printed only while it is
-// true of something on the sheet, that a block under half an hour is drawn
-// taller than it ran.
+// through it, and what the one tick column means. The sheet itself carries no
+// prose at all. Short hints beside a control were allowed and two were taken,
+// one under the timeline buttons and one under the export; the author has had
+// both out, on the grounds that a control whose label reads "Open the next
+// block" or "Save it as a PDF" has said its piece. What is left under the
+// drawing is derived rather than explanatory: three cells of figures, the
+// admission printed only while it is true of something on the sheet that a
+// block under half an hour is drawn taller than it ran, and the promise that
+// none of this is kept, which is not an instruction but the reason the export
+// exists.
 //
 // Three things had to be solved before any of that was worth building.
 //
@@ -205,31 +207,22 @@ const PAPER_ROWS = 14;
               <button type="button" data-action="sleep">Asleep from here</button>
               <button type="button" data-action="reopen" hidden>Reopen the day</button>
             </p>
-            <p class="recorder-help tl-hint">Pull the line down, or press Open the next block.</p>
           </div>
         </div>
       </div>
 
       <div class="tally" data-total>
-        <p class="tally-empty" data-tally-empty>Nothing recorded yet.</p>
-
         <div class="tally-figures" data-tally-figures hidden>
           <div class="tally-row">
             <div class="tally-cell tally-day" data-tally-day>
               <span class="tally-fill" aria-hidden="true"></span>
               <p class="tally-face">
                 <span class="tally-line"><span class="tally-value" data-tally-covered></span></span>
-                <span class="tally-line tally-caption">
-                  <span class="tally-unit">of 24 hrs</span>
-                  <span class="tally-state" data-tally-state></span>
-                </span>
+                <span class="tally-label">of 24 h</span>
               </p>
               <p class="tally-face tally-face-over" aria-hidden="true">
                 <span class="tally-line"><span class="tally-value" data-tally-covered></span></span>
-                <span class="tally-line tally-caption">
-                  <span class="tally-unit">of 24 hrs</span>
-                  <span class="tally-state" data-tally-state></span>
-                </span>
+                <span class="tally-label">of 24 h</span>
               </p>
             </div>
 
@@ -248,24 +241,22 @@ const PAPER_ROWS = 14;
             </div>
           </div>
 
-          <p class="tally-rest" data-tally-rest></p>
+          <p class="recorder-help tally-floored" data-floored hidden></p>
         </div>
-
-        <p class="recorder-help tally-floored" data-floored hidden></p>
       </div>
 
       <p class="recorder-tools">
-        <button type="button" class="print-button" data-action="print">Save it as a PDF</button>
-      </p>
-
-      <p class="recorder-help tools-hint">
-        Opens the browser's print dialogue: a PDF is one destination there, a printer another.
+        <button type="button" class="print-button" data-action="print">
+          <span data-print-word>Save it as a PDF</span><span
+            class="recorder-hidden"
+            data-print-tail></span>
+        </button>
       </p>
 
       <p class="recorder-privacy">
         Nothing here is saved. This page sends nothing anywhere, writes nothing to this browser, and
         loses the lot when the tab is closed or reloaded. The file you save is the only copy and it
-        is yours, which is what the course's policy on
+        is yours, which is what the course's policy on{" "}
         <a href={withBase("/policies/#the-records-you-make-are-yours")}>the records you make</a> says
         too.
       </p>
@@ -592,13 +583,40 @@ const PAPER_ROWS = 14;
   /* The export is the only action on the sheet that produces something, so it
      is the only one with the brand on it. The gold is the border and not the
      text: at 3.5:1 against the page it is sound as an edge and short of the
-     4.5:1 that the words inside it owe a reader. */
+     4.5:1 that the words inside it owe a reader.
+
+     Two states, because the button says two things now. Its label carries the
+     empty sheet, so the gold arrives with the first block: the sheet becomes
+     worth saving and the control that saves it becomes emphatic. The quiet
+     state drops the brand out of the border and changes nothing else, so the
+     box, the padding, the border width, the ink and the focus ring are
+     identical in both and nothing moves when the first block opens. The wash
+     of brand behind a control stays the Open button's mark and the heavy
+     border stays this one's, which is the distinction the two controls were
+     given when they were last looked at together.
+
+     It must not read as disabled, because pressing it is the route to a sheet
+     on paper and a student who wants paper presses it before recording
+     anything. So the quiet state is an ordinary button of this component and
+     not a greyed one: full strength ink, the same fill every other button has,
+     and the same edge colour. Nothing about it is dimmed.
+
+     The colour is the second channel and never the only one. The label is the
+     first, and it is also what a forced colours reader and a printed page get,
+     where a border colour is not something either of them keeps. The default
+     in the markup is the gold one, so a reader with no script, whose button
+     prints the ruled blank sheet, gets the emphatic state rather than the
+     state a script would have set. */
   .recorder .print-button {
     width: 100%;
     padding-block: 0.45rem;
     border-color: var(--at-primary);
     border-width: 2px;
     font-weight: 600;
+  }
+
+  .recorder .print-button[data-ready="false"] {
+    border-color: var(--at-border);
   }
 
   /* The label rides beside the field instead of above it, because the stack
@@ -982,21 +1000,13 @@ const PAPER_ROWS = 14;
     font-weight: 600;
   }
 
-  /* One sentence, on its own line under the controls it describes. The bottom
-     margin goes because the timeline already sets the gap to what follows, and
-     margins on a flex item do not collapse into it. */
-  .recorder .tl-hint {
-    flex: 1 1 100%;
-    margin-block: var(--at-spacing-xs) 0;
-  }
-
   .tl-end .tl-body {
     flex-wrap: wrap;
     grid-column: 2 / -1;
     border-inline-start-color: transparent;
   }
 
-  /* The figures under the sheet: three bounded cells and a sentence.
+  /* The figures under the sheet: three bounded cells, and nothing else.
    *
    * Three things are counted here and the author asked for three cells with an
    * edge around each, so the row is a row and not a paragraph of numbers.
@@ -1008,6 +1018,18 @@ const PAPER_ROWS = 14;
    * eventful day, which is the one failure week 1 warns about and week 4
    * writes a stopping rule for. So neither of them gets a meter, a percentage
    * or a target, and the third is the quietest thing in the row.
+   *
+   * Three cells and no prose. A state pill and a sentence naming the
+   * unaccounted stretch both stood here and the author has taken them out. The
+   * pill said in a small word what the sheet already says loudly: the buttons
+   * swap, the grip goes, the end row relabels to "Back to waking at" and
+   * locks, and a sleep block appears with the word in it. The sentence read
+   * "18 h 52 min unaccounted for, from 12:08 back around to 07:00", and both
+   * of its times are on the drawing already, since the blocks run contiguously
+   * from the wake line down and the gap is always the tail. What it added was
+   * the subtraction, and the subtraction is the cell beside it read the other
+   * way round. Nothing explanatory sits under the drawing now, which is the
+   * rule the zones were built on.
    *
    * Flat and table like, which is the author's standing instruction about this
    * region holding even though a boundary has now been asked for. One hairline
@@ -1030,16 +1052,19 @@ const PAPER_ROWS = 14;
    * row is a screen readout of a sheet in progress, and a sheet on paper is
    * either finished or blank. */
   .tally {
-    margin-block: 0 var(--at-spacing-md);
-    padding-block-start: var(--at-spacing-sm);
-    border-block-start: 1px solid var(--at-divider);
     font-variant-numeric: tabular-nums;
   }
 
-  .tally-empty {
-    margin: 0;
-    color: var(--at-text-secondary);
-    font-size: var(--at-font-size-sm);
+  /* The divider and the space sit on the figures rather than on the wrapper
+     around them, because the wrapper is now empty on an untouched sheet: the
+     line that used to say "Nothing recorded yet." is the export button's label
+     now. On the wrapper this rule drew itself under the drawing with nothing
+     beneath it, a hairline and twenty five pixels of air announcing a readout
+     that was not there. */
+  .tally-figures {
+    margin-block: 0 var(--at-spacing-md);
+    padding-block-start: var(--at-spacing-sm);
+    border-block-start: 1px solid var(--at-divider);
   }
 
   /* The row. One cell over two by default, three across once all three fit.
@@ -1047,15 +1072,28 @@ const PAPER_ROWS = 14;
      Chrome will not make a window narrow enough to check a phone.
 
      At a 390px viewport this region is 295px wide. Across three that is 98px a
-     cell, and the first cell's caption alone runs to 150px, so the day takes
-     the whole line and the two counts split the one under it. That is the
-     better shape for the meter as well, which wants length. Three across
-     arrives at the 40rem the timeline already breaks at, where the region is
-     545px.
+     cell, against a widest line of 157px in the first cell and 123px in the
+     third, so the day takes the whole line and the two counts split the one
+     under it. That is the better shape for the meter as well, which wants
+     length. Three across arrives at the 40rem the timeline already breaks at,
+     where the region is 545px.
 
-     Neither split is even. The first cell carries the headline and a state
-     word; of the other two the ticks have the longer label, so they take the
-     wider track both times.
+     Neither split is even, and the numbers in it are measured contents rather
+     than a feeling about importance. The widest line each cell has to hold is
+     157px for a coverage figure at 1.5rem, which is "23 h 46 min" and not the
+     "24 h" of a closed day, 97px for "blocks drawn" and 123px for "ticked as
+     change"; with the padding that is 179, 119 and 145, or 1.5 to 1 to 1.2.
+     The first cell being the widest is what the type asks for as well as what
+     the headline deserves.
+
+     Worth recording, because it was the opposite of what was expected: this
+     split did not change when the state word came out of the first cell. That
+     word shared its line with the unit and the two came to 138px, less than
+     the figure above them, so the figure was always the binding constraint and
+     still is. What the remeasure changed was the slack, which now runs 20, 14
+     and 14 pixels at the tightest three across width, where it used to run 15,
+     20 and 14 and the cell with the least room to spare was the one carrying
+     the headline.
 
      The gap is the hairline: one pixel of the border colour showing between
      opaque cells, plus a border around the outside. Borders on the cells
@@ -1090,7 +1128,7 @@ const PAPER_ROWS = 14;
 
   @media (width >= 40rem) {
     .tally-row {
-      grid-template-columns: 1.4fr 1fr 1.15fr;
+      grid-template-columns: 1.5fr 1fr 1.2fr;
     }
 
     .tally-day {
@@ -1119,10 +1157,6 @@ const PAPER_ROWS = 14;
     gap: 0 0.4em;
   }
 
-  .tally-caption .tally-state {
-    margin-inline-start: auto;
-  }
-
   .tally-value,
   .tally-count {
     font-size: 1.5rem;
@@ -1143,7 +1177,6 @@ const PAPER_ROWS = 14;
     color: var(--at-text-secondary);
   }
 
-  .tally-unit,
   .tally-label {
     color: var(--at-text-secondary);
     font-size: var(--at-font-size-sm);
@@ -1151,39 +1184,6 @@ const PAPER_ROWS = 14;
 
   .tally-ticked .tally-label {
     color: var(--at-text-muted);
-  }
-
-  /* A state, not a statistic, so it is a word with a shape beside it and never
-     a colour on its own: a ring while the day is open, the same ring filled
-     once it is closed. The words are the channel that survives greyscale, a
-     colourblind reader and forced colours; the dot is the thing the eye finds
-     from across the page.
-
-     It stays a word even though the cell behind it now fills as the day gets
-     accounted for, and that is not redundancy for its own sake. A full cell
-     does mean a closed day, but a closed day is not the only way to fill the
-     cell: an open day can be pulled, typed or stepped to exactly twenty-four
-     hours, at which point the fill says closed and the sheet is not. The fill
-     is the coverage and only the coverage; this word is the state. */
-  .tally-state {
-    display: inline-flex;
-    align-items: center;
-    color: var(--at-text-secondary);
-    font-size: var(--at-font-size-sm);
-  }
-
-  .tally-state::before {
-    content: "";
-    display: inline-block;
-    width: 0.6em;
-    height: 0.6em;
-    margin-inline-end: 0.45em;
-    border: 2px solid var(--at-primary);
-    border-radius: 50%;
-  }
-
-  .tally-state[data-closed="true"]::before {
-    background: var(--at-primary);
   }
 
   /* The day laid flat, and the cell is the drawing. The reader has spent the
@@ -1210,10 +1210,12 @@ const PAPER_ROWS = 14;
      for anything sitting on a brand fill, clipped to exactly the filled
      region. Both the fill's width and the clip's edge resolve the same
      --covered against the same box, so they land on the same pixel column.
-     Every glyph pixel left of that column is on-primary over primary, 7.1:1
+     Every glyph pixel left of that column is on-primary over primary, 5.6:1
      with this brand's gold; every pixel right of it is text over background,
-     about 17:1. Neither ratio depends on where the edge is, so the guarantee
-     at one percent fill is the guarantee at ninety-nine.
+     17.9:1 for the figure and 8.9:1 for the label under it. Sampled off a
+     canvas rather than estimated, and the same in dark mode, where the fill
+     does not change colour. No ratio depends on where the edge is, so the
+     guarantee at one percent fill is the guarantee at ninety-nine.
 
      What this replaces is a text shadow, which passes at whatever fill level
      you happen to look at and fails at the others, and mix-blend-mode, which
@@ -1233,16 +1235,8 @@ const PAPER_ROWS = 14;
     clip-path: inset(0 calc(100% - var(--covered, 0%)) 0 0);
   }
 
-  .tally-face-over :is(.tally-unit, .tally-state) {
+  .tally-face-over .tally-label {
     color: inherit;
-  }
-
-  .tally-face-over .tally-state::before {
-    border-color: var(--at-on-primary);
-  }
-
-  .tally-face-over .tally-state[data-closed="true"]::before {
-    background: var(--at-on-primary);
   }
 
   /* Forced colours throw the fill away: a background colour is not something
@@ -1262,43 +1256,21 @@ const PAPER_ROWS = 14;
     }
   }
 
-  /* What is left over, under the row rather than inside the first cell.
-
-     It belongs to coverage and it is the strongest line in the readout,
-     because it turns a percentage into an instruction to press the sleep
-     button. It is not in the cell for two reasons. It changes length as the
-     day fills, so a cell holding it would resize the whole row on every
-     keystroke. And it is a sentence: clipping a sentence in half down a
-     vertical seam is legible but restless, and this is the line a student is
-     meant to read rather than glance at. Under the row and against the same
-     left edge, it reads as the first cell continued. */
-  .tally-rest {
-    margin-block: var(--at-spacing-xs) 0;
-    color: var(--at-text-secondary);
-    font-size: var(--at-font-size-sm);
-  }
-
   .recorder .tally-floored {
     margin-block: var(--at-spacing-xs) 0;
   }
 
+  /* Standing alone under the button now that the hint between them has gone,
+     so it takes the gap the hint used to hold open: the two margins that met
+     here were both --at-spacing-xs and collapsed to four pixels, which read as
+     a caption on the button rather than as the page's own promise. */
   .recorder-privacy {
-    margin-block: var(--at-spacing-xs) var(--at-spacing-md);
+    margin-block: var(--at-spacing-sm) var(--at-spacing-md);
     font-size: var(--at-font-size-sm);
   }
 
   .recorder-tools {
     margin-block: var(--at-spacing-md) var(--at-spacing-xs);
-  }
-
-  /* The label says PDF and the button calls window.print(), and on plenty of
-     machines the dialogue that opens is pointed at a printer. One line under
-     the control, which is where a hint on a button is allowed to live, saying
-     what actually opens and that paper is the other thing behind it. Short
-     enough to read in the second before pressing, which is the only second in
-     which it is any use. */
-  .recorder .tools-hint {
-    margin-block: 0 var(--at-spacing-md);
   }
 
   /* Announced, not shown.
@@ -1750,7 +1722,7 @@ const PAPER_ROWS = 14;
           : `${plural(floored, "block")} ran under half an hour and ${floored === 1 ? "is" : "are"} drawn half an hour tall: on ${floored === 1 ? "that one" : "those"} the two times are the record and the height is not.`;
     }
 
-    // The figures: three cells and the sentence under them.
+    // The figures: three cells.
     //
     // Coverage leads. It is the week's own spec line, twenty-four continuous
     // hours, and it is the only figure here that cannot be improved by
@@ -1769,9 +1741,13 @@ const PAPER_ROWS = 14;
     // can reach twenty-four hours three ways: a drag clamps to the room left
     // rather than refusing it, retime clamps a last line the same way, and the
     // half hour button takes whatever is left when less than half an hour
-    // remains. So the state is kept as a word beside the figure rather than
-    // left to the fill, which would read "closed" on a sheet that still has
-    // its sleep block to write.
+    // remains. So nothing here is allowed to read the fill as the state, and
+    // nothing here reports the state at all. The sheet does: the buttons swap,
+    // the grip goes, the end row relabels to "Back to waking at" and locks,
+    // and a sleep block appears with the word in it. All four are set from the
+    // same `closed` a few lines above, and layout() runs after every mutation,
+    // so they cannot disagree with it. The announcement carries it too, in a
+    // whole sentence, which is what a screen reader gets instead of a pill.
     //
     // The other two cells are counts and are written as counts. Eleven blocks
     // is not better than six. The ticks are a share of what is on the sheet
@@ -1783,44 +1759,41 @@ const PAPER_ROWS = 14;
     // the one clipped to the fill, and writing them through one call is what
     // keeps them the same words.
     const marked = blocks.filter((block) => flagOf(block).checked).length;
-    const emptyLine = root.querySelector<HTMLElement>("[data-tally-empty]");
     const figures = root.querySelector<HTMLElement>("[data-tally-figures]");
-    // A sheet with nothing on it gets the sentence instead of the row. Three
-    // cells reading nought, nought and nought of nought is a scorecard of not
-    // having started, and the third one is not even arithmetic.
-    if (emptyLine) emptyLine.hidden = blocks.length > 0;
-    if (figures) figures.hidden = blocks.length === 0;
+    // A sheet with nothing on it gets no row at all. Three cells reading
+    // nought, nought and nought of nought is a scorecard of not having
+    // started, and the third one is not even arithmetic.
+    const drawn = blocks.length > 0;
+    if (figures) figures.hidden = !drawn;
 
     const write = (selector: string, text: string): void => {
       for (const node of root.querySelectorAll<HTMLElement>(selector)) node.textContent = text;
     };
 
+    // The export button says whether there is anything to export. "Nothing
+    // recorded yet." was a line of its own under the drawing and is the
+    // button's label now, on the author's instruction, and the gold on its
+    // border arrives with the first block.
+    //
+    // The accessible name follows the visible words rather than replacing
+    // them, which is the trade this needed. An aria-label reading "Save it as
+    // a PDF" over a button that visibly says something else would leave a
+    // voice control user saying what they can see and hitting nothing, which
+    // is WCAG 2.5.3 and a worse failure than the one it fixes. So the visible
+    // words come first and the action is appended in the clipped span, giving
+    // "Nothing recorded yet. Save it as a PDF." That span says only what the
+    // button does and promises nothing about what comes out of it.
+    const printWord = root.querySelector<HTMLElement>("[data-print-word]");
+    const printTail = root.querySelector<HTMLElement>("[data-print-tail]");
+    const printButton = root.querySelector<HTMLButtonElement>("[data-action='print']");
+    if (printWord) printWord.textContent = drawn ? "Save it as a PDF" : "Nothing recorded yet.";
+    if (printTail) printTail.textContent = drawn ? "" : " Save it as a PDF.";
+    if (printButton) printButton.dataset.ready = String(drawn);
+
     write("[data-tally-covered]", formatSpan(offset));
     const day = root.querySelector<HTMLElement>("[data-tally-day]");
     if (day) {
       day.style.setProperty("--covered", `${((offset / MINUTES_IN_DAY) * 100).toFixed(2)}%`);
-    }
-
-    write("[data-tally-state]", closed ? "Day closed" : "Day open");
-    for (const node of root.querySelectorAll<HTMLElement>("[data-tally-state]")) {
-      node.dataset.closed = String(closed);
-    }
-
-    const rest = root.querySelector<HTMLElement>("[data-tally-rest]");
-    if (rest) {
-      // What is left over is named with the hours it runs between rather than
-      // as a bare number, because on this sheet the unrecorded time is never a
-      // hole in the middle. Blocks are drawn end to end from the wake line
-      // down, so the only thing missing is always the stretch from the last
-      // line back around to waking, and saying where it is turns a percentage
-      // into an instruction to press the sleep button. The full and open case
-      // is the one the fill cannot say, so the sentence says it.
-      const sleep = closed ? minsOf(blocks[blocks.length - 1]) : 0;
-      rest.textContent = closed
-        ? `${formatSpan(sleep)} of it recorded as sleep.`
-        : offset >= MINUTES_IN_DAY
-          ? "Nothing unaccounted for, and the day is not closed: the blocks already fill the twenty-four hours."
-          : `${formatSpan(MINUTES_IN_DAY - offset)} unaccounted for, from ${formatClock(wake + offset)} back around to ${formatClock(wake)}.`;
     }
 
     write("[data-tally-blocks]", String(blocks.length));
