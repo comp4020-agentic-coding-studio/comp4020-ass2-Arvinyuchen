@@ -18,6 +18,17 @@
 // honestly. The Bureau publishes the grids under CC BY, which is what changed.
 // Provenance, licence and both caveats live in src/data/uv-index-bom.json and
 // are printed under the figure rather than kept in a commit message.
+//
+// The caption carries how to read the table and who to credit, in one
+// paragraph, and nothing else. It has been cut back twice. First it held the
+// readings, the count for the tropics against Hobart and the Adelaide and
+// Canberra near miss, which put the figure's two sharpest points in the
+// smallest type on the page; those are body prose in the lecture now. Then it
+// held the two caveats, the 1.5 degree grid and the gap between a monthly
+// average and a daily forecast. Those are still recorded in
+// src/data/uv-index-bom.json under `grid` and `threshold_note`, but they are
+// no longer shown to a reader anywhere, and they are the honest part of this
+// figure. Worth putting back into the lecture's prose.
 import data from "../data/uv-index-bom.json";
 
 const MONTH_LABELS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
@@ -94,30 +105,10 @@ const latitude = (lat: number): string => `${Math.abs(Math.round(lat))}°S`;
       Average UV index at local noon under cloud-free skies, {data._source.period},
       by month. Australia advises sun protection whenever the index reaches {threshold};
       shaded cells are at or above it, unshaded are below. The right-hand column
-      is the number of months the rule is on: twelve in the tropics, eight in
-      Hobart. Same rule, same country, different instruction.
-    </p>
-    <p class="caveat">
-      Two things this cannot tell you. The grid is {
-        data._source.grid.cellsize_degrees
-      } degrees, roughly 165 km, so each value describes the region around a city
-      rather than the city itself. And the real advice keys off the forecast for
-      the day, so a month averaging just under {threshold} still has days above
-      it: these averages show when the threshold is typically crossed, not what
-      any particular day will do.
-    </p>
-    <p class="caveat">
-      Worth reading the two rows at 35°S against each other. Adelaide averages
-      2.98 in May and Canberra 3.04, so the rule is off in one and on in the
-      other on a difference of six hundredths of an index point. The threshold
-      is a decision laid across a smooth gradient, not a line found in nature,
-      and that is true of every cut-off this course will show you.
-    </p>
-    <p class="credit">
-      Drawn from <a href={data._source.url}>{data._source.dataset}</a> ({
-        data._source.product_code
-      }), {data._source.publisher}, used under <a href={data._source.licence_url}
-        >{data._source.licence}</a
+      counts the months the rule is on. Drawn from <a href={data._source.url}
+        >{data._source.dataset}</a
+      > ({data._source.product_code}), {data._source.publisher}, used under <a
+        href={data._source.licence_url}>{data._source.licence}</a
       >.
     </p>
   </figcaption>
@@ -241,8 +232,4 @@ const latitude = (lat: number): string => `${Math.abs(Math.round(lat))}°S`;
     margin-block-end: 0;
   }
 
-  .caveat,
-  .credit {
-    font-size: 0.78rem;
-  }
 </style>

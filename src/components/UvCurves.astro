@@ -1,0 +1,265 @@
+---
+// Two cities through the year, against the threshold that switches the rule.
+//
+// The block this sits in argues that time is the axis guidance leaves implicit:
+// Australia states a condition, "whenever the index reaches 3", and leaves the
+// calendar to you. So the figure is that calculation done. Two curves crossing
+// one horizontal line, and where they sit below it the rule is off.
+//
+// SVG here, where the narrowing figure used HTML. The reason is the shape: a
+// bar chart is a list of lengths and HTML draws lists natively, but a curve is
+// a path and faking one with elements would be worse in every way. SVG <text>
+// is still real text, so the labels stay selectable and scale with the page.
+// The values themselves are not re-encoded for screen readers, because the
+// table in the previous section already carries every one of them; the caption
+// says so rather than leaving a reader to guess.
+//
+// Melbourne and Hobart because they are the interesting pair: both southern,
+// both below the threshold for part of the year, and different enough in how
+// long that the rule's calendar is visibly not a national fact.
+import data from "../data/uv-index-bom.json";
+
+const MONTHS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+const SHOWN = ["Melbourne", "Hobart"] as const;
+
+const series = SHOWN.map((name) => {
+  const city = data.cities.find((entry) => entry.name === name);
+  if (!city) throw new Error(`UvCurves: ${name} is not in uv-index-bom.json`);
+  return city;
+});
+
+const threshold = data.threshold;
+
+// Plot geometry. Room on the right for the series names, which are placed at
+// the end of each curve rather than in a legend: a legend makes the reader hold
+// a colour in their head and look back, and there is no reason to when the line
+// can say its own name.
+const W = 680;
+const H = 300;
+const LEFT = 40;
+const RIGHT = 596;
+const TOP = 16;
+const BOTTOM = 266;
+const Y_MAX = 15;
+
+const x = (month: number): number => LEFT + (month * (RIGHT - LEFT)) / (MONTHS.length - 1);
+const y = (value: number): number => BOTTOM - (value / Y_MAX) * (BOTTOM - TOP);
+
+const path = (values: number[]): string =>
+  values.map((value, index) => `${index === 0 ? "M" : "L"}${x(index).toFixed(1)} ${y(value).toFixed(1)}`).join(" ");
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+const monthsBelow = (values: number[]): number[] =>
+  values.flatMap((value, index) => (value < threshold ? [index] : []));
+
+// Built from the values rather than written out, because a sentence naming
+// "May to July" is a claim about the data and would quietly go stale if a city
+// or a dataset ever changed. Contiguous runs are collapsed to a range, which is
+// how a person would say it.
+const asRanges = (months: number[]): string => {
+  const runs: number[][] = [];
+  for (const month of months) {
+    const last = runs.at(-1);
+    if (last && month === last.at(-1)! + 1) last.push(month);
+    else runs.push([month]);
+  }
+  return runs
+    .map((run) =>
+      run.length === 1
+        ? MONTH_NAMES[run[0]]
+        : `${MONTH_NAMES[run[0]]} to ${MONTH_NAMES[run.at(-1)!]}`,
+    )
+    .join(" and ");
+};
+
+// Used only by the aria-label. The caption deliberately does not repeat it:
+// which months fall below the line is a reading of the figure, and readings
+// belong in body prose at body size. A screen reader has no figure to read,
+// so for that path the same sentence is the figure.
+const belowSummary = series
+  .map((city) => `${city.name} ${asRanges(monthsBelow(city.monthly))}`)
+  .join(", ");
+
+const gridlines = [0, 3, 6, 9, 12, 15];
+---
+
+<figure class="curves">
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-label={`Average noon UV index by month for ${SHOWN.join(" and ")}. Both fall below ${threshold}, the level at which Australia advises sun protection, in the middle of the year: ${belowSummary}.`}
+  >
+    <!-- The region where the rule is off. Drawn first so everything sits on it. -->
+    <rect
+      class="off"
+      x={LEFT}
+      y={y(threshold)}
+      width={RIGHT - LEFT}
+      height={BOTTOM - y(threshold)}
+    />
+
+    {
+      gridlines.map((value) => (
+        <g class:list={["grid", { threshold: value === threshold }]}>
+          <line x1={LEFT} x2={RIGHT} y1={y(value)} y2={y(value)} />
+          <text x={LEFT - 8} y={y(value)} class="axis">
+            {value}
+          </text>
+        </g>
+      ))
+    }
+
+    <text x={RIGHT - 6} y={BOTTOM - 8} class="note">
+      below {threshold}: protection not advised
+    </text>
+
+    {
+      MONTHS.map((label, index) => (
+        <text x={x(index)} y={BOTTOM + 20} class="axis month">
+          {label}
+        </text>
+      ))
+    }
+
+    {
+      series.map((city, index) => (
+        <g class:list={["series", index === 0 ? "first" : "second"]}>
+          <path d={path(city.monthly)} />
+          {city.monthly.map((value, month) => (
+            <circle cx={x(month)} cy={y(value)} r="2.6" />
+          ))}
+          <text x={RIGHT + 8} y={y(city.monthly[11])} class="name">
+            {city.name}
+          </text>
+        </g>
+      ))
+    }
+  </svg>
+  <figcaption>
+    <p>
+      The same numbers as the table above, read as two years. Each curve is a
+      city's average noon UV index month by month; the horizontal line is {threshold},
+      where Australia's advice switches on. Below it the advice inverts, from
+      covering up to getting some sun. Values are in the table above, and so are
+      the source and its limits.
+    </p>
+  </figcaption>
+</figure>
+
+<style>
+  .curves {
+    margin-block: var(--at-spacing-lg);
+    margin-inline: 0;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .off {
+    fill: currentColor;
+    opacity: 0.05;
+  }
+
+  .grid line {
+    stroke: var(--at-border);
+    stroke-width: 1;
+  }
+
+  /* The one line in the figure that means something. Everything else is scale. */
+  .grid.threshold line {
+    stroke: currentColor;
+    stroke-width: 1.25;
+    stroke-dasharray: 5 3;
+    opacity: 0.55;
+  }
+
+  .axis {
+    fill: var(--at-text-secondary);
+    font-size: 12px;
+    text-anchor: end;
+    dominant-baseline: middle;
+  }
+
+  .axis.month {
+    text-anchor: middle;
+  }
+
+  /* Anchored to the band's right end, which is the only part of it no curve
+     enters: both cities are above the threshold from September on. It sat at
+     the left first, then under the line, and in both places a curve ran into
+     the words. Placed by where the data is not, rather than by eye. */
+  .note {
+    fill: var(--at-text-secondary);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    text-anchor: end;
+  }
+
+  .series path {
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .series .name {
+    font-size: 13px;
+    dominant-baseline: middle;
+  }
+
+  /* Two channels, not one: the second series is dashed as well as lighter, so
+     the pair survives being printed or read by someone who cannot separate the
+     two colours. */
+  .series.first path,
+  .series.first circle {
+    stroke: var(--at-primary);
+    fill: var(--at-primary);
+  }
+
+  .series.first path {
+    fill: none;
+  }
+
+  .series.first .name {
+    fill: var(--at-primary);
+    stroke: none;
+  }
+
+  .series.second path {
+    stroke: currentColor;
+    stroke-dasharray: 6 4;
+    opacity: 0.8;
+  }
+
+  .series.second circle {
+    fill: currentColor;
+    stroke: none;
+    opacity: 0.8;
+  }
+
+  .series.second .name {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  figcaption {
+    margin-block-start: var(--at-spacing-md);
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  figcaption p {
+    margin-block: 0 0.5rem;
+  }
+
+  figcaption p:last-child {
+    margin-block-end: 0;
+  }
+
+</style>

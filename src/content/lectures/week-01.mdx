@@ -13,8 +13,8 @@ related:
 import Callout from "astro-theme-university/components/Callout.astro";
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
-import Narrowing from "../../components/Narrowing.astro";
 import UvSeason from "../../components/UvSeason.astro";
+import UvCurves from "../../components/UvCurves.astro";
 
 ## Course premise
 
@@ -42,24 +42,59 @@ result is worth acting on.
 
 ## Find the guidelines that suit you
 
-Guidance is not one rule for everyone. It has already been narrowed before it
-reaches you, and it is worth knowing on what. Three reasons the numbers are
-more specific than they look.
+Guidance is not one rule for everyone, and the three things it narrows on are
+not this course's invention. Explaining how much sun a person needs, ARPANSA
+writes that vitamin D from sunlight ["depends on many factors including
+location, time of year, day-to-day activities and individual
+circumstances"](https://www.arpansa.gov.au/understanding-radiation/radiation-sources/more-radiation-sources/sun-exposure/frequently-asked-questions):
+who you are, where you are and when it is, in one sentence from the national
+radiation authority. What differs is how openly each one is used. Guidance is
+organised by who you are, settles where you are before you read a word of it,
+and often leaves when it is for you to work out.
+
+### Who you are
+
+This is the axis guidance is built on, to the point of being its table of
+contents. Australia's [24-hour movement
+guidelines](https://www.health.gov.au/topics/physical-activity/24-hour-movement-guidelines-for-all-australians)
+are published as a menu of people under the heading "Find the guidelines that
+apply to you": birth to five, five to seventeen, eighteen to sixty-four,
+pregnancy, sixty-five and over, and people with disability. The sleep panel
+splits the same way, seven to nine hours for adults and seven to eight for
+older adults, so a figure quoted without an age band is already missing a
+caveat. The UK vitamin D advice narrows again inside the country, recommending
+supplements all year rather than only in winter for people who are rarely
+outdoors, who cover most of their skin, or who have dark skin from Black
+African, Black Caribbean or South Asian backgrounds, because melanin absorbs
+the UV that makes vitamin D. Read the caveats before the number: they are the
+part where guidance tells you whether it is talking to you at all.
 
 ### Where you are
 
-The same rule gives different instructions at different latitudes. Australia's
-sun rule is a single number: protect yourself whenever the UV index reaches 3,
-and below 3 do not, so your skin can make vitamin D. One threshold, over a
-country spanning more than thirty degrees of latitude, which means the rule is
-on all twelve months of the year in Darwin, ten in Sydney and eight in Hobart.
-In the United Kingdom the shortfall runs the other way, and everyone over four
-is advised to consider ten micrograms of vitamin D daily from October to March,
+Place is usually settled before you read anything, because a guideline is
+written for a country, which is also why the same rule gives different
+instructions at different latitudes. Australia's sun rule is a single number:
+protect yourself whenever the UV index reaches 3, and below 3 do not, so your
+skin can make vitamin D. One threshold, over a country spanning more than
+thirty degrees of latitude, which means the rule is on all twelve months of the
+year in Darwin, ten in Sydney and eight in Hobart. Only the more careful
+guidance divides this up inside the country: Cancer Council notes that northern
+areas need protection all year, while in [some southern
+areas](https://www.cancer.org.au/cancer-information/causes-and-prevention/sun-safety/vitamin-d)
+"there are times of the year when sun protection may not be necessary". In the
+United Kingdom the shortfall runs the other way, and everyone over four is
+advised to consider ten micrograms of vitamin D daily from October to March,
 because there is not enough sun in those months to make it. Same sentence, and
-the instruction inverts: the first thing to find is not the advice but the
-advice written for your latitude.
+the instruction inverts.
 
 <UvSeason />
+
+Two rows in that table are worth reading against each other. Adelaide averages
+2.98 in May and Canberra 3.04, so the rule is off in one and on in the other on
+a difference of six hundredths of an index point, and the grid puts both of
+them at the same latitude. A threshold is a decision laid across a smooth
+gradient rather than a line found in nature, and that is true of every cut-off
+this course will show you.
 
 <Callout type="info">
   And not for the reason most people think. Cancer Council WA published an
@@ -76,31 +111,21 @@ advice written for your latitude.
 
 ### When it is
 
-The same rule also changes through the year in one place, which is the table
-above read by row instead of by column. Hobart's average noon index is below 3
-from May to August and Melbourne's from May to July, the months when sun
-protection is not recommended at all, so the same person in the same city is
-told to cover up in January and to get some sun in July, for the same reason
-both times.
+Time is the axis guidance most often leaves implicit. Australia's rule is
+written as a condition rather than a season, sun protection whenever the index
+reaches 3, so the calendar is a consequence you are left to work out. Below is
+that work done for two cities. Hobart's average noon index is under 3 from May
+to August and Melbourne's from May to July, the months when sun protection is
+not recommended at all, so the same person in the same city is told to cover up
+in January and to get some sun in July, for the same reason both times. The UK
+advice does the opposite and names its months outright, October to March.
 Neither instruction is a revision of the other; the number moved and the rule
-did not. A recommendation with no season attached is therefore incomplete, and
-the ones worth trusting say when they apply.
+did not. A recommendation with no season attached is incomplete, and the ones
+worth trusting say when they apply.
 
-### Who you are
+<UvCurves />
 
-Guidance splits on the characteristics that change the answer. The sleep panel
-gives seven to nine hours for adults and seven to eight for older adults, so a
-figure quoted without an age band is already missing a caveat. The UK vitamin D
-advice narrows again inside the country, recommending supplements all year
-rather than only in winter for people who are rarely outdoors, who cover most
-of their skin, or who have dark skin from Black African, Black Caribbean or
-South Asian backgrounds, because melanin absorbs the UV that makes vitamin D.
-Read the caveats before the number: they are the part where guidance tells you
-whether it is talking to you at all.
-
-<Narrowing />
-
-That last rung is where the narrowing runs out. A category like "dark skin from
+The narrowing runs out before it reaches you. A category like "dark skin from
 South Asian backgrounds" covers enormous variation in skin, in where people
 live, in time spent outdoors. It is a better guess than no guess, and it is
 still a guess about a group. Guidance narrows from everyone to a group you
