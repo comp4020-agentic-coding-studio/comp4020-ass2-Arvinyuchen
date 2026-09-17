@@ -230,18 +230,20 @@ const PAPER_ROWS = 14;
         <p class="recorder-help tally-floored" data-floored hidden></p>
       </div>
 
+      <p class="recorder-tools">
+        <button type="button" class="print-button" data-action="print">Save it as a PDF</button>
+      </p>
+
+      <p class="recorder-help tools-hint">
+        Opens the browser's print dialogue: a PDF is one destination there, a printer another.
+      </p>
+
       <p class="recorder-privacy">
         Nothing here is saved. This page sends nothing anywhere, writes nothing to this browser, and
-        loses the lot when the tab is closed or reloaded. The file you print is the only copy and it
+        loses the lot when the tab is closed or reloaded. The file you save is the only copy and it
         is yours, which is what the course's policy on
         <a href={withBase("/policies/#the-records-you-make-are-yours")}>the records you make</a> says
         too.
-      </p>
-
-      <p class="recorder-tools">
-        <button type="button" class="print-button" data-action="print">
-          Print the sheet, or save it as a PDF
-        </button>
       </p>
     </div>
 
@@ -543,6 +545,8 @@ const PAPER_ROWS = 14;
      text: at 3.5:1 against the page it is sound as an edge and short of the
      4.5:1 that the words inside it owe a reader. */
   .recorder .print-button {
+    width: 100%;
+    padding-block: 0.45rem;
     border-color: var(--at-primary);
     border-width: 2px;
     font-weight: 600;
@@ -857,13 +861,58 @@ const PAPER_ROWS = 14;
     font-weight: 600;
   }
 
+  /* The two buttons take a line and divide it, rather than sitting at their
+     own widths with the rest of the line empty beside them.
+   *
+   * auto-fit is doing real work here and not decoration. Three buttons live in
+   * this row and only ever two of them are in the document at once: while the
+   * day is open it is Open and Asleep, and once it closes both are hidden and
+   * Reopen takes their place. With fixed halves that last state would leave a
+   * half width button stranded beside a gap. auto-fit collapses the empty
+   * track, so one visible button fills the line and two split it, with nothing
+   * in the markup or the script having to know which case it is in.
+   *
+   * The min() in the track floor is the guard against the narrow case: a bare
+   * minmax(11rem, 1fr) would refuse to shrink below 11rem and push the row
+   * past the window at 390px. With min(11rem, 100%) the track gives way, the
+   * second button drops to a line of its own, and each one is still the full
+   * width of the row. */
   .tl-actions {
-    display: flex;
+    display: grid;
     flex: 1 1 100%;
-    flex-wrap: wrap;
-    gap: var(--at-spacing-xs);
+    grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+    gap: var(--at-spacing-sm);
     min-width: 0;
     margin: 0;
+  }
+
+  /* Full width targets, so a little more height to go with the width: about
+     43px against the 24 that WCAG 2.5.8 asks for, and eight pixels of gap
+     between the two halves so a thumb cannot land on both edges at once.
+   *
+   * The inline padding comes in rather than out, which is the opposite of what
+   * a bigger button usually wants. At 390px the row is 167px wide and "Open
+   * the next block" needs 148 of it, so the default 0.7rem either side broke
+   * the label across two lines and made one button half again as tall as the
+   * other. A centred label in a full width button has all the air it needs
+   * from the width; the padding was only ever sizing the box. */
+  .recorder .tl-actions button {
+    padding: 0.45rem 0.4rem;
+  }
+
+  /* Same width, different weight. These two are not equal actions: Open is
+     pressed a dozen times in a day and Asleep once, at the end of it, so the
+     repeated one reads as the default. It takes weight and a wash of the brand
+     rather than a heavier border, which is the export button's mark and stays
+     the export button's: this one is the default step, that one is the thing
+     that produces a file. Asleep is left exactly as it was rather than being
+     dimmed, because it is not a lesser action, it is a rarer one, and a
+     control that looks disabled is a control people do not press when they
+     need it. */
+  .recorder .tl-actions button[data-action="open"] {
+    border-color: var(--at-primary);
+    background: color-mix(in srgb, var(--at-primary) 12%, var(--at-bg-alt));
+    font-weight: 600;
   }
 
   /* One sentence, on its own line under the controls it describes. The bottom
@@ -1028,7 +1077,17 @@ const PAPER_ROWS = 14;
   }
 
   .recorder-tools {
-    margin-block: 0 var(--at-spacing-xs);
+    margin-block: var(--at-spacing-md) var(--at-spacing-xs);
+  }
+
+  /* The label says PDF and the button calls window.print(), and on plenty of
+     machines the dialogue that opens is pointed at a printer. One line under
+     the control, which is where a hint on a button is allowed to live, saying
+     what actually opens and that paper is the other thing behind it. Short
+     enough to read in the second before pressing, which is the only second in
+     which it is any use. */
+  .recorder .tools-hint {
+    margin-block: 0 var(--at-spacing-md);
   }
 
   /* Announced, not shown.
