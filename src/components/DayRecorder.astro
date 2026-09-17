@@ -1,84 +1,106 @@
 ---
-// The week 1 sheet: twenty-four hours, what you would flag for later, and what
-// you decided not to write down. It keeps nothing.
+// The week 1 sheet: twenty-four hours drawn as a vertical timeline, and what
+// you would mark for a later week. It keeps nothing.
 //
 // Why a tool at all on a week that says paper is fine. The lab asks for a
-// continuous twenty-four hours written during the day, and the two ways that
-// goes wrong are both structural rather than motivational: the record ends up
-// with holes in it, and the third thing the lab actually assesses, what you
-// left out and why, gets remembered as an afterthought at midnight because
-// nothing ever asked for it. This asks for it, in its own section, with the
-// same weight as the day.
+// continuous twenty-four hours written during the day, and the way that goes
+// wrong is structural rather than motivational: reconstructed at night, a day
+// arrives with holes in it and with the long stretches rounded off. A drawing
+// that closes cannot have holes, and one that is filled as the day goes is the
+// thing the lab is actually asking for.
 //
-// The clock is a ring, and that is the whole design.
+// What it deliberately does not carry is the third spec line, what you decided
+// not to write down and why. That was a section here for two versions, two
+// textareas under a heading, and on the page it was the heaviest thing in the
+// component: two large empty boxes under a drawing. The line asks what a
+// student can say, not what a sheet records, and the lab already does it in
+// the room, where the days are read back to each other and the omissions come
+// up out loud. So it is the lab's, not the tool's.
 //
-// A block records only when it starts. It runs until the next block starts,
-// and the last block runs back around to the first, so a sheet with four
-// blocks on it covers twenty-four hours exactly as surely as one with twenty.
-// Three things fall out of that and each of them was a problem before:
+// The drawing, which is the whole interaction.
 //
-//   - Gaps cannot happen. Spec line one is satisfied by construction rather
-//     than by the student adding up their own day at the end.
-//   - Sleep is one block. An eleven at night to seven in the morning row is
-//     one row, not the thirty-two fifteen-minute cells a grid would have
-//     demanded.
-//   - Nobody types an end time. Half the typing in a naive two-time-field
-//     version is a restatement of the row above it.
+// One question opens it: what time did you wake up. That time is printed in the
+// gutter with a line drawn across the sheet beside it, and the reader pulls
+// that line downward. The pull opens a block: a second line lands where the
+// pointer stopped, the distance between the two lines is how long the block
+// lasted, and the space between them is where you write what you were doing.
+// Then you pull the new line, and the next, until you press the sleep button,
+// which closes the day.
 //
-// The cost is that the sheet never tells you the day is incomplete, because by
-// its own arithmetic it never is. That is honest here: an unrecorded stretch
-// shows up as a single very long block with nothing written against it, which
-// is a truer description of an hour you did not record than a gap would be,
-// and it is exactly the kind of thing the omissions field then asks about.
+// Duration is a physical distance here, at one pixel to the minute, which is
+// the part a list of typed times cannot do: a day drawn this way shows at a
+// glance that the afternoon was three blocks and the morning was nine, and it
+// shows the shape of the hours rather than their names.
 //
-// Speed, which is the requirement that shaped the rest.
+// Three things had to be solved before any of that was worth building.
 //
-// The target is a couple of minutes for a whole day, so a sentence per hour is
-// already too slow and anything with a mouse in the loop is much too slow.
-// Enter in a block starts the next one, prefilled at one resolution step later
-// and focused, so a day is typed as: what you were doing, Enter, what you were
-// doing, Enter. The resolution select is not decoration: it sets that step, so
-// a student working at fifteen minutes gets fifteen-minute steps. Repeat
-// copies a block's text into the next one, for the activity that comes back
-// four times in a day.
+// Dragging is never the only way, because WCAG 2.2 success criterion 2.5.7
+// requires a single-pointer path that is not a drag, and because a keyboard
+// user cannot drag at all. Every boundary is a real time input: tab to it, type
+// 07:45, or hold the arrow keys, which step in quarter hours. Enter walks the
+// two fields that carry the day and opens the next block at the end, so a whole
+// day can be typed without the pointer ever entering the timeline, and for many
+// readers that is the faster path rather than the consolation one. A tap on the
+// grip, with no drag at all, opens one block of the current resolution. The
+// button beside it does the same thing and is what a screen reader meets, since
+// the grip is pointer sugar and is hidden from the accessibility tree.
+//
+// Snapping is the resolution select, which is not decoration: a drag lands on
+// the nearest fifteen, thirty or sixty minutes, the readout under the pointer
+// names the time and the length while you are still holding it, and every block
+// prints its own length in the gutter. The lab says fifteen minutes is plenty
+// and an hour is not useless, so those are the increments, and free pixel
+// precision is not offered, because 07:43 is a worse record than 07:45 and an
+// annoying one to produce.
+//
+// Touch and page scrolling share the same vertical gesture, so they are
+// separated by area rather than by timing: touch-action: none is set on the
+// grip alone, which is the only element in the component that takes a drag.
+// Everywhere else on the timeline the page scrolls as it always did. A drag
+// that reaches the top or bottom of the window scrolls the page itself, and the
+// pull is measured in page coordinates rather than client ones, so scrolling
+// under a still finger goes on lengthening the block exactly as moving the
+// finger would.
+//
+// The sleep button is what makes the record twenty-four hours rather than a
+// waking day. Pulled blocks only ever cover the hours you were awake, and the
+// lab's first spec line asks for twenty-four continuous hours, so pressing
+// sleep takes everything between the last line and the wake time on the
+// following morning and records it as one sleep block. Nothing is left as a
+// gap: the sheet says 24 h, the printed record carries the sleep row with its
+// own start and length, and the whole thing closes on the line it opened on.
 //
 // What it does not do is store anything. There is no network call, no
 // localStorage, no sessionStorage, no cookie and deliberately no <form>
 // element, because a form with no action submits to the current URL and would
 // put a student's day in their browser history as a query string. The printed
-// file is the only copy. The course's own policy page promises that the
-// records a student makes are theirs, and a page on the same site that quietly
-// kept a copy would make that promise a lie.
+// file is the only copy. The course's own policy page promises that the records
+// a student makes are theirs, and a page on the same site that quietly kept a
+// copy would make that promise a lie.
 //
 // PDF export is window.print() and a print stylesheet, on purpose. This site
 // has never shipped a client library and a PDF library would be the largest
-// dependency in the repo, for a job the browser already does under Save as
-// PDF. What print gets instead is a real layout: the script keeps a plain
-// printable sheet in sync with the fields, and @media print hides the site
-// chrome, the lesson and the form itself, so the file is a record rather than
-// a screenshot of a web page.
+// dependency in the repo, for a job the browser already does under Save as PDF.
+// What print gets instead is a real layout: the script keeps a plain printable
+// sheet in sync with the fields, and @media print hides the site chrome, the
+// lesson and the timeline itself, so the file is a record rather than a
+// screenshot of a web page.
 //
-// With no JavaScript the page is still useful, which is what the blank sheet
-// at the foot is for. It is ordinary markup, it prints as a ruled template,
-// and the script hides it once it has run. Blank rows are what a student with
-// scripts off, or with the script failing, or with a preference for a pen,
-// takes into the lab.
+// With no JavaScript a drag interface is nothing at all, so the blank sheet at
+// the foot matters more here than it did in the typed version. It is ordinary
+// markup, it prints as a ruled template, and the script hides it once it has
+// run. Paper is what a reader with scripts off, or with the script failing,
+// takes into the lab, and the lab already blesses paper.
 import { withBase } from "astro-theme-university/url";
 
-// The seeded ladder. Four rows rather than a full day of them: enough to show
-// what a block is and that the last one wraps, few enough that nobody reads
-// them as a suggested shape for their Tuesday. Seven in the morning is the
-// visible, editable first row, not a claim about when anyone gets up.
-const SEED_START = 7 * 60;
-const SEED_BLOCKS = 4;
-const clock = (minutes: number): string =>
-  `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
-const seeded = Array.from({ length: SEED_BLOCKS }, (_, index) => clock(SEED_START + index * 60));
+// Seven in the morning is a visible, editable first answer, not a claim about
+// when anyone gets up. It is the only value in the component that starts
+// filled, because the drawing needs a line to start from.
+const DEFAULT_WAKE = "07:00";
 
-// Fourteen ruled rows on the paper sheet. A day at the resolution this lab
-// asks for runs to ten or a dozen blocks once sleep is one of them, and
-// fourteen still leaves room under the table for the two omission prompts on a
-// single printed page.
+// Fourteen ruled rows on the paper sheet. A day at the resolution this lab asks
+// for runs to ten or a dozen blocks once sleep is one of them, and fourteen
+// fills a printed page without running onto a second one.
 const PAPER_ROWS = 14;
 ---
 
@@ -86,8 +108,8 @@ const PAPER_ROWS = 14;
   <h3 id="recorder-title">The day sheet</h3>
 
   <p class="recorder-lead">
-    Twenty-four hours, what you would flag for a later week, and what you decided not to write
-    down. Fill it in as the day goes. It saves nothing.
+    Twenty-four hours, drawn, and what you would mark for a later week. Fill it in as the day
+    goes. It saves nothing.
   </p>
 
   <div class="recorder-live" data-live>
@@ -104,7 +126,6 @@ const PAPER_ROWS = 14;
           <option value="15">every 15 minutes</option>
           <option value="30">every half hour</option>
           <option value="60" selected>about every hour</option>
-          <option value="90">whenever I got to it</option>
         </select>
       </label>
     </div>
@@ -128,10 +149,16 @@ const PAPER_ROWS = 14;
     <h4>The twenty-four hours</h4>
 
     <p class="recorder-help">
-      A block runs until the next one starts, and the last block runs back around to the first, so
-      the sheet always closes a full day. Sleep is one block. Enter walks the start time, then what
-      you were doing, then the next block's start time, and makes a new block when you reach the
-      end, timed one step on from the one before it.
+      Say when you woke up, then pull the line down to open a block: where you let go is when that
+      block ended, and the space between the two lines is where you write what you were doing. An
+      hour is sixty pixels of it. Keep going until you went to bed, then press the sleep button,
+      which records everything from there back to waking as sleep and closes the twenty-four hours.
+    </p>
+
+    <p class="recorder-help">
+      You never have to drag. Every time on the sheet is a field you can type into, the up and down
+      arrows move it a quarter hour at a time, and Enter walks the start time, then what you were
+      doing, then opens the next block. <span data-snap-note></span>
     </p>
 
     <p class="recorder-help">
@@ -141,68 +168,31 @@ const PAPER_ROWS = 14;
       the actual work.
     </p>
 
-    <div class="blocks-head" aria-hidden="true">
-      <span>Starts</span>
-      <span>What you were doing</span>
-      <span>For a later week</span>
-      <span></span>
+    <div class="tl" data-timeline>
+      <ol class="tl-blocks" data-blocks></ol>
+
+      <div class="tl-row tl-end is-wake" data-end>
+        <div class="tl-gutter">
+          <label class="tl-time">
+            <span class="field-name" data-end-label>Woke at</span>
+            <input type="time" step="900" value={DEFAULT_WAKE} data-end-time />
+          </label>
+        </div>
+        <div class="tl-body">
+          <div class="tl-grip" data-grip aria-hidden="true">
+            <span class="tl-grip-bar"></span>
+            <span class="tl-readout" data-readout></span>
+          </div>
+          <p class="tl-actions">
+            <button type="button" data-action="open">Open the next block</button>
+            <button type="button" data-action="sleep">Asleep from here</button>
+            <button type="button" data-action="reopen" hidden>Reopen the day</button>
+          </p>
+        </div>
+      </div>
     </div>
 
-    <ol class="blocks" data-blocks>
-      {
-        seeded.map((time) => (
-          <li class="block" data-block>
-            <label class="field field-time">
-              <span class="field-name">Starts at</span>
-              <input type="time" data-time value={time} />
-            </label>
-            <label class="field field-what">
-              <span class="field-name">What you were doing</span>
-              <input type="text" data-what autocomplete="off" />
-            </label>
-            <label class="field field-flag">
-              <input type="checkbox" data-flag />
-              <span class="field-name">For a later week</span>
-            </label>
-            <p class="block-tools">
-              <button type="button" data-action="repeat">
-                Repeat<span class="recorder-hidden"> this block in the next one</span>
-              </button>
-              <button type="button" data-action="remove">
-                Remove<span class="recorder-hidden"> this block</span>
-              </button>
-            </p>
-            <p class="block-span" data-span />
-          </li>
-        ))
-      }
-    </ol>
-
-    <p class="blocks-tools">
-      <button type="button" data-action="add">Add a block</button>
-      <button type="button" data-action="sort" hidden>Put the blocks in clock order</button>
-    </p>
-
     <p class="blocks-total" data-total></p>
-
-    <h4>What you decided not to write down</h4>
-
-    <p class="recorder-help">
-      Everybody leaves something out, and in the lab we read that part back to each other. It is a
-      finding rather than a hole in your homework, so it goes on the sheet beside the day itself.
-      Blocks you could not face writing down, the parts you judged too ordinary to record, the
-      thing you would rather nobody read: all of it counts, and you can say what you left out
-      without saying what it was.
-    </p>
-
-    <label class="field">
-      <span class="field-name">What you left out</span>
-      <textarea rows="3" data-field="omitted"></textarea>
-    </label>
-    <label class="field">
-      <span class="field-name">Why it did not seem worth recording</span>
-      <textarea rows="3" data-field="why"></textarea>
-    </label>
 
     <h4>Taking it away</h4>
 
@@ -222,7 +212,7 @@ const PAPER_ROWS = 14;
 
     <p class="recorder-help">
       Your browser's print dialogue has a Save as PDF destination. The printed sheet carries the
-      day, the marks and the omissions, and none of the page around them.
+      day and the marks, and none of the page around them.
     </p>
 
     <p class="recorder-status" role="status" data-status></p>
@@ -231,8 +221,9 @@ const PAPER_ROWS = 14;
   <div class="recorder-paper" data-paper>
     <h4>The same sheet, to fill in by hand</h4>
     <p class="recorder-help">
-      If the buttons above do nothing, scripts are not running here. Print the page and write the
-      day in with a pen: the lab counts that identically, and the ruled sheet below is what prints.
+      If the line above will not pull and the buttons do nothing, scripts are not running here.
+      Print the page and write the day in with a pen: the lab counts that identically, and the
+      ruled sheet below is what prints.
     </p>
 
     <table class="paper-table">
@@ -256,16 +247,38 @@ const PAPER_ROWS = 14;
         }
       </tbody>
     </table>
-
-    <h5>What you decided not to write down</h5>
-    <p class="paper-rule"></p>
-    <p class="paper-rule"></p>
-    <h5>Why it did not seem worth recording</h5>
-    <p class="paper-rule"></p>
-    <p class="paper-rule"></p>
   </div>
 
   <div class="recorder-sheet" data-sheet></div>
+
+  <template data-block-template>
+    <li class="tl-row tl-block" data-block data-mins="60">
+      <div class="tl-gutter">
+        <label class="tl-time">
+          <span class="field-name" data-time-label>Block starts at</span>
+          <input type="time" step="900" data-time />
+        </label>
+        <p class="tl-span" data-span></p>
+      </div>
+      <div class="tl-body">
+        <label class="tl-what">
+          <span class="field-name">What you were doing</span>
+          <input type="text" data-what autocomplete="off" />
+        </label>
+        <label class="tl-flag">
+          <input type="checkbox" data-flag />
+          <span
+            ><span class="recorder-hidden">Mark this block for a </span><span class="tl-flag-word"
+              >later</span
+            ><span class="recorder-hidden"> week</span></span
+          >
+        </label>
+        <button type="button" class="tl-remove" data-action="remove">
+          <span aria-hidden="true">&#215;</span><span class="recorder-hidden">Remove this block</span>
+        </button>
+      </div>
+    </li>
+  </template>
 </section>
 
 <style>
@@ -413,117 +426,193 @@ const PAPER_ROWS = 14;
     font-size: var(--at-font-size-sm);
   }
 
-  .blocks {
+  /* The timeline.
+   *
+   * One pixel to the minute, so an hour is sixty pixels and a drag is the
+   * length of the thing it describes. Every row is the same two columns: the
+   * time in the gutter and the sheet beside it, with the row's top border
+   * drawn across both as the line the reader pulls.
+   *
+   * A block's height is its duration, with a floor of 2.25rem. The floor only
+   * bites at the finest resolution, since thirty minutes is already 30px and
+   * an hour is 60: it exists because a fifteen minute block is 15px and a time
+   * field is 32, and a row shorter than its own contents is not a row. */
+  .tl {
+    --px-per-min: 1px;
+    margin-block: var(--at-spacing-md) var(--at-spacing-sm);
+  }
+
+  .tl-blocks {
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .blocks-head {
-    display: none;
-  }
-
-  /* Narrow, a block is two columns and three rows: the start and the mark, the
-     activity across the width, and the span with the two row buttons beside
-     it. One column and five rows was the first attempt and ran to 234px a
-     block at 390px, which is three blocks to a screen and a day that takes
-     eight scrolls to read back. This is 130px. */
-  .block {
+  .tl-row {
     display: grid;
-    align-items: end;
-    gap: 0.15rem var(--at-spacing-sm);
-    padding-block: var(--at-spacing-sm);
-    border-block-start: 1px solid var(--at-divider);
-    grid-template-areas: "time flag" "what what" "runs tools";
-    grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr);
+    gap: 0 var(--at-spacing-sm);
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    border-block-start: 1px solid var(--at-border);
   }
 
-  .block:last-child {
-    border-block-end: 1px solid var(--at-divider);
+  .tl-block {
+    height: max(2.25rem, calc(var(--mins, 60) * var(--px-per-min)));
   }
 
-  .field-time {
-    grid-area: time;
+  .tl-gutter {
+    padding-block-start: 0.25rem;
   }
 
-  .field-what {
-    grid-area: what;
-  }
-
-  .field-flag {
+  /* The vertical rule down the sheet, which is what makes the horizontal lines
+     read as a timeline rather than as a stack of form rows. */
+  .tl-body {
     display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    grid-area: flag;
-  }
-
-  .field-flag .field-name {
-    text-transform: none;
-    letter-spacing: normal;
-    font-size: var(--at-font-size-sm);
-  }
-
-  .block .field {
-    margin-block-end: 0;
-  }
-
-  /* The per-row labels are the whole cost of the narrow layout: two lines of
-     them a block. Tightened rather than dropped, because dropping them is
-     dropping the accessible name with them. */
-  .block .field-name {
-    line-height: 1.35;
-  }
-
-  .block-tools {
-    display: flex;
-    justify-content: flex-end;
+    align-items: flex-start;
     gap: var(--at-spacing-xs);
-    margin: 0.2rem 0 0;
-    grid-area: tools;
+    padding: 0.25rem 0 0 var(--at-spacing-sm);
+    border-inline-start: 1px solid var(--at-border);
   }
 
-  /* Where the block ends and how long it ran, computed from the next block's
-     start. It is the only feedback the sheet gives that the day closes, and it
-     is text rather than a bar, because a bar would need a width and a width
-     would need a colour to mean anything. */
-  /* The area is named "runs" and not "span": grid-area: span is invalid, since
-     span is a keyword in the grid placement grammar, so the declaration was
-     dropped and this line was auto-placed into the first cell of the second
-     row. It rendered in the 7.5rem start-time column and wrapped "runs to
-     07:00, back around to the first block, 22 h 45 min" over three lines. */
-  .block-span {
-    align-self: center;
-    margin: 0;
+  .tl-time {
+    display: block;
+  }
+
+  /* Clipped on every row but the first. The gutter is a column of times under
+     a line each, which says what they are; the wake time is the question the
+     sheet opens with and keeps its label. */
+  .tl-block .field-name,
+  .tl-end .field-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .tl-row.is-wake .field-name {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+
+  .tl-span {
+    margin: 0.15rem 0 0;
     color: var(--at-text-secondary);
     font-size: var(--at-font-size-xs);
     font-variant-numeric: tabular-nums;
-    grid-area: runs;
   }
 
-  /* A marked block takes a gold edge, and the checkbox beside it stays ticked:
-     two channels, so the mark survives a greyscale print and a reader who
-     cannot separate the gold from the border grey. */
-  .block.is-marked {
-    border-inline-start: 3px solid var(--at-primary);
-    padding-inline-start: var(--at-spacing-sm);
+  .tl-what {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
-  .blocks-tools {
+  /* Below 30rem the word goes and the checkbox stays, because the activity
+     field is the thing that has to be typeable and 81px is not a field. The
+     word is only ever clipped, never removed, so the control keeps the same
+     accessible name at every width: "Mark this block for a later week". */
+  @media (width < 30rem) {
+    .tl-flag-word {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  .tl-flag {
     display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding-block-start: 0.35rem;
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-xs);
+  }
+
+  .tl-remove {
+    flex: none;
+    padding: 0.15rem 0.45rem;
+    line-height: 1.4;
+  }
+
+  /* A marked block takes the gold on its own rule, and the checkbox beside it
+     stays ticked: two channels, so the mark survives a greyscale print and a
+     reader who cannot separate the gold from the border grey. */
+  .tl-block.is-marked .tl-body {
+    border-inline-start: 3px solid var(--at-primary);
+    padding-inline-start: calc(var(--at-spacing-sm) - 2px);
+  }
+
+  .tl-block[data-sleep] .tl-body {
+    border-inline-start-style: dashed;
+  }
+
+  /* The grip: the only element in the component that takes a drag, and so the
+     only one that turns off the browser's own touch scrolling. Everywhere else
+     on the timeline a finger scrolls the page as usual. The hit area is 44px
+     tall for a target that a thumb can find; the bar inside it is what is
+     drawn. */
+  /* Its own full line in the end row, and the buttons take the line under it.
+     Sizing it as an ordinary flex item put the three buttons beside it at
+     max-content, which at 390px pushed the whole page 103px wider than the
+     window: the timeline fitted and the row under it did not. */
+  .tl-grip {
+    position: relative;
+    flex: 1 1 100%;
+    min-width: 0;
+    padding-block: 1.1rem;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .tl-grip:active {
+    cursor: grabbing;
+  }
+
+  .tl-grip-bar {
+    display: block;
+    height: 6px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--at-primary) 55%, transparent);
+  }
+
+  .tl-grip:hover .tl-grip-bar,
+  .tl.is-dragging .tl-grip-bar {
+    background: var(--at-primary);
+  }
+
+  .tl-readout {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    color: var(--at-text);
+    font-size: var(--at-font-size-xs);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  .tl-actions {
+    display: flex;
+    flex: 1 1 100%;
     flex-wrap: wrap;
     gap: var(--at-spacing-xs);
-    margin-block: var(--at-spacing-sm) var(--at-spacing-xs);
+    min-width: 0;
+    margin: 0;
+  }
+
+  .tl-end .tl-body {
+    flex-wrap: wrap;
+    border-inline-start-color: transparent;
   }
 
   .blocks-total {
     margin-block: 0 var(--at-spacing-sm);
     font-size: var(--at-font-size-sm);
     font-variant-numeric: tabular-nums;
-  }
-
-  .blocks-total.is-broken {
-    color: var(--at-warning);
-    font-weight: 600;
   }
 
   .recorder-privacy {
@@ -535,9 +624,9 @@ const PAPER_ROWS = 14;
     margin-block: 0 var(--at-spacing-xs);
   }
 
-  /* Announced and shown. Everything the buttons do happens somewhere other
-     than where the pointer was, so a line that only screen readers heard would
-     leave everyone else guessing where the block went. */
+  /* Announced and shown. Everything the buttons and the drag do happens
+     somewhere other than where the pointer was, so a line that only screen
+     readers heard would leave everyone else guessing. */
   .recorder-status {
     min-height: 1.5em;
     margin-block: 0;
@@ -554,10 +643,6 @@ const PAPER_ROWS = 14;
     white-space: nowrap;
   }
 
-  /* Wide enough for the columns, which is where the per-row labels stop
-     earning their space and the heading row takes over. They are clipped
-     rather than removed, so the accessible name of every control is the same
-     sentence at both widths. */
   @media (width >= 40rem) {
     .day-fields {
       grid-template-columns: 11rem minmax(0, 1fr);
@@ -570,38 +655,12 @@ const PAPER_ROWS = 14;
       gap: 0 var(--at-spacing-md);
     }
 
-    .blocks-head {
-      display: grid;
-      gap: var(--at-spacing-sm);
-      grid-template-columns: 7.5rem minmax(0, 1fr) 8rem auto;
-      padding-block-end: 0.2rem;
-      color: var(--at-text-secondary);
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+    .tl-row {
+      grid-template-columns: 7rem minmax(0, 1fr);
     }
 
-    .block {
-      align-items: center;
-      grid-template-areas: "time what flag tools" "runs runs runs runs";
-      grid-template-columns: 7.5rem minmax(0, 1fr) 8rem auto;
-    }
-
-    .block .field-name {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-
-    .block-tools {
-      margin-block-start: 0;
-    }
-
-    .block-span {
-      padding-block-start: 0.15rem;
+    .tl-flag {
+      font-size: var(--at-font-size-sm);
     }
   }
 
@@ -638,11 +697,6 @@ const PAPER_ROWS = 14;
     width: 8rem;
   }
 
-  .paper-rule {
-    margin-block: 0 0.9rem;
-    border-block-end: 1px solid var(--at-border);
-  }
-
   /* The printed sheet is built by the script and is the only thing on the
      paper. Off screen entirely until the print stylesheet asks for it. */
   .recorder-sheet {
@@ -653,12 +707,13 @@ const PAPER_ROWS = 14;
    *
    * The brief for the file was that it be a record and not a screenshot of a
    * form, so everything that is not the record goes: the site's nav, search
-   * and footer, the lesson around the sheet, and the form itself, whose input
-   * boxes print as empty rectangles and whose textareas clip whatever does not
-   * fit their three rows. What is left is one of two things. With the script
-   * running it is the sheet, rebuilt from the fields on every change, so the
-   * print dialogue and Ctrl+P agree with each other whether or not the browser
-   * fires beforeprint. Without it, it is the blank ruled template.
+   * and footer, the lesson around the sheet, and the timeline itself, whose
+   * input boxes print as empty rectangles and whose sixty pixels an hour would
+   * put a waking day across three sheets of paper. What is left is one of two
+   * things. With the script running it is the sheet, rebuilt from the fields on
+   * every change, so the print dialogue and Ctrl+P agree with each other
+   * whether or not the browser fires beforeprint. Without it, it is the blank
+   * ruled template.
    *
    * The hiding is done by structure rather than by naming the theme's classes:
    * everything in the body that is not the main region, and everything in the
@@ -748,8 +803,7 @@ const PAPER_ROWS = 14;
      headings. Simulated the print rules on screen to find it: the record came
      out as a block of brand colour with the day inside it. A sheet somebody
      prints is ink they paid for, and this one is a form. */
-  .recorder-sheet :global(.sheet-title),
-  .recorder-sheet :global(.sheet-section) {
+  .recorder-sheet :global(.sheet-title) {
     color: #000;
   }
 
@@ -770,23 +824,8 @@ const PAPER_ROWS = 14;
     width: 26mm;
   }
 
-  .recorder-sheet :global(.sheet-section) {
-    margin: 6mm 0 1.5mm;
-    font-size: 11pt;
-  }
-
-  .recorder-sheet :global(.sheet-answer) {
-    margin: 0 0 3mm;
-    font-size: 10pt;
-    white-space: pre-wrap;
-  }
-
-  .recorder-sheet :global(.sheet-blank) {
-    font-style: italic;
-  }
-
   .recorder-sheet :global(.sheet-foot) {
-    margin: 8mm 0 0;
+    margin: 6mm 0 0;
     padding-block-start: 2mm;
     border-block-start: 0.4pt solid #000;
     font-size: 8pt;
@@ -794,19 +833,38 @@ const PAPER_ROWS = 14;
 </style>
 
 <script>
-  // Wiring only. Everything the sheet knows is in the DOM: there is no model
-  // held alongside it, because a second copy of a student's day is a second
-  // thing that could be persisted by accident, and because the printed sheet
-  // is rebuilt from the fields rather than from a cache of them.
+  // Wiring only. What the sheet knows is in the DOM: the wake time is the first
+  // row's field, and every block carries its own length in data-mins, so the
+  // clock times are derived rather than stored twice. There is no model held
+  // alongside it, because a second copy of a student's day is a second thing
+  // that could be persisted by accident, and because the printed sheet is
+  // rebuilt from the fields rather than from a cache of them.
 
   const MINUTES_IN_DAY = 1440;
 
-  // Reassigned by every wiring pass and read by the three listeners that live
-  // on window and document. Those cannot be registered inside the pass:
-  // window outlives a ClientRouter swap while the document does not, so a
-  // listener registered per pass would accumulate one copy per navigation,
-  // each holding a detached copy of the sheet.
+  // A typed time cannot squeeze a block below this. Five minutes rather than
+  // the snap increment, because correcting a boundary by hand is exactly where
+  // somebody legitimately wants a ten minute block that the drag would not
+  // have offered.
+  const MIN_BLOCK = 5;
+
+  // Reassigned by every wiring pass and read by the listeners that live on
+  // window and document. Those cannot be registered inside the pass: window
+  // outlives a ClientRouter swap while the document does not, so a listener
+  // registered per pass would accumulate one copy per navigation, each holding
+  // a detached copy of the sheet.
   let recorder: HTMLElement | null = null;
+
+  // The drag in progress, if any. One at a time by construction: the grip
+  // captures the pointer.
+  let drag: {
+    id: number;
+    startPageY: number;
+    clientY: number;
+    block: HTMLLIElement | null;
+    grip: HTMLElement;
+    frame: number;
+  } | null = null;
 
   const blocksOf = (root: HTMLElement): HTMLLIElement[] =>
     Array.from(root.querySelectorAll<HTMLLIElement>("[data-block]"));
@@ -820,8 +878,29 @@ const PAPER_ROWS = 14;
   const flagOf = (block: Element): HTMLInputElement =>
     block.querySelector("[data-flag]") as HTMLInputElement;
 
-  const fieldOf = (root: HTMLElement, name: string): HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null =>
+  const timelineOf = (root: HTMLElement): HTMLElement =>
+    root.querySelector("[data-timeline]") as HTMLElement;
+
+  const endTimeOf = (root: HTMLElement): HTMLInputElement =>
+    root.querySelector("[data-end-time]") as HTMLInputElement;
+
+  const fieldOf = (
+    root: HTMLElement,
+    name: string,
+  ): HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null =>
     root.querySelector(`[data-field="${name}"]`);
+
+  const minsOf = (block: Element): number => Number((block as HTMLElement).dataset.mins) || 0;
+
+  const setMins = (block: Element, minutes: number): void => {
+    (block as HTMLElement).dataset.mins = String(Math.max(MIN_BLOCK, Math.round(minutes)));
+  };
+
+  const isClosed = (root: HTMLElement): boolean =>
+    timelineOf(root).dataset.closed === "true";
+
+  const totalMins = (root: HTMLElement): number =>
+    blocksOf(root).reduce((sum, block) => sum + minsOf(block), 0);
 
   /** "07:15" to 435. Null for an empty or half-typed field. */
   const parseClock = (value: string): number | null => {
@@ -836,6 +915,9 @@ const PAPER_ROWS = 14;
     return `${String(Math.floor(wrapped / 60)).padStart(2, "0")}:${String(wrapped % 60).padStart(2, "0")}`;
   };
 
+  const plural = (count: number, word: string): string =>
+    `${count} ${word}${count === 1 ? "" : "s"}`;
+
   const formatSpan = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);
     const rest = minutes % 60;
@@ -844,96 +926,106 @@ const PAPER_ROWS = 14;
     return `${hours} h ${rest} min`;
   };
 
-  /** The step Enter and Add use, from the resolution select. */
+  /** The snap increment, from the resolution select. */
   const stepOf = (root: HTMLElement): number => {
     const select = fieldOf(root, "resolution") as HTMLSelectElement | null;
     const step = Number(select?.value ?? 60);
     return Number.isFinite(step) && step > 0 ? step : 60;
   };
 
-  /** Anything a student would be sorry to lose. Recomputed rather than
-   * tracked, so clearing the last field also clears the unload warning. */
-  const hasContent = (root: HTMLElement): boolean => {
-    const typed = Array.from(root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
-      "[data-what], [data-field='omitted'], [data-field='why'], [data-field='date']",
-    )).some((input) => input.value.trim().length > 0);
-    if (typed) return true;
-    return blocksOf(root).some((block) => flagOf(block).checked);
+  /** Which field holds the wake time: the first block's, or the end row's when
+   * no block has been drawn yet. Both are the same line on the drawing. */
+  const wakeInputOf = (root: HTMLElement): HTMLInputElement => {
+    const first = blocksOf(root)[0];
+    return first ? timeOf(first) : endTimeOf(root);
   };
+
+  const wakeMins = (root: HTMLElement): number =>
+    parseClock(wakeInputOf(root).value) ?? 7 * 60;
 
   const announce = (root: HTMLElement, message: string): void => {
     const status = root.querySelector<HTMLElement>("[data-status]");
     if (status) status.textContent = message;
   };
 
-  /**
-   * The ring, measured. Each block runs to the next one's start and the last
-   * runs back to the first, so the spans always add to a whole number of days:
-   * one, if the blocks are in clock order, and more than one if they are not,
-   * since every descent in the sequence adds another lap. That is what the
-   * count of laps is for. It is the only way the sheet can be wrong, and it
-   * has a button that fixes it.
-   */
-  const measure = (root: HTMLElement) => {
-    const blocks = blocksOf(root);
-    const times = blocks.map((block) => parseClock(timeOf(block).value));
-    const known = times.filter((value): value is number => value !== null);
-    const spans: (number | null)[] = times.map((time, index) => {
-      if (time === null || known.length < 2) return null;
-      // The next block that has a time on it, wrapping to the front.
-      for (let step = 1; step <= times.length; step += 1) {
-        const next = times[(index + step) % times.length];
-        if (next !== null) return ((next - time) % MINUTES_IN_DAY + MINUTES_IN_DAY) % MINUTES_IN_DAY;
-      }
-      return null;
-    });
-    const total = spans.reduce<number>((sum, span) => sum + (span ?? 0), 0);
-    return { blocks, times, spans, total, single: known.length === 1 };
+  /** Anything a student would be sorry to lose. Recomputed rather than
+   * tracked, so clearing the last field also clears the unload warning. A
+   * drawn day counts even with nothing written in it. */
+  const hasContent = (root: HTMLElement): boolean => {
+    if (blocksOf(root).length > 0) return true;
+    const date = fieldOf(root, "date") as HTMLInputElement | null;
+    return (date?.value.trim().length ?? 0) > 0;
   };
 
-  /** Redraw everything derived: the spans, the total, the marks, the sheet. */
-  const refresh = (root: HTMLElement): void => {
-    const { blocks, times, spans, total, single } = measure(root);
+  /**
+   * Redraw everything derived: the clock times, the heights, the labels, the
+   * totals and the printable sheet. Nothing here decides anything; the
+   * durations in data-mins and the wake time are the whole state.
+   */
+  const layout = (root: HTMLElement): void => {
+    const blocks = blocksOf(root);
+    const closed = isClosed(root);
+    const wake = wakeMins(root);
+    const end = root.querySelector<HTMLElement>("[data-end]");
 
+    let offset = 0;
     blocks.forEach((block, index) => {
+      const input = timeOf(block);
+      const label = block.querySelector<HTMLElement>("[data-time-label]");
+      if (label) label.textContent = index === 0 ? "Woke at" : "Block starts at";
+      block.classList.toggle("is-wake", index === 0);
+      const start = formatClock(wake + offset);
+      // Never while it is being typed into: writing to a time input resets
+      // which segment the caret is in, and a field that jumps back to the hour
+      // on every keystroke cannot be typed into at all.
+      if (document.activeElement !== input) input.value = start;
+      input.dataset.clock = start;
+      block.style.setProperty("--mins", String(minsOf(block)));
       const span = block.querySelector<HTMLElement>("[data-span]");
-      const time = times[index];
-      const length = spans[index];
-      const last = index === blocks.length - 1;
-      if (span) {
-        if (time === null) span.textContent = "no start time yet";
-        else if (single) span.textContent = "the only block, so it holds all 24 h";
-        else if (length === null) span.textContent = "";
-        else {
-          const ends = formatClock(time + length);
-          span.textContent = last
-            ? `runs to ${ends}, back around to the first block, ${formatSpan(length)}`
-            : `runs to ${ends}, ${formatSpan(length)}`;
-        }
-      }
+      if (span) span.textContent = formatSpan(minsOf(block));
       block.classList.toggle("is-marked", flagOf(block).checked);
+      offset += minsOf(block);
     });
 
-    const marked = blocks.filter((block) => flagOf(block).checked).length;
-    const anyTime = times.some((time) => time !== null);
-    const covered = single ? MINUTES_IN_DAY : total;
-    const laps = covered / MINUTES_IN_DAY;
-    const ordered = laps <= 1;
-    const totalLine = root.querySelector<HTMLElement>("[data-total]");
-    if (totalLine) {
-      const marks = marked === 1 ? "1 block marked for a later week" : `${marked} blocks marked for a later week`;
-      if (!anyTime) {
-        totalLine.textContent = `${blocks.length} blocks, none of them timed yet. ${marks}.`;
-      } else if (ordered) {
-        totalLine.textContent = `${blocks.length} blocks, covering ${formatSpan(covered)}. ${marks}.`;
-      } else {
-        totalLine.textContent = `${blocks.length} blocks, but they run around the clock ${laps} times, so this is not one day yet: some of them are out of clock order.`;
-      }
-      totalLine.classList.toggle("is-broken", anyTime && !ordered);
+    const endInput = endTimeOf(root);
+    const endClock = formatClock(wake + offset);
+    if (document.activeElement !== endInput) endInput.value = endClock;
+    endInput.dataset.clock = endClock;
+    endInput.readOnly = closed;
+    end?.classList.toggle("is-wake", blocks.length === 0);
+    const endLabel = root.querySelector<HTMLElement>("[data-end-label]");
+    if (endLabel) {
+      endLabel.textContent =
+        blocks.length === 0 ? "Woke at" : closed ? "Back to waking at" : "Up to";
     }
 
-    const sort = root.querySelector<HTMLButtonElement>("[data-action='sort']");
-    if (sort) sort.hidden = ordered || !anyTime;
+    const grip = root.querySelector<HTMLElement>("[data-grip]");
+    if (grip) grip.hidden = closed;
+    const openButton = root.querySelector<HTMLButtonElement>("[data-action='open']");
+    const sleepButton = root.querySelector<HTMLButtonElement>("[data-action='sleep']");
+    const reopenButton = root.querySelector<HTMLButtonElement>("[data-action='reopen']");
+    if (openButton) openButton.hidden = closed;
+    if (sleepButton) sleepButton.hidden = closed;
+    if (reopenButton) reopenButton.hidden = !closed;
+
+    const snapNote = root.querySelector<HTMLElement>("[data-snap-note]");
+    if (snapNote) {
+      snapNote.textContent = `A drag lands on the nearest ${formatSpan(stepOf(root))}, and so does the button.`;
+    }
+
+    const marked = blocks.filter((block) => flagOf(block).checked).length;
+    const marks = `${plural(marked, "block")} marked for a later week`;
+    const totalLine = root.querySelector<HTMLElement>("[data-total]");
+    if (totalLine) {
+      if (blocks.length === 0) {
+        totalLine.textContent = "No blocks yet. Pull the line down, or press Open the next block.";
+      } else if (closed) {
+        const sleep = minsOf(blocks[blocks.length - 1]);
+        totalLine.textContent = `${plural(blocks.length, "block")} covering 24 h, including ${formatSpan(sleep)} asleep. ${marks}.`;
+      } else {
+        totalLine.textContent = `${plural(blocks.length, "block")}, ${formatSpan(offset)} since you woke. The day is still open. ${marks}.`;
+      }
+    }
 
     renderSheet(root);
   };
@@ -958,7 +1050,10 @@ const PAPER_ROWS = 14;
   const renderSheet = (root: HTMLElement): void => {
     const sheet = root.querySelector<HTMLElement>("[data-sheet]");
     if (!sheet) return;
-    const { blocks, times, spans, total, single } = measure(root);
+    const blocks = blocksOf(root);
+    const closed = isClosed(root);
+    const wake = wakeMins(root);
+    const total = totalMins(root);
 
     const date = (fieldOf(root, "date") as HTMLInputElement | null)?.value ?? "";
     const resolution = (() => {
@@ -969,9 +1064,12 @@ const PAPER_ROWS = 14;
 
     const facts = [
       `Date: ${date || "not stated"}`,
+      `Woke at: ${formatClock(wake)}`,
       `Written down: ${resolution || "not stated"}`,
       `Written: ${written || "not stated"}`,
-      `Covers: ${formatSpan(single ? MINUTES_IN_DAY : total)} in ${blocks.length} blocks`,
+      closed
+        ? `Covers: 24 h in ${plural(blocks.length, "block")}, sleep included`
+        : `Covers: ${formatSpan(total)} since waking, and the day is not closed`,
     ].join("  ·  ");
 
     const table = make("table", "sheet-table");
@@ -991,43 +1089,29 @@ const PAPER_ROWS = 14;
     table.append(head);
 
     const body = document.createElement("tbody");
-    blocks.forEach((block, index) => {
-      // A block with a start time and nothing written against it stays: an
-      // hour nobody recorded is a fact about the day, and it is the thing the
-      // omissions field then has to account for. A block with neither a time
-      // nor a word is just an Add a block somebody thought better of, and it
-      // does not go on the paper.
-      if (times[index] === null && whatOf(block).value.trim().length === 0) return;
+    let offset = 0;
+    for (const block of blocks) {
       const row = document.createElement("tr");
-      const time = times[index];
-      const length = single ? MINUTES_IN_DAY : spans[index];
-      row.append(make("td", "sheet-col-time", time === null ? "" : formatClock(time)));
-      row.append(make("td", "sheet-col-span", length === null ? "" : formatSpan(length)));
-      row.append(make("td", "", whatOf(block).value.trim()));
+      const mins = minsOf(block);
+      row.append(make("td", "sheet-col-time", formatClock(wake + offset)));
+      row.append(make("td", "sheet-col-span", formatSpan(mins)));
+      // The sleep block is the one row the student did not type, so it says so
+      // rather than printing an empty cell that reads as an unrecorded hour.
+      const what = whatOf(block).value.trim();
+      row.append(make("td", "", what || (block.dataset.sleep === "true" ? "asleep" : "")));
       // The word, not a tick or a colour: this sheet is printed in black and
       // read on paper, and "marked" survives both.
       row.append(make("td", "sheet-col-mark", flagOf(block).checked ? "marked" : ""));
       body.append(row);
-    });
+      offset += mins;
+    }
     table.append(body);
-
-    const answer = (value: string): HTMLElement =>
-      value.trim().length > 0
-        ? make("p", "sheet-answer", value.trim())
-        : make("p", "sheet-answer sheet-blank", "Left blank.");
-
-    const omitted = (fieldOf(root, "omitted") as HTMLTextAreaElement | null)?.value ?? "";
-    const why = (fieldOf(root, "why") as HTMLTextAreaElement | null)?.value ?? "";
 
     sheet.replaceChildren(
       make("p", "sheet-course", "SLOP1638 week 1 lab · baseline record"),
       make("h2", "sheet-title", "One day, recorded and not improved"),
       make("p", "sheet-facts", facts),
       table,
-      make("h3", "sheet-section", "What I decided not to write down"),
-      answer(omitted),
-      make("h3", "sheet-section", "Why it did not seem worth recording"),
-      answer(why),
       make(
         "p",
         "sheet-foot",
@@ -1036,20 +1120,225 @@ const PAPER_ROWS = 14;
     );
   };
 
-  /** A fresh block after `after`, timed one resolution step on from it. */
-  const addBlock = (root: HTMLElement, after: HTMLLIElement | null, text = ""): HTMLLIElement => {
-    const blocks = blocksOf(root);
-    const model = blocks[0];
+  /** How much of the day is still unspoken for. */
+  const remainingMins = (root: HTMLElement): number => MINUTES_IN_DAY - totalMins(root);
+
+  /** Open a block at the end of the day. Returns null when the twenty-four
+   * hours are already full, which is the one thing that can stop it. */
+  const openBlock = (root: HTMLElement, minutes: number, sleep = false): HTMLLIElement | null => {
+    const room = remainingMins(root);
+    if (room < MIN_BLOCK) {
+      announce(root, "The twenty-four hours are full. Shorten a block, or close the day.");
+      return null;
+    }
+    const template = root.querySelector<HTMLTemplateElement>("[data-block-template]");
+    const model = template?.content.firstElementChild;
+    if (!model) return null;
     const block = model.cloneNode(true) as HTMLLIElement;
-    const previous = after ?? blocks[blocks.length - 1] ?? null;
-    const from = previous ? parseClock(timeOf(previous).value) : null;
-    timeOf(block).value = from === null ? "" : formatClock(from + stepOf(root));
-    whatOf(block).value = text;
-    flagOf(block).checked = false;
-    block.classList.remove("is-marked");
-    if (previous) previous.after(block);
-    else root.querySelector("[data-blocks]")?.append(block);
+    const wakeBefore = wakeMins(root);
+    setMins(block, Math.min(Math.max(minutes, MIN_BLOCK), room));
+    if (sleep) {
+      block.dataset.sleep = "true";
+      whatOf(block).value = "asleep";
+      block.querySelector<HTMLButtonElement>("[data-action='remove']")?.remove();
+    }
+    root.querySelector("[data-blocks]")?.append(block);
+    // The first block takes over the wake time from the end row, which was
+    // holding it while the sheet had no blocks at all.
+    if (blocksOf(root).length === 1) timeOf(block).value = formatClock(wakeBefore);
+    layout(root);
     return block;
+  };
+
+  /** Remove a block and give its minutes to a neighbour, so the wake time and
+   * the end of the day both stay where they were. */
+  const removeBlock = (root: HTMLElement, block: HTMLLIElement): void => {
+    const blocks = blocksOf(root);
+    const index = blocks.indexOf(block);
+    const mins = minsOf(block);
+    // The wake time lives in whichever field is first on the sheet, so a
+    // removal that changes which field that is has to carry it across. Without
+    // this, deleting the first block promoted the second block's start time to
+    // be the wake time, and deleting the only block left the end row holding
+    // the end of the day and called it waking: a 07:00 sheet with one four
+    // hour block came back as a sheet that started at 11:00.
+    const wakeBefore = wakeMins(root);
+    const previous = blocks[index - 1];
+    const next = blocks[index + 1];
+    const started = timeOf(block).value;
+    // Focus has to land somewhere before the element holding it leaves the
+    // document, or it falls to the body and a keyboard user starts the tab
+    // order again from the top of the page.
+    const landing =
+      (next && whatOf(next)) ||
+      (previous && whatOf(previous)) ||
+      root.querySelector<HTMLElement>("[data-action='open']");
+    landing?.focus();
+    if (previous) setMins(previous, minsOf(previous) + mins);
+    else if (next) setMins(next, minsOf(next) + mins);
+    block.remove();
+    const first = blocksOf(root)[0];
+    (first ? timeOf(first) : endTimeOf(root)).value = formatClock(wakeBefore);
+    layout(root);
+    announce(
+      root,
+      blocksOf(root).length === 0
+        ? "Block removed. The sheet is back to the waking line."
+        : `Block starting ${started} removed, and its ${formatSpan(mins)} went to the block ${previous ? "above" : "below"} it.`,
+    );
+  };
+
+  /** Close the day: everything from the last line back around to waking is
+   * sleep. This is what turns a waking day into the twenty-four continuous
+   * hours the lab asks for, and it is why the sheet never reports a gap. */
+  const closeDay = (root: HTMLElement): void => {
+    const blocks = blocksOf(root);
+    if (blocks.length === 0) {
+      announce(root, "Draw at least one block before you close the day.");
+      return;
+    }
+    const sleep = remainingMins(root);
+    if (sleep < MIN_BLOCK) {
+      announce(root, "There is no time left to sleep in: the blocks already fill the day.");
+      return;
+    }
+    const wake = wakeMins(root);
+    const from = formatClock(wake + totalMins(root));
+    timelineOf(root).dataset.closed = "true";
+    const block = openBlock(root, sleep, true);
+    layout(root);
+    if (block) whatOf(block).focus();
+    announce(
+      root,
+      `Day closed. ${from} back around to ${formatClock(wake)} is recorded as asleep, ${formatSpan(sleep)}. The sheet now covers twenty-four hours.`,
+    );
+  };
+
+  const reopenDay = (root: HTMLElement): void => {
+    const blocks = blocksOf(root);
+    const last = blocks[blocks.length - 1];
+    if (last?.dataset.sleep === "true") last.remove();
+    delete timelineOf(root).dataset.closed;
+    layout(root);
+    root.querySelector<HTMLElement>("[data-action='open']")?.focus();
+    announce(root, "Day reopened. The sleep block is gone and the line is loose again.");
+  };
+
+  /** A boundary was typed or arrowed into a new time. Move that one line and
+   * leave its neighbours where they are: the block above takes the difference
+   * and the block below gives it up. */
+  const retime = (root: HTMLElement, input: HTMLInputElement): void => {
+    const now = parseClock(input.value);
+    const before = parseClock(input.dataset.clock ?? "");
+    if (now === null || before === null) return;
+    // Nearest wrap, so typing 23:45 under a block that started at 00:15 reads
+    // as half an hour earlier rather than as most of a day later.
+    let delta = ((now - before + MINUTES_IN_DAY + 720) % MINUTES_IN_DAY) - 720;
+    if (delta === 0) return;
+
+    const blocks = blocksOf(root);
+    const block = input.closest<HTMLLIElement>("[data-block]");
+
+    // The wake line. Everything keeps its length and the whole day slides.
+    if (!block && blocks.length === 0) {
+      layout(root);
+      return;
+    }
+    if (block && blocks.indexOf(block) === 0) {
+      layout(root);
+      return;
+    }
+
+    const above = block ? blocks[blocks.indexOf(block) - 1] : blocks[blocks.length - 1];
+    // Which block pays for the move. An interior line has blocks on both sides
+    // and the later ones are already placed, so the two it sits between trade
+    // the difference. The last line of an open day has nothing after it, so
+    // moving it moves the end of the day and the block below keeps its length:
+    // typing 22:45 on the line under a nine hour evening means the evening
+    // ended at 22:45, not that the five minutes after it have to absorb three
+    // hours. That clamp is what produced a sheet whose times and lengths
+    // disagreed, and it produced it silently.
+    const last = blocks[blocks.length - 1];
+    const trades = block && !(block === last && !isClosed(root));
+    const below = trades ? block : null;
+    if (!above) return;
+
+    let clamped = false;
+    if (minsOf(above) + delta < MIN_BLOCK) {
+      delta = MIN_BLOCK - minsOf(above);
+      clamped = true;
+    }
+    if (below && minsOf(below) - delta < MIN_BLOCK) {
+      delta = minsOf(below) - MIN_BLOCK;
+      clamped = true;
+    }
+    if (!below && totalMins(root) + delta > MINUTES_IN_DAY) {
+      delta = MINUTES_IN_DAY - totalMins(root);
+      clamped = true;
+    }
+
+    setMins(above, minsOf(above) + delta);
+    if (below) setMins(below, minsOf(below) - delta);
+    layout(root);
+    if (clamped) {
+      announce(
+        root,
+        `Kept at ${input.value}: a block cannot be shorter than five minutes, and the day cannot run past twenty-four hours.`,
+      );
+    }
+  };
+
+  // The drag itself. Measured in page coordinates rather than client ones, so
+  // that scrolling the window under a still finger goes on lengthening the
+  // block: the autoscroll below depends on it.
+  const dragFrame = (root: HTMLElement): void => {
+    if (!drag) return;
+    const zone = 90;
+    if (drag.clientY > window.innerHeight - zone) window.scrollBy(0, 14);
+    else if (drag.clientY < zone) window.scrollBy(0, -14);
+
+    const pulled = drag.clientY + window.scrollY - drag.startPageY;
+    if (pulled > 3 || drag.block) {
+      const snap = stepOf(root);
+      const room = remainingMins(root) + (drag.block ? minsOf(drag.block) : 0);
+      const wanted = Math.round(pulled / snap) * snap;
+      const minutes = Math.min(Math.max(wanted, snap), Math.max(snap, room));
+      if (!drag.block) drag.block = openBlock(root, minutes);
+      else {
+        setMins(drag.block, minutes);
+        layout(root);
+      }
+      const readout = root.querySelector<HTMLElement>("[data-readout]");
+      if (readout && drag.block) {
+        const wake = wakeMins(root);
+        readout.textContent = `${formatClock(wake + totalMins(root))} · ${formatSpan(minsOf(drag.block))}`;
+      }
+    }
+    drag.frame = requestAnimationFrame(() => dragFrame(root));
+  };
+
+  const endDrag = (root: HTMLElement, commit: boolean): void => {
+    if (!drag) return;
+    cancelAnimationFrame(drag.frame);
+    const block = drag.block;
+    const grip = drag.grip;
+    drag = null;
+    timelineOf(root).classList.remove("is-dragging");
+    const readout = root.querySelector<HTMLElement>("[data-readout]");
+    if (readout) readout.textContent = "";
+    if (!commit) return;
+    // A tap with no pull is the single-pointer path that WCAG 2.5.7 asks for:
+    // one block of the current resolution, same as the button beside it.
+    const opened = block ?? openBlock(root, stepOf(root));
+    if (!opened) return;
+    whatOf(opened).focus();
+    const wake = wakeMins(root);
+    const start = formatClock(wake + totalMins(root) - minsOf(opened));
+    announce(
+      root,
+      `Block opened, ${start} to ${formatClock(wake + totalMins(root))}, ${formatSpan(minsOf(opened))}. Say what you were doing.`,
+    );
+    void grip;
   };
 
   function setUpDayRecorder(): void {
@@ -1060,130 +1349,150 @@ const PAPER_ROWS = 14;
     // replacing it, so there is nothing to bind and only the derived text to
     // put back.
     if (root.dataset.scripted === "true") {
-      refresh(root);
+      layout(root);
       return;
     }
     // Also what hides the blank paper sheet, so the fallback is visible
     // exactly when this line has not run.
     root.dataset.scripted = "true";
 
-    root.addEventListener("input", () => refresh(root));
-    root.addEventListener("change", () => refresh(root));
+    root.addEventListener("input", (event) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.matches("[data-time], [data-end-time]")) {
+        retime(root, target as HTMLInputElement);
+        return;
+      }
+      layout(root);
+    });
+    root.addEventListener("change", () => layout(root));
 
-    // Enter is the whole speed argument, and it is one key rather than three.
-    //
-    // It walks the two fields that carry the day, start time then activity,
-    // and then on to the next block's start time, making that block if there
-    // is not one yet. So a day is typed as a single loop: four digits, Enter,
-    // what you were doing, Enter, four digits, Enter. The checkbox and the two
-    // row buttons are not in the loop, because marking a block and repeating
-    // one are not things that happen on every row. Tab still reaches them, in
-    // the order they are read in.
-    //
-    // Two earlier versions are in here by their absence. Enter landing on the
-    // activity field skipped the start time, which is the field that actually
-    // needs typing: the prefilled step is right for the block after an hour of
-    // desk work and wrong for almost everything else, and getting back to it
-    // meant a shift-Tab on nearly every row. And Enter inserting a block
-    // unconditionally put a second 08:00 above the seeded 08:00 every time
-    // somebody pressed it on the first row. Inserting belongs to Repeat and to
-    // Add a block; Enter only ever walks forward.
+    // layout() never writes to the field somebody is typing in, so a value it
+    // had to correct stays on screen until focus moves. This is the moment it
+    // moves: one frame later the caret is somewhere else and the field can be
+    // told what it actually holds.
+    root.addEventListener("focusout", () => requestAnimationFrame(() => layout(root)));
+
+    // Enter walks the two fields that carry the day and opens the next block
+    // at the end, so the whole thing can be typed. It only ever walks forward:
+    // inserting in the middle belongs to the line above the block, which is a
+    // time you can type into.
     root.addEventListener("keydown", (event) => {
       if (!(event instanceof KeyboardEvent) || event.key !== "Enter") return;
       const target = event.target as HTMLElement | null;
-      const block = target?.closest<HTMLLIElement>("[data-block]");
-      if (!block || !target?.matches("[data-time], [data-what]")) return;
-      event.preventDefault();
+      if (!target) return;
       if (target.matches("[data-time]")) {
-        whatOf(block).focus();
+        event.preventDefault();
+        const block = target.closest<HTMLLIElement>("[data-block]");
+        if (block) whatOf(block).focus();
         return;
       }
-      const next = block.nextElementSibling as HTMLLIElement | null;
+      if (target.matches("[data-end-time]")) {
+        event.preventDefault();
+        root.querySelector<HTMLElement>("[data-action='open']")?.focus();
+        return;
+      }
+      if (!target.matches("[data-what]")) return;
+      event.preventDefault();
+      const block = target.closest<HTMLLIElement>("[data-block]");
+      const next = block?.nextElementSibling as HTMLLIElement | null;
       if (next?.matches("[data-block]")) {
         timeOf(next).focus();
         return;
       }
-      const added = addBlock(root, block);
-      refresh(root);
-      timeOf(added).focus();
-      announce(root, "Block added.");
+      if (isClosed(root)) return;
+      const opened = openBlock(root, stepOf(root));
+      if (!opened) return;
+      timeOf(opened).focus();
+      announce(root, `Block opened, ${formatSpan(minsOf(opened))}. Correct the start time or press Enter again.`);
     });
 
     root.addEventListener("click", (event) => {
-      const button = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>("[data-action]");
+      const button = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>(
+        "[data-action]",
+      );
       if (!button) return;
       const action = button.dataset.action;
-      const block = button.closest<HTMLLIElement>("[data-block]");
 
-      if (action === "add") {
-        const added = addBlock(root, null);
-        refresh(root);
-        whatOf(added).focus();
-        announce(root, "Block added at the end.");
-        return;
-      }
-
-      if (action === "repeat" && block) {
-        const added = addBlock(root, block, whatOf(block).value);
-        refresh(root);
-        whatOf(added).focus();
-        announce(root, `Repeated "${whatOf(block).value.trim() || "the empty block"}".`);
-        return;
-      }
-
-      if (action === "remove" && block) {
-        const blocks = blocksOf(root);
-        const index = blocks.indexOf(block);
-        const started = timeOf(block).value;
-        // Focus has to land somewhere before the element holding it leaves the
-        // document, or it falls to the body and a keyboard user starts the tab
-        // order again from the top of the page.
-        const next = blocks[index + 1] ?? blocks[index - 1] ?? null;
-        if (next) {
-          whatOf(next).focus();
-          block.remove();
-          announce(root, `Block starting ${started || "with no time"} removed.`);
-        } else {
-          // The last one standing is emptied instead, so the sheet always has
-          // a block to clone the next one from.
-          timeOf(block).value = "";
-          whatOf(block).value = "";
-          flagOf(block).checked = false;
-          whatOf(block).focus();
-          announce(root, "Last block emptied. The sheet keeps one block.");
-        }
-        refresh(root);
-        return;
-      }
-
-      if (action === "sort") {
-        const blocks = blocksOf(root);
-        const first = blocks[0];
-        const sorted = [...blocks].sort(
-          (a, b) => (parseClock(timeOf(a).value) ?? MINUTES_IN_DAY) - (parseClock(timeOf(b).value) ?? MINUTES_IN_DAY),
+      if (action === "open") {
+        const opened = openBlock(root, stepOf(root));
+        if (!opened) return;
+        whatOf(opened).focus();
+        announce(
+          root,
+          `Block opened, ${formatSpan(minsOf(opened))}. Say what you were doing, and correct the time on the line above it if the length is wrong.`,
         );
-        // Rotated so the day still starts where the student said it starts,
-        // rather than at whichever block happens to hold the smallest number.
-        const start = sorted.indexOf(first);
-        const rotated = [...sorted.slice(start), ...sorted.slice(0, start)];
-        const list = root.querySelector("[data-blocks]");
-        for (const item of rotated) list?.append(item);
-        refresh(root);
-        button.hidden = true;
-        whatOf(first).focus();
-        announce(root, "Blocks put in clock order, starting where the day started.");
+        return;
+      }
+
+      if (action === "remove") {
+        const block = button.closest<HTMLLIElement>("[data-block]");
+        if (block) removeBlock(root, block);
+        return;
+      }
+
+      if (action === "sleep") {
+        closeDay(root);
+        return;
+      }
+
+      if (action === "reopen") {
+        reopenDay(root);
         return;
       }
 
       if (action === "print") {
         renderSheet(root);
-        announce(root, "Sheet sent to the print dialogue. Nothing was saved: the file you keep is the only copy.");
+        announce(
+          root,
+          "Sheet sent to the print dialogue. Nothing was saved: the file you keep is the only copy.",
+        );
         window.print();
-        return;
       }
     });
 
-    refresh(root);
+    const grip = root.querySelector<HTMLElement>("[data-grip]");
+    if (grip) {
+      grip.addEventListener("pointerdown", (event) => {
+        if (!(event instanceof PointerEvent) || isClosed(root)) return;
+        // Stops the browser starting a text selection or a scroll of its own.
+        // The grip is the only element in the component with touch-action:
+        // none, so this is the only place the page gives up its own gesture.
+        event.preventDefault();
+        // Capture so the pull survives the pointer leaving the grip, which it
+        // does immediately: the grip moves down with the line while the finger
+        // stays where it is. Guarded because capture throws on a pointer id the
+        // browser does not have active, which is what a synthetic event is.
+        try {
+          grip.setPointerCapture(event.pointerId);
+        } catch {
+          /* uncaptured is still workable: the listeners are on the grip */
+        }
+        timelineOf(root).classList.add("is-dragging");
+        drag = {
+          id: event.pointerId,
+          // clientY plus the scroll offset rather than pageY, so the start of
+          // the pull is measured the same way every frame of it is. It also
+          // keeps the handler testable: a synthetic PointerEvent carries a
+          // pageY of 0, which made a 95px pull read as a five hour block.
+          startPageY: event.clientY + window.scrollY,
+          clientY: event.clientY,
+          block: null,
+          grip,
+          frame: 0,
+        };
+        drag.frame = requestAnimationFrame(() => dragFrame(root));
+      });
+
+      grip.addEventListener("pointermove", (event) => {
+        if (!drag || !(event instanceof PointerEvent) || event.pointerId !== drag.id) return;
+        drag.clientY = event.clientY;
+      });
+
+      grip.addEventListener("pointerup", () => endDrag(root, true));
+      grip.addEventListener("pointercancel", () => endDrag(root, false));
+    }
+
+    layout(root);
   }
 
   // A page that saves nothing owes a warning before it throws the lot away.
@@ -1214,7 +1523,10 @@ const PAPER_ROWS = 14;
 
   window.addEventListener("afterprint", () => {
     if (recorder?.isConnected) {
-      announce(recorder, "Print dialogue closed. Nothing was saved here: if you did not keep the file, the record is still only in this tab.");
+      announce(
+        recorder,
+        "Print dialogue closed. Nothing was saved here: if you did not keep the file, the record is still only in this tab.",
+      );
     }
   });
 
