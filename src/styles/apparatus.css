@@ -1,4 +1,5 @@
-/* Apparatus sections. GENERATED, see scripts/build-apparatus-css.mjs.
+/* Section labels, and the apparatus block. GENERATED, see
+ * scripts/build-apparatus-css.mjs.
  *
  * A lab page had seven h2s at the same size doing two different jobs: three
  * were the lesson, the rest were the recurring machinery around it, the
@@ -6,20 +7,28 @@
  * reader could not tell them apart, so the page shouted at one volume
  * throughout.
  *
- * These five keep their h2 semantics, because they really are page-level
- * sections and the document outline should say so. What changes is weight:
- * they read as small labels, so the only full-size headings left on a page are
- * the ones carrying the teaching.
+ * These keep their h2 semantics, because they really are page-level sections
+ * and the document outline should say so. What changes is weight: they read as
+ * small labels, so the only full-size headings left on a page are the ones
+ * carrying the teaching.
  *
- * The icons are masks rather than markup because two of the five sections are
+ * Two of them are now at the top of a lab rather than the foot: the week's
+ * summary and the list of what the student brings. They take the same label
+ * because they are the same kind of thing, a recurring block that appears on
+ * all twelve weeks and says which block it is before it says anything else.
+ * Being quiet is the point there too: the safety block sits between them, and
+ * nothing above it may compete with it.
+ *
+ * The icons are masks rather than markup because two of the sections are
  * rendered by package components whose h2 cannot be reached from here. Driving
- * all five from CSS keeps them identical instead of icons on some. They are
+ * them all from CSS keeps them identical instead of icons on some. They are
  * decorative (::before content is not announced) and the label text carries
  * the meaning on its own.
  */
 
-.claims-section > h2,
+.week-summary > h2,
 .spec-list > h2,
+.claims-section > h2,
 .protocol-section > h2,
 .teaching-team > h2,
 .related-content > h2 {
@@ -41,8 +50,9 @@
   text-transform: uppercase !important;
 }
 
-.claims-section > h2::before,
+.week-summary > h2::before,
 .spec-list > h2::before,
+.claims-section > h2::before,
 .protocol-section > h2::before,
 .teaching-team > h2::before,
 .related-content > h2::before {
@@ -56,12 +66,16 @@
   mask-size: contain;
 }
 
-.claims-section > h2::before {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M10 9H6m9.5 2a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5M6 6h3m9 12l-4.5-3l-2.5 2l-5-4'/%3E%3Cpath d='M3 20.4V3.6a.6.6 0 0 1 .6-.6h16.8a.6.6 0 0 1 .6.6v16.8a.6.6 0 0 1-.6.6H3.6a.6.6 0 0 1-.6-.6Z'/%3E%3C/g%3E%3C/svg%3E");
+.week-summary > h2::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5'%3E%3Cpath d='M10.586 10.586L16.95 7.05l-3.536 6.364L7.05 16.95z'/%3E%3Cpath d='M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .spec-list > h2::before {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M9 6h11M3.8 5.8l.8.8l2-2m-2.8 7.2l.8.8l2-2m-2.8 7.2l.8.8l2-2M9 12h11M9 18h11'/%3E%3C/svg%3E");
+}
+
+.claims-section > h2::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M10 9H6m9.5 2a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5M6 6h3m9 12l-4.5-3l-2.5 2l-5-4'/%3E%3Cpath d='M3 20.4V3.6a.6.6 0 0 1 .6-.6h16.8a.6.6 0 0 1 .6.6v16.8a.6.6 0 0 1-.6.6H3.6a.6.6 0 0 1-.6-.6Z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .protocol-section > h2::before {
@@ -84,12 +98,6 @@
  * its own rules, and it follows the text colour into dark mode instead of
  * staying a light-mode tint. */
 .apparatus {
-  /* One indent for everything itemised inside the block, declared once here
-   * and read by the sections that have to line up with each other, including
-   * Claims.astro, which is a scoped component and cannot see this file's
-   * selectors but can read this property. */
-  --apparatus-indent: 1.2em;
-
   margin-block-start: var(--at-spacing-2xl, 3rem);
   border-block-start: 1px solid color-mix(in srgb, currentColor 25%, transparent);
 }
@@ -137,8 +145,21 @@
  * and the spec's preamble sentence flush at 0. Three left edges inside one
  * block is what made it read as a pile rather than a set. Labels, preambles
  * and label/value pairs start at the content edge; anything itemised is
- * indented by the one indent above, with its markers hanging in that space. */
-.apparatus ul {
+ * indented by the one indent, with its markers hanging in that space.
+ *
+ * Declared on .spec-list as well as on .apparatus, because the spec is the one
+ * section that appears in both places: at the foot of an assessment, and at
+ * the top of a lab, where there is no .apparatus above it to inherit from and
+ * the list would otherwise fall back to the browser's 40px. Claims.astro is a
+ * scoped component that cannot see these selectors but can read the property,
+ * which is why it is a custom property rather than a literal. */
+.apparatus,
+.spec-list {
+  --apparatus-indent: 1.2em;
+}
+
+.apparatus ul,
+.spec-list ul {
   padding-inline-start: var(--apparatus-indent);
 }
 

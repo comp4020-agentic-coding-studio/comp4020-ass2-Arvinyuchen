@@ -14,7 +14,40 @@
 // gives: ContentLayout renders `description` twice, once as the meta
 // description and once as a visible lead paragraph, with no way to keep the
 // first without the second. The description is still doing its real jobs, on
-// the session cards and in search results.
+// the session cards and in search results, and on a lab it now also opens the
+// page, under a label, which is not the same thing as a subtitle: see below.
+//
+// What a lab opens with, and why in this order.
+//
+// The ask was that a week say what it is about and then list what the student
+// will actually do, and that both come first. Both already existed and neither
+// was doing that job. `description` is a one sentence statement of the week and
+// was rendered nowhere a reader could see it. `spec` is the list of what the
+// student must bring, and it was at the foot of the page among the apparatus,
+// which is the last place a reader looks and the right place for a reference
+// list but the wrong one for a set of instructions. So nothing here is new
+// writing: the summary is `description` and the task list is `spec`, moved.
+//
+// They are not adjacent, and that is the one deliberate departure from what was
+// asked. Rule 1 outranks the layout, and the safety block has to be met before
+// a student starts, not found later. Measured at 390px on weeks 7 and 9, with
+// the nav at 220px and a title that runs to three lines: the summary and the
+// task list together are 533px, which puts "Before you run this" at 959px on an
+// 844px screen, off the bottom entirely. The summary alone is 145px and leaves
+// the safety heading and the whole of its stopping rule on the first screen.
+//
+// The split is also the better reading order, which is what settled it rather
+// than the pixels. Week 7's stopping rule says to go back to your usual intake
+// if you get a headache that will not shift, and that sentence means nothing
+// until you know the week is about caffeine: the summary is what tells you. And
+// the task list is what a student acts on, so it belongs after the rule for
+// when to stop rather than before it. On the low risk weeks there is no safety
+// block at all, so the summary and the task list are adjacent there and are
+// exactly the first two things under the metadata line.
+//
+// Both blocks take the apparatus label, small and uppercase, from
+// src/styles/apparatus.css. Quiet on purpose. The safety block is the loudest
+// thing on a lab page and nothing above it may compete with it.
 //
 // Risk is the one thing that could not simply move to the foot with the rest
 // of the old grid. Rule 1 says every week states how risky its experiment is,
@@ -51,6 +84,19 @@ const risk = session.data.risk;
 // "med" is a storage value, not a word to print at a reader.
 const riskWord = risk === "med" ? "medium" : risk;
 
+// Every week's description is written without a full stop, because until now
+// its only jobs were the blurb on a session card and the <meta description>,
+// and a card blurb does not take one. As the opening sentence of the page it
+// does: a paragraph that stops without punctuation reads as a sentence that got
+// cut off. Added here rather than in the twelve content files, so the card and
+// the search result keep the form they were written for.
+const summary = session.data.description?.trim();
+const summarySentence = summary
+  ? /[.!?:]$/.test(summary)
+    ? summary
+    : `${summary}.`
+  : undefined;
+
 // Matches the name ContentLayout derives, so the view transition from the lab
 // card on the index page still lands on this heading.
 const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").replace(/\//g, "-")}`;
@@ -73,12 +119,27 @@ const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").
     }
   </p>
 
+  {
+    summarySentence && (
+      <section class="week-summary" aria-labelledby="this-week">
+        <h2 id="this-week">This week</h2>
+        <p>{summarySentence}</p>
+      </section>
+    )
+  }
+
   <Safety week={session} />
+
+  <div class="lab-brief">
+    <SpecList spec={session.data.spec} heading="What you bring to the lab">
+      The lesson below is how you get there. The lab is where you show it.
+    </SpecList>
+  </div>
+
   <Content />
 
   <div class="apparatus">
     <Claims claims={session.data.claims} />
-    <SpecList spec={session.data.spec}>What you bring to the lab.</SpecList>
     <Protocol week={session} />
     <TeachingTeam teachers={session.data.teachers} />
     <RelatedContent entry={session} collections={graphCollections} />
@@ -86,6 +147,40 @@ const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").
 </BaseLayout>
 
 <style>
+  /* The summary sentence sits tight under its own label and carries no styling
+     of its own: body size, body colour, the same as every other sentence on the
+     page. That is what keeps it a summary rather than a subtitle. A lead
+     paragraph set larger or greyer under the title is the thing the lab layout
+     got rid of, and it would be back the moment this sentence were given a
+     typographic register nothing else on the page uses. */
+  .week-summary p {
+    margin-block: 0;
+  }
+
+  /* Where the orientation ends and the lesson begins.
+     Without it the last line of the task list and the first line of the lesson
+     sat one paragraph gap apart at the same size, so a reader could not see
+     that one had stopped and the other had started: on week 1 the list ran
+     straight into "This week we record a day and change nothing." A hairline in
+     the theme's divider token is the same thing the apparatus draws between its
+     sections at the foot, which is the point. A lab is three layers now, and
+     each division is drawn the same way.
+
+     The wrapper exists because the rule has to hang off something. SpecList is
+     a package component, and an Astro-scoped selector reaching into it would be
+     written .lab-brief[cid] .spec-list[cid], which nothing matches: the
+     component's elements carry their own scope, not this page's. A div in this
+     template does carry it.
+
+     The gap is 27px on both sides: the list's own 1em bottom margin plus a
+     small pad above the line, and --at-spacing-lg below it. The margin does not
+     collapse through, because the border stops it. */
+  .lab-brief {
+    margin-block-end: var(--at-spacing-lg);
+    padding-block-end: var(--at-spacing-sm);
+    border-block-end: 1px solid var(--at-divider);
+  }
+
   /* Risk is the one value on the metadata line a reader is scanning for, and
      it carries three channels rather than one, because a reader who cannot
      separate the theme's warm gold from the theme's warm amber, or who is

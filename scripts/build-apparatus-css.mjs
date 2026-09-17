@@ -1,9 +1,14 @@
 // Regenerates src/styles/apparatus.css.
 //
-// The apparatus section labels carry iconoir glyphs as CSS mask data URIs
-// rather than as markup, because two of the five sections (SpecList,
-// RelatedContent) are package components whose <h2> cannot be reached from
-// here. Driving all five from CSS keeps them identical.
+// The section labels carry iconoir glyphs as CSS mask data URIs rather than as
+// markup, because two of the sections (SpecList, RelatedContent) are package
+// components whose <h2> cannot be reached from here. Driving all of them from
+// CSS keeps them identical.
+//
+// Six sections now, not five, and two of them open a lab rather than close it.
+// The label idiom is about a recurring block of a known kind, wherever it
+// sits: a reader who has learned that small uppercase row on week 1 finds the
+// summary and the task list on week 7 without reading them.
 //
 // Run with:  node scripts/build-apparatus-css.mjs
 //
@@ -19,14 +24,18 @@ const set = load("@iconify-json/iconoir/icons.json");
 const W = set.width ?? 24;
 const H = set.height ?? 24;
 
-// One glyph per recurring section. Icons help a reader skip machinery they
-// have already seen; they are noise on prose headings, which differ each week.
-// Order matters: this is also the order the sections are written in, and the
-// divider rule below leans on it only to the extent that every one of them is
-// a direct child of .apparatus.
+// One glyph per recurring section. Icons help a reader find, or skip, a block
+// they have already met; they are noise on prose headings, which differ each
+// week.
+//
+// Listed in page order. The first two open a lab: the summary of what the week
+// is about, and the list of what the student brings to it. The last four are
+// the apparatus at the foot, and the divider rule below leans on the ordering
+// only to the extent that every one of those is a direct child of .apparatus.
 const ICONS = {
-  ".claims-section": "stats-report",
+  ".week-summary": "compass",
   ".spec-list": "task-list",
+  ".claims-section": "stats-report",
   ".protocol-section": "flask",
   ".teaching-team": "group",
   ".related-content": "link",
@@ -49,7 +58,8 @@ const perIcon = selectors
   .map((s) => `${s} > h2::before {\n  mask-image: url("data:image/svg+xml,${dataUri(ICONS[s])}");\n}`)
   .join("\n\n");
 
-const css = `/* Apparatus sections. GENERATED, see scripts/build-apparatus-css.mjs.
+const css = `/* Section labels, and the apparatus block. GENERATED, see
+ * scripts/build-apparatus-css.mjs.
  *
  * A lab page had seven h2s at the same size doing two different jobs: three
  * were the lesson, the rest were the recurring machinery around it, the
@@ -57,14 +67,21 @@ const css = `/* Apparatus sections. GENERATED, see scripts/build-apparatus-css.m
  * reader could not tell them apart, so the page shouted at one volume
  * throughout.
  *
- * These five keep their h2 semantics, because they really are page-level
- * sections and the document outline should say so. What changes is weight:
- * they read as small labels, so the only full-size headings left on a page are
- * the ones carrying the teaching.
+ * These keep their h2 semantics, because they really are page-level sections
+ * and the document outline should say so. What changes is weight: they read as
+ * small labels, so the only full-size headings left on a page are the ones
+ * carrying the teaching.
  *
- * The icons are masks rather than markup because two of the five sections are
+ * Two of them are now at the top of a lab rather than the foot: the week's
+ * summary and the list of what the student brings. They take the same label
+ * because they are the same kind of thing, a recurring block that appears on
+ * all twelve weeks and says which block it is before it says anything else.
+ * Being quiet is the point there too: the safety block sits between them, and
+ * nothing above it may compete with it.
+ *
+ * The icons are masks rather than markup because two of the sections are
  * rendered by package components whose h2 cannot be reached from here. Driving
- * all five from CSS keeps them identical instead of icons on some. They are
+ * them all from CSS keeps them identical instead of icons on some. They are
  * decorative (::before content is not announced) and the label text carries
  * the meaning on its own.
  */
@@ -109,12 +126,6 @@ ${perIcon}
  * its own rules, and it follows the text colour into dark mode instead of
  * staying a light-mode tint. */
 .apparatus {
-  /* One indent for everything itemised inside the block, declared once here
-   * and read by the sections that have to line up with each other, including
-   * Claims.astro, which is a scoped component and cannot see this file's
-   * selectors but can read this property. */
-  --apparatus-indent: 1.2em;
-
   margin-block-start: var(--at-spacing-2xl, 3rem);
   border-block-start: 1px solid color-mix(in srgb, currentColor 25%, transparent);
 }
@@ -162,8 +173,21 @@ ${perIcon}
  * and the spec's preamble sentence flush at 0. Three left edges inside one
  * block is what made it read as a pile rather than a set. Labels, preambles
  * and label/value pairs start at the content edge; anything itemised is
- * indented by the one indent above, with its markers hanging in that space. */
-.apparatus ul {
+ * indented by the one indent, with its markers hanging in that space.
+ *
+ * Declared on .spec-list as well as on .apparatus, because the spec is the one
+ * section that appears in both places: at the foot of an assessment, and at
+ * the top of a lab, where there is no .apparatus above it to inherit from and
+ * the list would otherwise fall back to the browser's 40px. Claims.astro is a
+ * scoped component that cannot see these selectors but can read the property,
+ * which is why it is a custom property rather than a literal. */
+.apparatus,
+.spec-list {
+  --apparatus-indent: 1.2em;
+}
+
+.apparatus ul,
+.spec-list ul {
   padding-inline-start: var(--apparatus-indent);
 }
 
