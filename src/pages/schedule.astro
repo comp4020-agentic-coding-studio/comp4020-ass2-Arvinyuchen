@@ -8,9 +8,27 @@
 import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
-import { formatCourseDate } from "../lib/dates";
 import { sessionLabels, siteConfig } from "../site-config";
 import SiteChrome from "../components/SiteChrome.astro";
+
+// The site's own formatCourseDate writes "22 February 2027", and this is the
+// one page that cannot afford it. With the long form the five columns came to
+// 845px of min-content inside a content column of 864px, which left 19px of
+// slack and every column as narrow as its own longest unbreakable thing: the
+// lab titles wrapped to three lines while the widest minimum on the page was a
+// date, 160px of text that must not break. Abbreviating the month costs a
+// reader nothing in a column headed Starting and returns 45px, 41 of it from
+// Starting and 4 from the due dates under the Due column. The year stays,
+// because a schedule that does not say which year it runs in is a schedule for
+// nobody.
+const tableDate = new Intl.DateTimeFormat("en-AU", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const formatTableDate = (value: Date | string) =>
+  tableDate.format(typeof value === "string" ? new Date(`${value}T00:00:00Z`) : value);
 
 const [labs, lectures, assessments] = await Promise.all([
   getPublishedCollection("sessions"),
@@ -22,10 +40,14 @@ const weeks = [...labs].sort((a, b) => a.data.week - b.data.week);
 const lecturesIn = (week: number) => lectures.filter((entry) => entry.data.week === week);
 const dueIn = (week: number) => assessments.filter((entry) => entry.data.week === week);
 
-// The two-week teaching break falls after week 6. Showing it explains the jump
-// from 29 March to 19 April, which a reader would otherwise have to notice.
+// The teaching break falls after week 6, and it is two weeks rather than one.
+// Listing the two weeks it swallows, rather than describing them in a sentence,
+// is what lets the table give the break the height it actually takes: one row
+// per week, exactly like the weeks either side of it. It also keeps the
+// Starting column unbroken, which is the thing a reader notices first when 29
+// March is followed by 19 April.
 const BREAK_AFTER = 6;
-const BREAK_DATES = "5 and 12 April 2027";
+const BREAK_WEEKS = ["2027-04-05", "2027-04-12"];
 
 // The three moves the course teaches. Read from the weeks rather than listed
 // here, so the table cannot disagree with the content.
@@ -35,14 +57,19 @@ const PHASES = [
   { key: "rethinking", label: "Rethinking", blurb: "Read what your body, your mood and your actions send back, and revise." },
 ] as const;
 
-const firstWeekOf = new Map(
-  PHASES.map(({ key }) => [
-    key,
-    Math.min(...weeks.filter((w) => w.data.phase === key).map((w) => w.data.week)),
-  ]),
-);
-const phaseStartingAt = (week: number) =>
-  PHASES.find(({ key }) => firstWeekOf.get(key) === week);
+// One group per move, each holding its own weeks in order. The grouping is the
+// markup now: a `tbody` per move, which is what `tbody` is for, so the run of
+// rows a band covers is stated once rather than implied by where a heading row
+// happens to sit.
+const bands = PHASES.map((phase) => {
+  const inPhase = weeks.filter((week) => week.data.phase === phase.key);
+  return {
+    ...phase,
+    weeks: inPhase,
+    first: inPhase[0]?.data.week,
+    last: inPhase[inPhase.length - 1]?.data.week,
+  };
+}).filter((band) => band.weeks.length > 0);
 
 const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 0);
 ---
@@ -56,8 +83,11 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
   <p>
     Twelve teaching weeks with a two-week break after week 6: four lectures,
     twelve labs, and four pieces of assessment totalling {totalWeight}%. The
-    weeks run in three moves, banded below. Each lab introduces one method,
-    named under its title, and builds only on methods from earlier weeks.
+    weeks run in three moves, and every row says which move it is in. Each lab
+    introduces one method, named under its title, and builds only on methods
+    from earlier weeks. A blank cell means nothing that week rather than
+    nothing recorded: only four weeks carry a lecture, and only four have
+    something falling due.
   </p>
 
   <div
@@ -67,6 +97,20 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
     aria-label="Course schedule, week by week"
   >
     <table>
+      {/* Column shares, because the browser's own guess was wrong here in a way
+          that showed. The five columns come to 800px of min-content in a column
+          864px wide, so there are 64px to place, and left alone the browser
+          hands them to the widest column rather than to the column that needs
+          them: the lab titles, the longest text on the page, wrapped to three
+          lines while the Lecture column, which is blank in eight rows out of
+          twelve, took the slack. */}
+      <colgroup>
+        <col class="col-week" />
+        <col class="col-starting" />
+        <col class="col-lecture" />
+        <col class="col-lab" />
+        <col class="col-due" />
+      </colgroup>
       <thead>
         <tr>
           <th scope="col">Week</th>
@@ -76,62 +120,70 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
           <th scope="col">Due</th>
         </tr>
       </thead>
-      <tbody>
-        {
-          weeks.map((lab) => {
-            const week = lab.data.week;
-            const lecture = lecturesIn(week);
-            const due = dueIn(week);
-            const opens = phaseStartingAt(week);
-            return (
-              <>
-                {opens && (
-                  <tr class="phase-row">
-                    <th colspan="5" scope="colgroup">
-                      <span class="phase-label">{opens.label}</span>
-                      <span class="phase-blurb">{opens.blurb}</span>
+      {
+        bands.map((band) => (
+          <tbody class="band">
+            <tr class="phase-row">
+              <th colspan="5" scope="rowgroup">
+                <span class="phase-head">
+                  <span class="phase-label">{band.label}</span>
+                  <span class="phase-weeks">
+                    Weeks {band.first} to {band.last}
+                  </span>
+                </span>
+                <span class="phase-blurb">{band.blurb}</span>
+              </th>
+            </tr>
+            {band.weeks.map((lab) => {
+              const week = lab.data.week;
+              const lecture = lecturesIn(week);
+              const due = dueIn(week);
+              return (
+                <>
+                  <tr class:list={["week-row", week % 2 === 0 && "alt"]}>
+                    <th scope="row" class="week-cell">
+                      <span class="week-number">{week}</span>
+                      <span class="week-phase">{band.label}</span>
                     </th>
-                  </tr>
-                )}
-                <tr>
-                  <th scope="row">{week}</th>
-                  <td class="starting">{formatCourseDate(lab.data.date)}</td>
-                  <td>
-                    {lecture.length === 0 ? (
-                      <span class="none">none</span>
-                    ) : (
-                      lecture.map((entry) => (
+                    <td class="starting">{formatTableDate(lab.data.date)}</td>
+                    <td>
+                      {lecture.map((entry) => (
                         <a href={withBase(`/lectures/${entry.id}/`)}>{entry.data.title}</a>
-                      ))
-                    )}
-                  </td>
-                  <td>
-                    <a href={withBase(`/sessions/${lab.id}/`)}>{lab.data.title}</a>
-                    {lab.data.method && <small class="method">{lab.data.method}</small>}
-                  </td>
-                  <td>
-                    {due.length === 0 ? (
-                      <span class="none">none</span>
-                    ) : (
-                      due.map((entry) => (
+                      ))}
+                    </td>
+                    <td>
+                      <a href={withBase(`/sessions/${lab.id}/`)}>{lab.data.title}</a>
+                      {lab.data.method && <small class="method">{lab.data.method}</small>}
+                    </td>
+                    <td>
+                      {due.map((entry) => (
                         <span class="due">
                           <a href={withBase(`/assessments/${entry.id}/`)}>{entry.data.title}</a>
-                          <small>{formatCourseDate(entry.data.due)} · {entry.data.weight}%</small>
+                          <small>
+                            {formatTableDate(entry.data.due)} · {entry.data.weight}%
+                          </small>
                         </span>
-                      ))
-                    )}
-                  </td>
-                </tr>
-                {week === BREAK_AFTER && (
-                  <tr class="teaching-break">
-                    <td colspan="5">Teaching break: {BREAK_DATES}</td>
+                      ))}
+                    </td>
                   </tr>
-                )}
-              </>
-            );
-          })
-        }
-      </tbody>
+                  {week === BREAK_AFTER &&
+                    BREAK_WEEKS.map((date, index) => (
+                      <tr class="break-row">
+                        {index === 0 && (
+                          <th scope="row" rowspan={BREAK_WEEKS.length} class="break-label">
+                            Teaching break
+                          </th>
+                        )}
+                        <td class="starting">{formatTableDate(date)}</td>
+                        <td colspan="3" />
+                      </tr>
+                    ))}
+                </>
+              );
+            })}
+          </tbody>
+        ))
+      }
     </table>
   </div>
 </ContentLayout>
@@ -144,6 +196,30 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
   .schedule-scroll {
     overflow-x: auto;
     max-width: 100%;
+
+    /* One week, as a height. Every week row is held to it and the break is two
+       of them, so the break is twice a week because it is two weeks, not
+       because a number was chosen to look right. 5.5rem is 99px, which is
+       where eight of the twelve week rows already sat once the columns are
+       sized below, so the floor pushes nothing down: it lifts the three short
+       ones, 76px and two at 71px, the weeks with no lecture and a one-line
+       title. Week 6 is the only row above it, at 104px, because its Due cell
+       runs to two lines, and it is the reason the break is about twice a week
+       row rather than exactly twice. */
+    --week-row: 5.5rem;
+  }
+
+  /* The table keeps its desktop width on a phone and scrolls to it, rather
+     than squeezing down to the 800px its own content demands. Left to squeeze,
+     the Lab column gives up the 64px the colgroup hands it, the titles go back
+     to three lines, the week rows grow past 5.5rem, and the two-week break,
+     which does not grow because it holds no text, stops being twice the height
+     of the rows around it: 1.6 times at 390px against 2.0 at desktop. Pinning
+     the width costs 64px of sideways scroll in a box that already scrolls, and
+     buys one table that reads the same everywhere. 48rem is the theme's
+     content column, so nothing moves at desktop. */
+  .schedule-scroll table {
+    min-inline-size: 48rem;
   }
 
   .schedule-scroll:focus-visible {
@@ -151,19 +227,58 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
     outline-offset: 2px;
   }
 
-  .schedule-scroll th[scope="row"] {
-    text-align: right;
-    color: var(--at-text-secondary);
-    font-variant-numeric: tabular-nums;
+  /* Every rule below has to beat the theme's table rules, which live in
+     `@layer at.base`. Any unlayered author rule beats a layered one whatever
+     the selector, so none of this depends on stylesheet order, which is the
+     one thing that differs between a cold load and a ClientRouter navigation. */
+
+  /* The theme stripes `tbody tr:nth-child(even)`, which counted the heading
+     rows and the break row along with the weeks. The result was a stripe on
+     the Change heading, a stripe on week 6 and another on week 7 with only the
+     break between them, and no relationship at all between a stripe and
+     anything a reader could name. Zebra is for tracking a row across five
+     columns, so it now tracks what the row is: even weeks are tinted, odd
+     weeks are not, and a row that is not a week is never tinted. */
+  .schedule-scroll tbody tr:nth-child(even) {
+    background: none;
   }
 
+  .schedule-scroll .week-row.alt {
+    background: var(--at-table-stripe);
+  }
+
+  .col-week {
+    width: 12%;
+  }
+
+  .col-starting {
+    width: 18%;
+  }
+
+  .col-lecture {
+    width: 21%;
+  }
+
+  .col-lab {
+    width: 28%;
+  }
+
+  .col-due {
+    width: 21%;
+  }
+
+  /* The week number was the only cell in the table sitting on the vertical
+     middle: `vertical-align: top` was set on `td` alone, and the number is a
+     `th`. Against a three-line lab cell it floated half a row down from its own
+     date, which is most of why the rows looked unaligned. */
+  .schedule-scroll th,
   .schedule-scroll td {
     vertical-align: top;
   }
 
-  /* Dates read badly broken across lines ("22 February / 2027"). Keeping them
-     on one line widens the table, which costs nothing here, because it already
-     scrolls inside its own box on a narrow screen. */
+  /* Dates read badly broken across lines ("22 Feb / 2027"). Keeping them on one
+     line widens the table, which costs nothing here, because it already scrolls
+     inside its own box on a narrow screen. */
   .starting,
   .due small {
     white-space: nowrap;
@@ -181,21 +296,80 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
     margin-block-start: 0.5rem;
   }
 
-  .none {
-    color: var(--at-text-muted);
+  /* The bands.
+   *
+   * A heading row announced each move once and then nothing marked which weeks
+   * belonged to it, so by week 3 the band had been forgotten. Two things carry
+   * it now. The first is the word itself, under every week number, which is
+   * the channel that survives with colour ignored and the only one that
+   * answers "which move is week 9 in" without scrolling back up. The second is
+   * the rail down the inline start edge, which runs from the first week of a
+   * band to the last and stops at each heading, so the band also has a shape.
+   *
+   * The rail is an inset shadow rather than a border because the table is
+   * border-collapse: a 3px collapsed border would hang half its width outside
+   * the table box and shift the whole grid against the paragraph above it. */
+  .week-cell,
+  .break-label {
+    box-shadow: inset 3px 0 0 var(--at-primary);
   }
 
-  /* The three moves, as bands across the table. A heading row rather than a
-     column, because a phase covers a run of consecutive weeks and a column
-     would repeat the same word four times. */
+  .week-row > *,
+  .break-row > * {
+    block-size: var(--week-row);
+  }
+
+  .week-cell {
+    text-align: start;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .week-number {
+    display: block;
+    font-weight: 600;
+  }
+
+  .week-phase,
+  .break-label {
+    color: var(--at-text-secondary);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .week-phase {
+    display: block;
+  }
+
+  /* The heading belongs to the band under it, so the gap above it is roughly
+     twice the gap below: proximity is doing the grouping that the old even
+     spacing left to the reader. The hairline is the band boundary; the first
+     band needs none, because the painted header row is already its boundary. */
   .phase-row th {
-    padding-block: var(--at-spacing-md) 0.35rem;
+    padding-block: var(--at-spacing-xl) var(--at-spacing-sm);
+    border-block-start: 1px solid var(--at-border);
     text-align: start;
     font-weight: 400;
   }
 
+  .band:first-of-type .phase-row th {
+    padding-block-start: var(--at-spacing-md);
+    border-block-start: none;
+  }
+
+  /* The heading repeats the weeks it covers. It is the one piece of
+     information the heading alone could not give: Change reads as two weeks
+     long if you count the rows, because the break sits inside it. */
+  .phase-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.6em;
+  }
+
   .phase-label {
-    display: block;
     color: var(--at-primary);
     font-size: 0.75rem;
     font-weight: 600;
@@ -203,16 +377,36 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
     text-transform: uppercase;
   }
 
+  .phase-weeks,
   .phase-blurb {
-    display: block;
     color: var(--at-text-secondary);
     font-size: 0.85rem;
   }
 
-  .teaching-break td {
-    text-align: center;
+  .phase-blurb {
+    display: block;
+  }
+
+  /* The break is two weeks, so it is two rows.
+   *
+   * Making it one short row said the opposite of what it is: the emptiest
+   * fortnight of the course was the least of the page. Each row now carries one
+   * missing week's starting date in the same column as every other starting
+   * date, and is held to the height of a week row, so the break stands about
+   * twice as tall as the weeks either side of it and the three empty columns
+   * show what happens in it. The height follows from BREAK_WEEKS rather than
+   * from a number typed here: a three-week break would be three rows tall
+   * without anything in this file changing.
+   *
+   * The label spans both rows, which is also what keeps the rail continuous
+   * through the break: a break that broke the rail would end the Change band
+   * three weeks early. */
+  .break-row > * {
     color: var(--at-text-secondary);
-    background: var(--at-bg-alt);
-    font-size: 0.9em;
+  }
+
+  .break-label {
+    text-align: start;
+    font-weight: 600;
   }
 </style>
