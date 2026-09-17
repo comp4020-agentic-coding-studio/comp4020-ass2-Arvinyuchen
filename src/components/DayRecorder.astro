@@ -30,28 +30,46 @@
 // Duration is a physical distance here, at one pixel to the minute, which is
 // the part a list of typed times cannot do: a day drawn this way shows at a
 // glance that the afternoon was three blocks and the morning was nine, and it
-// shows the shape of the hours rather than their names.
+// shows the shape of the hours rather than their names. The space between the
+// lines is also the space you write in, so a three hour block offers three
+// hours of room and a twenty minute one offers a line: the field tells you how
+// much of the day you are describing before you have written a word of it.
 //
 // Three things had to be solved before any of that was worth building.
 //
 // Dragging is never the only way, because WCAG 2.2 success criterion 2.5.7
 // requires a single-pointer path that is not a drag, and because a keyboard
 // user cannot drag at all. Every boundary is a real time input: tab to it, type
-// 07:45, or hold the arrow keys, which step in quarter hours. Enter walks the
-// two fields that carry the day and opens the next block at the end, so a whole
-// day can be typed without the pointer ever entering the timeline, and for many
-// readers that is the faster path rather than the consolation one. A tap on the
-// grip, with no drag at all, opens one block of the current resolution. The
-// button beside it does the same thing and is what a screen reader meets, since
-// the grip is pointer sugar and is hidden from the accessibility tree.
+// 07:43, or hold the arrow keys, which move a minute on the minutes and an hour
+// on the hours. Enter walks the two fields that carry the day and opens the
+// next block at the end, so a whole day can be typed without the pointer ever
+// entering the timeline, and for many readers that is the faster path rather
+// than the consolation one. A tap on the grip, with no drag at all, opens one
+// block of half an hour. The button beside it does the same thing and is what a
+// screen reader meets, since the grip is pointer sugar and is hidden from the
+// accessibility tree.
 //
-// Snapping is the resolution select, which is not decoration: a drag lands on
-// the nearest fifteen, thirty or sixty minutes, the readout under the pointer
-// names the time and the length while you are still holding it, and every block
-// prints its own length in the gutter. The lab says fifteen minutes is plenty
-// and an hour is not useless, so those are the increments, and free pixel
-// precision is not offered, because 07:43 is a worse record than 07:45 and an
-// annoying one to produce.
+// Nothing rounds the drag. A pixel is a minute and the block is as long as the
+// pull was, which is the second version of this: it snapped to a resolution
+// select, on the reasoning that free dragging produces 07:43 and annoys people.
+// It does produce 07:43, and that is the point. This lab asks for the day as it
+// actually was, and 07:43 is a truer record than 07:45 rounded off for the
+// instrument's convenience; the lab's fifteen minutes is plenty is about how
+// finely a student needs to write, not about how precisely the tool is allowed
+// to let them. The readout under the pointer names the exact time and length
+// while you are still holding it, and the time inputs lost their quarter hour
+// step for the same reason: a sheet that can draw 07:43 must not refuse to have
+// it typed.
+//
+// The header is one field, the date. A resolution select and three radios for
+// whether the day was written live or reconstructed were there and are not any
+// more. The select had nothing left to set once the drag went continuous. The
+// radios asked a student to certify that they had followed the instruction in
+// the lesson above, which is a question that invites a recorded no rather than
+// a changed behaviour, and the lab reads the days back to each other in the
+// room where that comes up anyway. The cost is on the record: the printed sheet
+// no longer says whether the day was written as it happened, and that is a real
+// loss, taken deliberately.
 //
 // Touch and page scrolling share the same vertical gesture, so they are
 // separated by area rather than by timing: touch-action: none is set on the
@@ -115,57 +133,19 @@ const PAPER_ROWS = 14;
   <div class="recorder-live" data-live>
     <h4>The day</h4>
 
-    <div class="day-fields">
-      <label class="field">
-        <span class="field-name">Date</span>
-        <input type="date" data-field="date" />
-      </label>
-      <label class="field">
-        <span class="field-name">How often you wrote something down</span>
-        <select data-field="resolution">
-          <option value="15">every 15 minutes</option>
-          <option value="30">every half hour</option>
-          <option value="60" selected>about every hour</option>
-        </select>
-      </label>
-    </div>
-
-    <fieldset class="when-written">
-      <legend>When you wrote it</legend>
-      <label class="choice">
-        <input type="radio" name="recorder-written" value="as the day went" data-written />
-        <span>as the day went</span>
-      </label>
-      <label class="choice">
-        <input type="radio" name="recorder-written" value="partly at the time, partly later" data-written />
-        <span>partly at the time, partly later</span>
-      </label>
-      <label class="choice">
-        <input type="radio" name="recorder-written" value="afterwards, from memory" data-written />
-        <span>afterwards, from memory</span>
-      </label>
-    </fieldset>
+    <label class="field day-date">
+      <span class="field-name">Date</span>
+      <input type="date" data-field="date" />
+    </label>
 
     <h4>The twenty-four hours</h4>
 
     <p class="recorder-help">
-      Say when you woke up, then pull the line down to open a block: where you let go is when that
-      block ended, and the space between the two lines is where you write what you were doing. An
-      hour is sixty pixels of it. Keep going until you went to bed, then press the sleep button,
-      which records everything from there back to waking as sleep and closes the twenty-four hours.
-    </p>
-
-    <p class="recorder-help">
-      You never have to drag. Every time on the sheet is a field you can type into, the up and down
-      arrows move it a quarter hour at a time, and Enter walks the start time, then what you were
-      doing, then opens the next block. <span data-snap-note></span>
-    </p>
-
-    <p class="recorder-help">
-      Marking a block changes nothing. This week changes nothing: that is the exercise, and a day
-      you tidied while recording it is not the day you set out to describe. A mark is a note to
-      yourself about where a change might go in weeks 5 to 7, which is where changing something is
-      the actual work.
+      Say when you woke up, then pull the line down to open a block: where you let go is when it
+      ended, and the space between the lines is where you write what you were doing. A pixel is a
+      minute. Keep going until you went to bed, then press the sleep button, which records the rest
+      as sleep and closes the twenty-four hours. Nothing has to be dragged: every time here is a
+      field you can type into.
     </p>
 
     <div class="tl" data-timeline>
@@ -175,7 +155,7 @@ const PAPER_ROWS = 14;
         <div class="tl-gutter">
           <label class="tl-time">
             <span class="field-name" data-end-label>Woke at</span>
-            <input type="time" step="900" value={DEFAULT_WAKE} data-end-time />
+            <input type="time" value={DEFAULT_WAKE} data-end-time />
           </label>
         </div>
         <div class="tl-body">
@@ -188,11 +168,24 @@ const PAPER_ROWS = 14;
             <button type="button" data-action="sleep">Asleep from here</button>
             <button type="button" data-action="reopen" hidden>Reopen the day</button>
           </p>
+          <p class="recorder-help tl-hint">
+            The button opens a half hour block, which you then correct by typing its end time on the
+            line below it; a drag makes one any length. Enter walks the start time, then what you
+            were doing, then opens the next block, and Shift with Enter starts a new line inside
+            one. The arrows on a time move it a minute, or an hour on the hours.
+          </p>
         </div>
       </div>
     </div>
 
     <p class="blocks-total" data-total></p>
+
+    <p class="recorder-help" data-floored hidden></p>
+
+    <p class="recorder-help">
+      Ticking <b>later</b> marks a block for weeks 5 to 7, where the course teaches changing
+      something. It changes nothing now.
+    </p>
 
     <h4>Taking it away</h4>
 
@@ -256,15 +249,14 @@ const PAPER_ROWS = 14;
       <div class="tl-gutter">
         <label class="tl-time">
           <span class="field-name" data-time-label>Block starts at</span>
-          <input type="time" step="900" data-time />
+          <input type="time" data-time />
         </label>
-        <p class="tl-span" data-span></p>
       </div>
-      <div class="tl-body">
-        <label class="tl-what">
-          <span class="field-name">What you were doing</span>
-          <input type="text" data-what autocomplete="off" />
-        </label>
+      <label class="tl-what">
+        <span class="field-name">What you were doing</span>
+        <textarea rows="1" data-what autocomplete="off"></textarea>
+      </label>
+      <p class="tl-controls">
         <label class="tl-flag">
           <input type="checkbox" data-flag />
           <span
@@ -276,7 +268,7 @@ const PAPER_ROWS = 14;
         <button type="button" class="tl-remove" data-action="remove">
           <span aria-hidden="true">&#215;</span><span class="recorder-hidden">Remove this block</span>
         </button>
-      </div>
+      </p>
     </li>
   </template>
 </section>
@@ -332,11 +324,8 @@ const PAPER_ROWS = 14;
     text-transform: uppercase;
   }
 
-  .recorder input[type="text"],
   .recorder input[type="time"],
-  .recorder input[type="date"],
-  .recorder select,
-  .recorder textarea {
+  .recorder input[type="date"] {
     width: 100%;
     padding: 0.3rem 0.45rem;
     border: 1px solid var(--at-border);
@@ -347,15 +336,10 @@ const PAPER_ROWS = 14;
     font-size: var(--at-font-size-sm);
   }
 
-  .recorder textarea {
-    resize: vertical;
-  }
-
   /* The checkboxes and radios take the brand gold, which is the one place a
      colour is allowed to carry a state here, and never the only place: the
      control's own tick is the channel that does the work. */
-  .recorder input[type="checkbox"],
-  .recorder input[type="radio"] {
+  .recorder input[type="checkbox"] {
     accent-color: var(--at-primary);
     width: 1.1rem;
     height: 1.1rem;
@@ -367,7 +351,7 @@ const PAPER_ROWS = 14;
      never sees; a form this size is exactly where a missing ring strands a
      keyboard user. Gold against either page colour clears the 3:1 that a
      non-text indicator owes. */
-  .recorder :is(input, select, textarea, button, a):focus-visible {
+  .recorder :is(input, textarea, button, a):focus-visible {
     outline: 2px solid var(--at-primary);
     outline-offset: 2px;
   }
@@ -397,33 +381,8 @@ const PAPER_ROWS = 14;
     font-weight: 600;
   }
 
-  .day-fields {
-    display: grid;
-    gap: 0 var(--at-spacing-md);
-    grid-template-columns: 1fr;
-  }
-
-  .when-written {
-    margin: 0 0 var(--at-spacing-sm);
-    padding: 0;
-    border: 0;
-  }
-
-  .when-written legend {
-    padding: 0;
-    color: var(--at-text-secondary);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    line-height: 1.6;
-    text-transform: uppercase;
-  }
-
-  .choice {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding-block: 0.1rem;
-    font-size: var(--at-font-size-sm);
+  .day-date {
+    max-width: 11rem;
   }
 
   /* The timeline.
@@ -434,9 +393,10 @@ const PAPER_ROWS = 14;
    * drawn across both as the line the reader pulls.
    *
    * A block's height is its duration, with a floor of 2.25rem. The floor only
-   * bites at the finest resolution, since thirty minutes is already 30px and
-   * an hour is 60: it exists because a fifteen minute block is 15px and a time
-   * field is 32, and a row shorter than its own contents is not a row. */
+   * bites below half an hour: it exists because a fifteen minute block is 15px
+   * and a time field is 22, and a row shorter than its own contents is not a
+   * row. Half an hour is also the length of an undragged block, so everything
+   * the buttons make is drawn exactly. */
   .tl {
     --px-per-min: 1px;
     margin-block: var(--at-spacing-md) var(--at-spacing-sm);
@@ -450,17 +410,29 @@ const PAPER_ROWS = 14;
 
   .tl-row {
     display: grid;
-    gap: 0 var(--at-spacing-sm);
-    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: 0 var(--at-spacing-xs);
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
     border-block-start: 1px solid var(--at-border);
   }
 
+  /* The floor, and what it costs.
+   *
+   * A block is its duration in pixels, so above half an hour the drawing is
+   * exact: a three hour block is 180px and holds three hours of writing. Below
+   * it, a fifteen minute block would be fifteen pixels, which cannot hold a
+   * word or a time field, so everything under thirty minutes is drawn thirty
+   * tall. That is a real break in the relationship and it is stated on the page
+   * rather than hidden: on a floored block the two times on the lines are the
+   * record and the height is only approximately it. Thirty was chosen because
+   * it is the roundest number that fits the contents, so the rule a reader has
+   * to hold is "half an hour and over is to scale". */
   .tl-block {
-    height: max(2.25rem, calc(var(--mins, 60) * var(--px-per-min)));
+    height: max(30px, calc(var(--mins, 60) * var(--px-per-min)));
   }
 
   .tl-gutter {
-    padding-block-start: 0.25rem;
+    align-self: start;
+    padding-block-start: 0.2rem;
   }
 
   /* The vertical rule down the sheet, which is what makes the horizontal lines
@@ -473,8 +445,23 @@ const PAPER_ROWS = 14;
     border-inline-start: 1px solid var(--at-border);
   }
 
+  /* The theme gives every label a bottom margin of --at-spacing-xs, which is
+     four pixels of somebody else's spacing inside a row whose whole height is
+     the duration: it pushed the gutter to 35px inside a 30px block and left
+     the writing area four pixels short of the line below it. */
+  .recorder :is(.tl-time, .tl-what) {
+    margin-block-end: 0;
+  }
+
   .tl-time {
     display: block;
+  }
+
+  /* Sized to the floor: the whole row is 30px at its shortest and this is what
+     has to sit in it. */
+  .recorder .tl-time input {
+    padding: 0.05rem 0.2rem;
+    font-size: var(--at-font-size-xs);
   }
 
   /* Clipped on every row but the first. The gutter is a column of times under
@@ -490,23 +477,95 @@ const PAPER_ROWS = 14;
     white-space: nowrap;
   }
 
-  .tl-row.is-wake .field-name {
+  /* The opening question, visible only while the sheet is empty.
+   *
+   * Two things had to be true at once: the first thing a reader meets should
+   * say "Woke at" in words, and every row of a drawn day has to fit inside its
+   * own duration, which at the floor is thirty pixels and does not have room
+   * for a label above a field. The empty state is the end row, which has no
+   * duration at all, so the label lives there and is clipped everywhere else.
+   * The accessible name never changes: the clipped label is the same words.
+   *
+   * It was .tl-row.is-wake .field-name for one build, which also unclipped the
+   * writing area's label on the first block and pushed a visible WHAT YOU WERE
+   * DOING above a field sized to the block. */
+  .tl-end.is-wake .tl-gutter .field-name {
     position: static;
     width: auto;
     height: auto;
     clip-path: none;
   }
 
-  .tl-span {
-    margin: 0.15rem 0 0;
-    color: var(--at-text-secondary);
-    font-size: var(--at-font-size-xs);
-    font-variant-numeric: tabular-nums;
+  /* The block is the writing area. It fills the space between the two lines
+     edge to edge, because that space is the duration and the room to write in
+     ought to be the same thing.
+     A textarea rather than an input: an input centres its text in the box, so
+     in a three hour block the words floated in the middle of the space instead
+     of starting under the line, and a tall block is exactly where somebody
+     wants a second line anyway. Enter belongs to the sheet, so Shift and Enter
+     is the newline. */
+  .tl-what {
+    position: relative;
+    min-width: 0;
   }
 
-  .tl-what {
-    flex: 1 1 auto;
-    min-width: 0;
+  /* Absolutely positioned inside the block, which is the only way the height
+     can be the duration and nothing else. The theme gives every textarea a
+     min-height of 6rem, so in flow a fifteen minute block came out 108px tall
+     and the grid row grew to fit it: the drawing was being sized by its
+     contents rather than by the day. Out of flow it cannot push, and inset: 0
+     is what makes it fill the space between the two lines edge to edge. */
+  .recorder .tl-what textarea {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 0.2rem 0.4rem;
+    border: 0;
+    border-inline-start: 1px solid var(--at-border);
+    border-radius: 0;
+    background: color-mix(in srgb, var(--at-border) 10%, transparent);
+    color: var(--at-text);
+    font: inherit;
+    font-size: var(--at-font-size-sm);
+    line-height: 1.4;
+    resize: none;
+  }
+
+  /* What is left of the affordance once the box is gone. The tint says the
+     region takes writing, the way a filled cell in a table does; it deepens
+     under the pointer, and again while it holds focus. */
+  .recorder .tl-what textarea:hover {
+    background: color-mix(in srgb, var(--at-border) 20%, transparent);
+  }
+
+  /* The focus ring is the whole cell. Drawn inside the edge, because an
+     outline offset outwards would sit on the line above and on the block
+     below; 2px of the brand gold against either page colour clears the 3:1 a
+     focus indicator owes, and it marks a much larger shape than the old ring
+     around a small box did. The tint changes with it, so focus is not carried
+     by the outline alone. */
+  .recorder .tl-what textarea:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: -2px;
+    background: color-mix(in srgb, var(--at-primary) 8%, transparent);
+  }
+
+  /* Beside the writing area rather than inside it: an overlay would either
+     cover the first line of the text or reserve a column of padding on every
+     line of it. Side by side rather than stacked, because a thirty pixel block
+     is one row tall and two of these are 46px wide against 42px of height. */
+  .tl-controls {
+    display: flex;
+    flex-wrap: nowrap;
+    align-self: start;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0;
+    padding-block-start: 0.2rem;
+    white-space: nowrap;
   }
 
   /* Below 30rem the word goes and the checkbox stays, because the activity
@@ -528,26 +587,31 @@ const PAPER_ROWS = 14;
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    padding-block-start: 0.35rem;
+    margin: 0;
     color: var(--at-text-secondary);
     font-size: var(--at-font-size-xs);
   }
 
-  .tl-remove {
+  .recorder .tl-flag input[type="checkbox"] {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .recorder .tl-remove {
     flex: none;
-    padding: 0.15rem 0.45rem;
-    line-height: 1.4;
+    padding: 0 0.4rem;
+    font-size: var(--at-font-size-sm);
+    line-height: 1.5;
   }
 
   /* A marked block takes the gold on its own rule, and the checkbox beside it
      stays ticked: two channels, so the mark survives a greyscale print and a
      reader who cannot separate the gold from the border grey. */
-  .tl-block.is-marked .tl-body {
+  .recorder .tl-block.is-marked .tl-what textarea {
     border-inline-start: 3px solid var(--at-primary);
-    padding-inline-start: calc(var(--at-spacing-sm) - 2px);
   }
 
-  .tl-block[data-sleep] .tl-body {
+  .recorder .tl-block[data-sleep] .tl-what textarea {
     border-inline-start-style: dashed;
   }
 
@@ -606,6 +670,7 @@ const PAPER_ROWS = 14;
 
   .tl-end .tl-body {
     flex-wrap: wrap;
+    grid-column: 2 / -1;
     border-inline-start-color: transparent;
   }
 
@@ -644,19 +709,8 @@ const PAPER_ROWS = 14;
   }
 
   @media (width >= 40rem) {
-    .day-fields {
-      grid-template-columns: 11rem minmax(0, 1fr);
-    }
-
-    .when-written {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      gap: 0 var(--at-spacing-md);
-    }
-
     .tl-row {
-      grid-template-columns: 7rem minmax(0, 1fr);
+      grid-template-columns: 7.5rem minmax(0, 1fr) auto;
     }
 
     .tl-flag {
@@ -824,6 +878,11 @@ const PAPER_ROWS = 14;
     width: 26mm;
   }
 
+  /* A block can hold more than one line now, so the print has to keep them. */
+  .recorder-sheet :global(.sheet-col-what) {
+    white-space: pre-wrap;
+  }
+
   .recorder-sheet :global(.sheet-foot) {
     margin: 6mm 0 0;
     padding-block-start: 2mm;
@@ -842,11 +901,16 @@ const PAPER_ROWS = 14;
 
   const MINUTES_IN_DAY = 1440;
 
-  // A typed time cannot squeeze a block below this. Five minutes rather than
-  // the snap increment, because correcting a boundary by hand is exactly where
-  // somebody legitimately wants a ten minute block that the drag would not
-  // have offered.
-  const MIN_BLOCK = 5;
+  // A block has to have a length, and that is the whole of the rule. It was
+  // five minutes while the drag snapped to quarter hours; now that a pixel is
+  // a minute there is no reason for the sheet to hold an opinion about how
+  // short a real block can be.
+  const MIN_BLOCK = 1;
+
+  // The shortest block the drawing can show at one pixel to the minute, which
+  // is the height a time field and a line of writing need. Matches the 30px
+  // floor in the stylesheet; below it the height stops meaning the duration.
+  const FLOOR_MINUTES = 30;
 
   // Reassigned by every wiring pass and read by the listeners that live on
   // window and document. Those cannot be registered inside the pass: window
@@ -872,8 +936,8 @@ const PAPER_ROWS = 14;
   const timeOf = (block: Element): HTMLInputElement =>
     block.querySelector("[data-time]") as HTMLInputElement;
 
-  const whatOf = (block: Element): HTMLInputElement =>
-    block.querySelector("[data-what]") as HTMLInputElement;
+  const whatOf = (block: Element): HTMLTextAreaElement =>
+    block.querySelector("[data-what]") as HTMLTextAreaElement;
 
   const flagOf = (block: Element): HTMLInputElement =>
     block.querySelector("[data-flag]") as HTMLInputElement;
@@ -926,12 +990,17 @@ const PAPER_ROWS = 14;
     return `${hours} h ${rest} min`;
   };
 
-  /** The snap increment, from the resolution select. */
-  const stepOf = (root: HTMLElement): number => {
-    const select = fieldOf(root, "resolution") as HTMLSelectElement | null;
-    const step = Number(select?.value ?? 60);
-    return Number.isFinite(step) && step > 0 ? step : 60;
-  };
+  // How long a block is when it is opened without a drag: by the button, by
+  // Enter, or by a tap on the line. A resolution select used to set this, back
+  // when it also set the drag's snap; per-minute dragging left it with one job
+  // and it has been removed, so the length is fixed here.
+  //
+  // Half an hour, for a reason rather than as a middle value. It is the
+  // drawing's floor: the shortest block the timeline can still draw to scale.
+  // An undragged block therefore opens at the smallest size that is not a lie
+  // about its own height, and the lab's own range, fifteen minutes is plenty
+  // and an hour is not useless, sits either side of it.
+  const DEFAULT_BLOCK = 30;
 
   /** Which field holds the wake time: the first block's, or the end row's when
    * no block has been drawn yet. Both are the same line on the drawing. */
@@ -981,8 +1050,6 @@ const PAPER_ROWS = 14;
       if (document.activeElement !== input) input.value = start;
       input.dataset.clock = start;
       block.style.setProperty("--mins", String(minsOf(block)));
-      const span = block.querySelector<HTMLElement>("[data-span]");
-      if (span) span.textContent = formatSpan(minsOf(block));
       block.classList.toggle("is-marked", flagOf(block).checked);
       offset += minsOf(block);
     });
@@ -1008,9 +1075,20 @@ const PAPER_ROWS = 14;
     if (sleepButton) sleepButton.hidden = closed;
     if (reopenButton) reopenButton.hidden = !closed;
 
-    const snapNote = root.querySelector<HTMLElement>("[data-snap-note]");
-    if (snapNote) {
-      snapNote.textContent = `A drag lands on the nearest ${formatSpan(stepOf(root))}, and so does the button.`;
+    // Said only when it is true of something on the sheet. The drawing is
+    // exact above half an hour and floored below it, which is a real break in
+    // the one relationship this component is built on, so it is admitted where
+    // the blocks are rather than in an introduction nobody rereads. It is not
+    // repeated on the printed sheet, because the printed sheet states every
+    // length as a number and has no drawing to be approximate.
+    const floored = blocks.filter((block) => minsOf(block) < FLOOR_MINUTES).length;
+    const flooredLine = root.querySelector<HTMLElement>("[data-floored]");
+    if (flooredLine) {
+      flooredLine.hidden = floored === 0;
+      flooredLine.textContent =
+        floored === 0
+          ? ""
+          : `${plural(floored, "block")} ran under half an hour and ${floored === 1 ? "is" : "are"} drawn half an hour tall: on ${floored === 1 ? "that one" : "those"} the two times are the record and the height is not.`;
     }
 
     const marked = blocks.filter((block) => flagOf(block).checked).length;
@@ -1056,17 +1134,10 @@ const PAPER_ROWS = 14;
     const total = totalMins(root);
 
     const date = (fieldOf(root, "date") as HTMLInputElement | null)?.value ?? "";
-    const resolution = (() => {
-      const select = fieldOf(root, "resolution") as HTMLSelectElement | null;
-      return select?.selectedOptions[0]?.textContent?.trim() ?? "";
-    })();
-    const written = root.querySelector<HTMLInputElement>("[data-written]:checked")?.value ?? "";
 
     const facts = [
       `Date: ${date || "not stated"}`,
       `Woke at: ${formatClock(wake)}`,
-      `Written down: ${resolution || "not stated"}`,
-      `Written: ${written || "not stated"}`,
       closed
         ? `Covers: 24 h in ${plural(blocks.length, "block")}, sleep included`
         : `Covers: ${formatSpan(total)} since waking, and the day is not closed`,
@@ -1078,7 +1149,7 @@ const PAPER_ROWS = 14;
     for (const [label, className] of [
       ["Starts", "sheet-col-time"],
       ["Runs for", "sheet-col-span"],
-      ["What I was doing", ""],
+      ["What I was doing", "sheet-col-what"],
       ["For a later week", "sheet-col-mark"],
     ] as const) {
       const cell = make("th", className, label);
@@ -1098,7 +1169,9 @@ const PAPER_ROWS = 14;
       // The sleep block is the one row the student did not type, so it says so
       // rather than printing an empty cell that reads as an unrecorded hour.
       const what = whatOf(block).value.trim();
-      row.append(make("td", "", what || (block.dataset.sleep === "true" ? "asleep" : "")));
+      row.append(
+        make("td", "sheet-col-what", what || (block.dataset.sleep === "true" ? "asleep" : "")),
+      );
       // The word, not a tick or a colour: this sheet is printed in black and
       // read on paper, and "marked" survives both.
       row.append(make("td", "sheet-col-mark", flagOf(block).checked ? "marked" : ""));
@@ -1283,7 +1356,7 @@ const PAPER_ROWS = 14;
     if (clamped) {
       announce(
         root,
-        `Kept at ${input.value}: a block cannot be shorter than five minutes, and the day cannot run past twenty-four hours.`,
+        `Kept at ${input.value}: a block cannot be shorter than a minute, and the day cannot run past twenty-four hours.`,
       );
     }
   };
@@ -1299,10 +1372,13 @@ const PAPER_ROWS = 14;
 
     const pulled = drag.clientY + window.scrollY - drag.startPageY;
     if (pulled > 3 || drag.block) {
-      const snap = stepOf(root);
+      // A pixel is a minute and nothing rounds it. The sheet used to snap to
+      // the resolution, which meant it could not record that somebody got up
+      // at 07:43: the lab asks for the day as it was, and quarter hours are
+      // how finely a student needs to write it down, not how precisely the
+      // instrument is allowed to let them.
       const room = remainingMins(root) + (drag.block ? minsOf(drag.block) : 0);
-      const wanted = Math.round(pulled / snap) * snap;
-      const minutes = Math.min(Math.max(wanted, snap), Math.max(snap, room));
+      const minutes = Math.min(Math.max(Math.round(pulled), MIN_BLOCK), Math.max(MIN_BLOCK, room));
       if (!drag.block) drag.block = openBlock(root, minutes);
       else {
         setMins(drag.block, minutes);
@@ -1328,8 +1404,8 @@ const PAPER_ROWS = 14;
     if (readout) readout.textContent = "";
     if (!commit) return;
     // A tap with no pull is the single-pointer path that WCAG 2.5.7 asks for:
-    // one block of the current resolution, same as the button beside it.
-    const opened = block ?? openBlock(root, stepOf(root));
+    // half an hour, the same as the button beside it.
+    const opened = block ?? openBlock(root, DEFAULT_BLOCK);
     if (!opened) return;
     whatOf(opened).focus();
     const wake = wakeMins(root);
@@ -1378,6 +1454,11 @@ const PAPER_ROWS = 14;
     // time you can type into.
     root.addEventListener("keydown", (event) => {
       if (!(event instanceof KeyboardEvent) || event.key !== "Enter") return;
+      // The writing area is a textarea, so Enter had to be taken off it to keep
+      // walking the day. Shift and Enter is the newline, which is the
+      // convention every message box has taught, and it is said on the page
+      // rather than left to be discovered.
+      if (event.shiftKey) return;
       const target = event.target as HTMLElement | null;
       if (!target) return;
       if (target.matches("[data-time]")) {
@@ -1400,7 +1481,7 @@ const PAPER_ROWS = 14;
         return;
       }
       if (isClosed(root)) return;
-      const opened = openBlock(root, stepOf(root));
+      const opened = openBlock(root, DEFAULT_BLOCK);
       if (!opened) return;
       timeOf(opened).focus();
       announce(root, `Block opened, ${formatSpan(minsOf(opened))}. Correct the start time or press Enter again.`);
@@ -1414,7 +1495,7 @@ const PAPER_ROWS = 14;
       const action = button.dataset.action;
 
       if (action === "open") {
-        const opened = openBlock(root, stepOf(root));
+        const opened = openBlock(root, DEFAULT_BLOCK);
         if (!opened) return;
         whatOf(opened).focus();
         announce(
