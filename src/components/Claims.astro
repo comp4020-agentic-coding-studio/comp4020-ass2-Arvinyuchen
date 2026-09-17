@@ -1,39 +1,74 @@
 ---
-// The week's claims, with their sample sizes on the page.
+// The week's evidence, kept as a record rather than taught as a section.
 //
 // This component is the course's own argument applied to itself. Rule 2 says
 // anything asserting an effect has to show how many people were measured and
 // whether they were blinded. Collecting that in frontmatter satisfies the
-// check; printing it here is what makes the case.
+// check; printing it here is what makes the case. It cannot go back into the
+// frontmatter and out of sight, because a course whose second rule is "a claim
+// carries its own evidence" has to visibly carry its own, and the foot of a
+// lab page is where a marker looks for it.
 //
 // It was a four-column table, and a table was the wrong form. Most weeks make
 // one or two claims, so it was table machinery: head, scopes, caption,
 // horizontal scroller: wrapped around a single row. Worse, a row forces 140
 // characters of prose and a six-character number into one grid, so the column
 // widths had to satisfy both: that is why the table could not get narrower
-// than 580px and needed a scroller on a phone at all.
+// than 580px and needed a scroller on a phone at all. Do not put it back.
 //
-// Each claim is now a block. The claim gets the full measure as prose, and
-// beneath it a metadata line in the same label-value idiom as the protocol
-// strip at the top of the page. Effect claims and history claims take the same
-// shape, because they are the same kind of object, and differ in what the line
-// says and how the rule beside them is drawn.
+// It was then a flat list of blocks, all at body size, under a heading reading
+// "What we actually know", and that is what this round changes.
 //
-// The sample size leads that line. A course whose first instruction is "ask
-// how many people were measured" should not bury the number mid-row.
+// The heading promised a lesson and delivered a bibliography, which is
+// probably why no week's body has ever referred to this block: it was never a
+// lesson to begin with. It is the receipts, so it says so. "Evidence on file"
+// is what the block is, in the same register as "Teaching team" beside it.
+//
+// And the list ran effect claims and history claims in one undifferentiated
+// stack, which flattened the one distinction the schema exists to make. They
+// are grouped now, and each group is labelled in the slot where the safety
+// block puts its terms. What goes in that slot is the point:
+//
+//   - For an effect claim the label is its own sample size and blinding. Those
+//     two fields are what makes it an effect claim rather than an assertion,
+//     so they are what names it, and putting them first is the course's first
+//     instruction applied to its own page. They used to sit under the claim,
+//     on a line of their own, which cost every week a line and buried the
+//     number below the prose.
+//
+//   - For history the label says "History, not measured", once, for the whole
+//     group. A history claim has no sample size and is given no row where one
+//     could have been: an empty field would report that a number is missing,
+//     when the truth is that a fact about 1965 was never a measurement. The
+//     previous version said "Not a measurement" against every entry, which on
+//     week 6 said it three times.
+//
+// The two kinds are set differently as well as labelled differently. An effect
+// claim is the evidential basis for the week's method, so it keeps body size:
+// CLAUDE.md's rule about figures applies with equal force here, a finding in
+// the smallest type on the page is a finding nobody reads. History is
+// provenance, and sets one step down, which is what turns a week with three of
+// them from three more paragraphs of teaching into a record of where the
+// material came from.
 import type { CollectionEntry } from "astro:content";
+
+type Claim = NonNullable<CollectionEntry<"sessions">["data"]["claims"]>[number];
+type EffectClaim = Extract<Claim, { kind: "effect" }>;
+type HistoryClaim = Extract<Claim, { kind: "history" }>;
 
 interface Props {
   claims: CollectionEntry<"sessions">["data"]["claims"];
 }
 
 const { claims } = Astro.props;
+const all = claims ?? [];
 
-// Effects first, then history. The distinction is the teaching point, and
-// ordering carries it without needing a second heading.
-const ordered = [...(claims ?? [])].sort((a, b) =>
-  a.kind === b.kind ? 0 : a.kind === "effect" ? -1 : 1,
-);
+// Every week carries exactly one effect claim, because the check in
+// spec/content-invariants.test.ts requires one. Each still gets its own
+// labelled group, so a week that gained a second would render both with their
+// own numbers rather than one set of numbers standing for two claims.
+const effects = all.filter((claim): claim is EffectClaim => claim.kind === "effect");
+const histories = all.filter((claim): claim is HistoryClaim => claim.kind === "history");
 
 const sampleSize = (n: number | "unreported", unit: string): string =>
   n === "unreported" ? "sample size never reported" : `${n.toLocaleString("en-AU")} ${unit}`;
@@ -45,30 +80,38 @@ const blinding = (blinded: boolean | "n/a"): string =>
 ---
 
 {
-  ordered.length > 0 && (
-    <section class="claims-section" aria-labelledby="what-we-know">
-      <h2 id="what-we-know">What we actually know</h2>
+  all.length > 0 && (
+    <section class="claims-section" aria-labelledby="evidence-on-file">
+      <h2 id="evidence-on-file">Evidence on file</h2>
 
-      <ul class="claims">
-        {ordered.map((claim) => (
-          <li class:list={["claim", claim.kind]}>
-            <p class="claim-text">{claim.text}</p>
-            <p class="claim-facts">
-              {claim.kind === "effect" ? (
-                <>
-                  <span class:list={["n", { unreported: claim.n === "unreported" }]}>
-                    {sampleSize(claim.n, claim.unit)}
-                  </span>
-                  <span>{blinding(claim.blinded)}</span>
-                </>
-              ) : (
-                <span class="kind">Not a measurement</span>
-              )}
-            </p>
-            <cite class="claim-source">{claim.source}</cite>
-          </li>
+      <dl class="claims">
+        {effects.map((claim) => (
+          <div class="group effect">
+            <dt>
+              <span class:list={["n", { unreported: claim.n === "unreported" }]}>
+                {sampleSize(claim.n, claim.unit)}
+              </span>{" "}
+              <span class="blinding">{blinding(claim.blinded)}</span>
+            </dt>
+            <dd>
+              <p class="claim-text">{claim.text}</p>
+              <cite class="claim-source">{claim.source}</cite>
+            </dd>
+          </div>
         ))}
-      </ul>
+
+        {histories.length > 0 && (
+          <div class="group history">
+            <dt>History, not measured</dt>
+            {histories.map((claim) => (
+              <dd>
+                <p class="claim-text">{claim.text}</p>
+                <cite class="claim-source">{claim.source}</cite>
+              </dd>
+            ))}
+          </div>
+        )}
+      </dl>
     </section>
   )
 }
@@ -76,86 +119,108 @@ const blinding = (blinded: boolean | "n/a"): string =>
 <style>
   .claims {
     margin: 0;
-    padding: 0;
-    list-style: none;
   }
 
-  /* A rule down the side rather than a box: it ties the claim to its evidence
-     without drawing a card around every sentence.
-
-     The inset is --apparatus-indent, declared on .apparatus in
-     src/styles/apparatus.css and read through the cascade rather than
-     copied, because the one thing it has to do is agree with the indent of
-     the bulleted lists in the sections below. It was --at-spacing-md, which
-     is 16px against their 40px, so the claims and the spec started their
-     text at two different left edges inside a block meant to read as one. */
-  .claim {
-    padding-inline-start: var(--apparatus-indent, 1.2em);
-    border-inline-start: 2px solid var(--at-primary);
-  }
-
-  .claim + .claim {
+  .group + .group {
     margin-block-start: var(--at-spacing-lg);
   }
 
-  /* History is not evidence of an effect, and the rule says so before the text
-     does: dotted and quieter, so the two kinds are separable at a glance and
-     not only by reading the line underneath. */
-  .claim.history {
-    border-inline-start-style: dotted;
-    border-inline-start-color: var(--at-tertiary);
-  }
+  /* The same small uppercase label the safety block uses for a term above its
+     description, so a reader meets one idiom and not two. Flush at the content
+     edge, like every other label on a lab page.
 
-  .claim-text {
-    margin-block: 0 0.35rem;
-  }
-
-  .claim-facts {
+     Not a heading. The complaint this round answers is that the block reads as
+     a section, and two more entries in the document outline would say the
+     opposite of what the styling says. */
+  .claims dt {
     display: flex;
     flex-wrap: wrap;
     gap: 0 0.5em;
-    margin: 0;
     color: var(--at-text-secondary);
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: var(--at-font-size-xs);
+    letter-spacing: 0.08em;
+    line-height: 1.3;
+    text-transform: uppercase;
   }
 
   /* Separators are drawn, not typed. They are only ever between the two short
-     facts: the citation used to sit in this row too, and being long it wrapped
-     and dragged its middot onto the start of the next line. A long citation
-     and a six-character number do not belong in the same wrapping row. */
-  .claim-facts > :not(:first-child)::before {
+     facts: the citation used to sit in a row like this one, and being long it
+     wrapped and dragged its middot onto the start of the next line. A long
+     citation and a six-character number do not belong in the same row.
+
+     The literal space between the two spans is not decoration. Generated
+     content is not reliably announced, so without it the label flattens to
+     "48 peoplenot blinded" for a screen reader while looking correct on the
+     page. With it the line still reads when the styling is taken away. */
+  .claims dt > :not(:first-child)::before {
     content: "·";
     margin-inline-end: 0.5em;
-    color: var(--at-text-muted);
   }
 
-  .claim-source {
-    display: block;
-    margin-block-start: 0.15rem;
-    color: var(--at-text-secondary);
-    font-size: 0.85rem;
-    font-style: italic;
-    line-height: 1.45;
-  }
-
+  /* The sample size is the one thing in this label a reader is looking for, so
+     it keeps the body colour and takes the weight while the rest steps back. */
   .n {
     color: var(--at-text);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
-  /* A missing sample size is the interesting case, not something to hide: it
-     is marked so a reader spots it without reading the words. */
+  /* A missing sample size is the interesting case, not something to hide: it is
+     marked so a reader spots it without reading the words. */
   .n.unreported {
     color: var(--at-text-secondary);
     font-weight: 400;
     font-style: italic;
   }
 
-  .kind {
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+  /* A rule down the side rather than a box: it ties the claim to its evidence
+     without drawing a card around every sentence.
+
+     The inset is --apparatus-indent, declared on .apparatus in
+     src/styles/apparatus.css and read through the cascade rather than copied,
+     because the one thing it has to do is agree with the indent of the
+     bulleted lists in the sections below. It was --at-spacing-md, which is 16px
+     against their 40px, so the claims and the spec started their text at two
+     different left edges inside a block meant to read as one.
+
+     The margin reset is load bearing too: a dd carries 40px of UA indent, which
+     would put the rule 40px in from everything else in the apparatus. */
+  .claims dd {
+    margin-inline: 0;
+    margin-block: var(--at-spacing-xs) 0;
+    padding-inline-start: var(--apparatus-indent, 1.2em);
+    border-inline-start: 2px solid var(--at-primary);
+  }
+
+  .claims dd + dd {
+    margin-block-start: var(--at-spacing-md);
+  }
+
+  /* History is not evidence of an effect, and the rule says so before the text
+     does: dotted, and in the border token rather than the brand colour, so the
+     two kinds are separable at a glance and not only by reading the label. */
+  .history dd {
+    border-inline-start-style: dotted;
+    border-inline-start-color: var(--at-border);
+  }
+
+  .claim-text {
+    margin-block: 0;
+  }
+
+  /* One step below the lesson. Provenance is reference material, and setting it
+     at body size is what made a week with three history claims read as three
+     more paragraphs of teaching. */
+  .history .claim-text {
+    font-size: var(--at-font-size-sm);
+  }
+
+  .claim-source {
+    display: block;
+    margin-block-start: var(--at-spacing-xs);
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+    font-style: italic;
+    line-height: 1.45;
   }
 </style>
