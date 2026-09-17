@@ -12,16 +12,115 @@ related:
   - assessments/the-report
 ---
 
-The most useful hour in the course, and the most uncomfortable one. We start
-with distributions rather than definitions: thirty days of one measure
-on a screen, the worst day marked, and what happens next. The effect is visible
-before any statistics are introduced, which is the point. This is not a subtle
-artefact that appears under analysis. It is the shape of the data.
+import Callout from "astro-theme-university/components/Callout.astro";
+import GaltonMedians from "../../components/GaltonMedians.astro";
 
-From there: Galton's 1886 measurements of parents and children, Kahneman's flight
-instructors who built a training philosophy on it, and the reason the entire
-self-improvement industry gets a permanent free lunch from the fact that people
-start new routines on bad days.
+## The shape before the name
 
-We close on what it does to your own report, which is due next week. If you began
-your experiment on an unusual day, some of your result belongs to the day.
+An unusual measurement is usually followed by an ordinary one. That sentence is
+the whole of this week, and it is not a claim about your body, your willpower or
+your routine: it is a property of any two measurements that are related without
+being identical. Nothing acts on the second reading. There is no rebound, no
+correction and no debt being repaid. An extreme reading is extreme because
+several things went wrong at once, and several things rarely go wrong at once
+twice in a row, so the next reading sits closer to where most of your readings
+already are. Now set that beside the question of when people actually change
+something. Nobody takes up a sleep routine in a week they have been sleeping
+beautifully. Nobody rebuilds a morning on a morning that went fine. Changes
+start at the bottom, which means the days after a change begins are very likely
+to be better than the days before it, whatever the change was, and including no
+change at all. That is an improvement available for free to anything whatsoever,
+and it has been sold a great many times. It has a name,
+[regression to the mean](/glossary/#regression-to-the-mean), and the rest of
+this lecture is three occasions on which it was mistaken for a result.
+
+## Three times this has already fooled somebody
+
+### Galton measured it and filed it under heredity
+
+Francis Galton read [Regression towards Mediocrity in Hereditary
+Stature](https://galton.org/essays/1880-1889/galton-1886-jaigi-regression-stature.pdf)
+to the Anthropological Institute and published it in 1886, and it is the first
+place anyone put numbers to this. He had collected family records by offering
+prizes for them, and Table I of that memoir cross tabulates the heights of 205
+mid-parents against the heights of their 928 adult children, where a mid-parent
+is the average of a couple with the mother's height first multiplied by 1.08 to
+put it on the same scale as the father's. What matters is the last column, which
+gives the median height of the children born to each height of mid-parent, set
+against the mid-parent height itself.
+
+<GaltonMedians />
+
+Read the two columns against each other and the whole table leans inward. The
+71.5 inch mid-parents had children with a median height of 69.9, more than an
+inch and a half shorter than their parents, while the 64.5 inch mid-parents had
+children with a median of 65.8, better than an inch taller than their parents,
+and every row in between moves the same way by a smaller amount the closer it
+starts to the middle. Galton's own summary is that the height deviate of the
+offspring is on average two thirds of the height deviate of its mid-parentage.
+One row refuses: the 72.5 inch mid-parents have a median child height of 72.2,
+which barely moves at all, and that row rests on 19 children of 6 mid-parents,
+which is its own lesson about reading a single line of any table. What Galton
+did next is the error the rest of this lecture is about. He treated the pattern
+as a fact about inheritance, a tendency of a race to fall back towards its type,
+and it is nothing of the kind.
+
+<Callout type="info">
+  Regression to the mean is not a force, and the commonest way to misunderstand
+  it is to look for the mechanism. There isn't one. Galton's own title, with its
+  regression towards mediocrity, reads as though heights were being pulled
+  somewhere by something, and they are not: the same arithmetic turns up in
+  blood pressure, in exam marks and in aircraft landings, anywhere two
+  measurements of the same thing agree with each other without agreeing
+  exactly. If you catch yourself asking why the days after a bad day improve,
+  you have already accepted a cause that does not exist.
+</Callout>
+
+### The flight instructors built a training philosophy on it
+
+The sharpest case is in Tversky and Kahneman's ["Judgment under Uncertainty:
+Heuristics and
+Biases"](https://sites.socsci.uci.edu/~bskyrms/bio/readings/tversky_k_heuristics_biases.pdf),
+published in *Science* in 1974, volume 185, pages 1124 to 1131, and it is worth
+reading in their words rather than in the retellings that came later. "In a discussion of flight
+training, experienced instructors noted that praise for an exceptionally smooth
+landing is typically followed by a poorer landing on the next try, while harsh
+criticism after a rough landing is usually followed by an improvement on the
+next try. The instructors concluded that verbal rewards are detrimental to
+learning, while verbal punishments are beneficial, contrary to accepted
+psychological doctrine." The instructors were reporting what they saw
+accurately. An exceptional landing is followed by a more ordinary one, and so is
+a terrible one, whether or not anybody says a word in between. The authors then
+generalise it past flying: "the human condition is such that, by chance alone,
+one is most often rewarded for punishing others and most often punished for
+rewarding them". Years of experience, an honest record of it, and a conclusion
+about how to treat people that came out of arithmetic rather than out of the
+cadets.
+
+### The self-improvement industry gets this for free
+
+The instructors at least had to wait for a bad landing. Anyone selling a routine
+does not, because their customers arrive already at the bottom: people go
+looking for a new system on the week the old one visibly failed, which is the
+week their measurements are furthest from their own average. Whatever they buy
+is therefore measured from the worst point, against the days that follow it, and
+those days were going to be better anyway. This is not an argument that such
+products do nothing, and it is not an invitation to be cynical about people who
+say they were helped. It is an argument about one particular kind of evidence.
+The testimonial that opens "I was at my lowest and then I tried this" is the
+shape of the data being reported as the effect of the product, and no amount of
+sincerity in the telling can separate the two. Only a comparison can, which
+means something else that also started at the bottom.
+
+You have all of this in your own records, which is where today's lab starts: we
+pool the class's week 1 [baselines](/glossary/#baseline), find every unusually
+bad day and look at what followed, with no statistics involved, because none are
+needed to see it. Then take it to your report, due next week, and to the
+paragraph in it that will be hardest to write. Find the day your experiment
+began and say where that day sat in your own distribution. If it was
+unremarkable, say so and move on. If it was one of your worst, then some part of
+your result belongs to the day rather than to what you changed, and the honest
+version says how much of it you cannot separate out. The report is marked on
+inference rather than on outcome for precisely this reason: marks for
+improvement would be marks for arithmetic, and this is the week that shows you
+why.

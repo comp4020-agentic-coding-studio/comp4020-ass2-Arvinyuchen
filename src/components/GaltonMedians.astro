@@ -1,0 +1,287 @@
+---
+// Galton's Table I, reduced to the two columns that carry the argument.
+//
+// The block this sits in argues that an unusual measurement is followed by an
+// ordinary one. Prose can say that, and prose can even give a pair of numbers
+// for it, but the thing worth seeing is that every row moves the same way and
+// by less the closer it starts to the middle: the mid-parent heights fan out
+// from 64.5 to 72.5 inches and the medians of their children sit inside them
+// on both sides. That is one shape, and it has to be shown at once or it is
+// nine separate sentences.
+//
+// A real table, for the same reason as the UV and GRADE figures: this is a
+// course about reading numbers, so the numbers are on the page where a reader
+// can check them against the scan. The track is a second channel over the top,
+// and it is aria-hidden because it says nothing the cells do not.
+//
+// Open marker for the parents, filled for the children, so the two are told
+// apart by shape and not only by colour. The figure has to survive being
+// printed, and axe runs the full rule set over this page at build time.
+//
+// Provenance, licence and the caveats live in src/data/galton-1886-stature.json.
+// The two open-ended rows of the original, mid-parents above 72.5 and below
+// 64.5 inches, are not drawn: Galton prints no median for either, and drawing
+// a point where the source has none is the exact failure this lecture is about.
+import data from "../data/galton-1886-stature.json";
+
+const { min_inches: lo, max_inches: hi } = data.scale;
+const pos = (inches: number): number => ((inches - lo) / (hi - lo)) * 100;
+
+const meanAt = pos(data.population_mean_inches);
+
+const rows = data.rows.map((row) => {
+  const parent = pos(row.mid_parent);
+  const child = pos(row.median_child);
+  return {
+    ...row,
+    parent,
+    child,
+    from: Math.min(parent, child),
+    width: Math.abs(parent - child),
+  };
+});
+---
+
+<figure class="galton">
+  <div class="scroll">
+    <table>
+      <caption class="visually-hidden">
+        Mid-parent height against the median height of their adult children, for
+        the {data.total_adult_children} adult children of {data.total_mid_parents} mid-parents
+        in Galton's Table I.
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col" class="num">Mid-parent</th>
+          <th scope="col" class="num">Children</th>
+          <th scope="col" class="num">Median child</th>
+          <th scope="col" class="track-head">
+            <span class="head-label">Both, on one scale of inches</span>
+            <span class="axis" aria-hidden="true">
+              <span class="tick start" style={`--x: ${pos(lo)}%`}>{lo}</span>
+              <span class="tick mid" style={`--x: ${meanAt}%`}
+                >{data.population_mean_label}</span
+              >
+              <span class="tick end" style={`--x: ${pos(hi)}%`}>{hi}</span>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr>
+              <th scope="row" class="num">
+                {row.mid_parent.toFixed(1)}
+              </th>
+              <td class="num quiet">{row.adult_children}</td>
+              <td class="num strong">{row.median_child.toFixed(1)}</td>
+              <td class="track-cell">
+                <span class="track" aria-hidden="true">
+                  <span class="mean-rule" style={`--x: ${meanAt}%`} />
+                  <span class="pull" style={`--a: ${row.from}%; --w: ${row.width}%`} />
+                  <span class="marker parent" style={`--x: ${row.parent}%`} />
+                  <span class="marker child" style={`--x: ${row.child}%`} />
+                </span>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <figcaption>
+    <p>
+      Heights in inches. Each row puts two points on one scale running from {lo} to {hi} inches:
+      an open marker for the mid-parent height, a filled marker for the median
+      height of their adult children, joined by a line. The dotted rule down the
+      column is Galton's stated population mean of {data.population_mean_label} inches.
+      From Table I of <a href={data._source.url}>{data._source.dataset}</a
+      >, {data._source.publisher}. <a href={data._source.licence_url}
+        >{data._source.licence}</a
+      >.
+    </p>
+  </figcaption>
+</figure>
+
+<style>
+  .galton {
+    margin-block: var(--at-spacing-lg);
+    margin-inline: 0;
+  }
+
+  /* The track needs a fixed minimum width to mean anything, so on a phone the
+     table has to scroll inside this box rather than taking the page with it.
+     The claims table on the lab pages shipped without this and pushed the whole
+     viewport sideways, which no build check noticed. */
+  .scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The table caption names the table for a screen reader, which the figcaption
+     cannot do because it sits outside the table. Hidden rather than removed:
+     axe wants tables named, and sighted readers have the heading above it and
+     the caption below. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The theme paints table headers with the brand colour and stripes the body
+     rows. Both were fought once on the UV table and once on the GRADE table:
+     the gold bar outweighs the data it labels, and a striped row puts a second
+     background under the one carrying the values. Note this resets `thead`
+     itself and not only `thead th`. Resetting the cells leaves the paint on the
+     ancestor, and it shows straight through them. */
+  .galton thead,
+  .galton thead th,
+  .galton tbody tr,
+  .galton tbody th {
+    background: transparent;
+  }
+
+  th,
+  td {
+    padding: 0.35rem 0.5rem;
+    text-align: start;
+    font-weight: 400;
+    vertical-align: middle;
+  }
+
+  thead th {
+    color: var(--at-text-secondary);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-block-end: 1px solid var(--at-border);
+    vertical-align: end;
+  }
+
+  .num {
+    text-align: end;
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+
+  tbody th.num {
+    font-size: 0.9rem;
+  }
+
+  .quiet {
+    color: var(--at-text-secondary);
+  }
+
+  .strong {
+    font-weight: 600;
+  }
+
+  .track-head {
+    width: 100%;
+    padding-inline-start: var(--at-spacing-md);
+  }
+
+  .head-label {
+    display: block;
+  }
+
+  /* The axis is three labels and nothing else: the gridline a reader needs is
+     the mean, and it is drawn in every row rather than once at the top. */
+  .axis {
+    position: relative;
+    display: block;
+    height: 1.2em;
+    margin-block-start: 0.2rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .tick {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: var(--x);
+    font-size: 0.65rem;
+  }
+
+  .tick.mid {
+    transform: translateX(-50%);
+  }
+
+  .tick.end {
+    transform: translateX(-100%);
+  }
+
+  .track-cell {
+    width: 100%;
+    padding-inline-start: var(--at-spacing-md);
+  }
+
+  .track {
+    position: relative;
+    display: block;
+    min-width: 15rem;
+    height: 1.1rem;
+  }
+
+  .mean-rule {
+    position: absolute;
+    inset-block: -0.35rem;
+    inset-inline-start: var(--x);
+    width: 0;
+    border-inline-start: 1px dotted var(--at-text-secondary);
+  }
+
+  /* The segment is the finding: its length is how far the children sit from
+     their parents, and its side is which way they moved. */
+  .pull {
+    position: absolute;
+    inset-block-start: calc(50% - 1px);
+    inset-inline-start: var(--a);
+    width: var(--w);
+    height: 2px;
+    background: var(--at-primary);
+    opacity: 0.55;
+  }
+
+  .marker {
+    position: absolute;
+    inset-block-start: calc(50% - 0.3rem);
+    inset-inline-start: var(--x);
+    margin-inline-start: -0.3rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+  }
+
+  /* Open against filled, so the pair is legible without colour. */
+  .marker.parent {
+    border: 1.5px solid var(--at-text-secondary);
+    background: var(--at-bg, transparent);
+  }
+
+  .marker.child {
+    background: var(--at-primary);
+  }
+
+  figcaption {
+    margin-block-start: var(--at-spacing-md);
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  figcaption p {
+    margin-block: 0;
+  }
+</style>

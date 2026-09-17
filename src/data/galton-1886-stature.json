@@ -1,0 +1,32 @@
+{
+  "_source": {
+    "dataset": "Table I: Number of Adult Children of various statures born of 205 Mid-parents of various statures",
+    "publisher": "Francis Galton, Regression towards Mediocrity in Hereditary Stature, Journal of the Anthropological Institute of Great Britain and Ireland, volume 15 (1886), pages 246 to 263",
+    "url": "https://galton.org/essays/1880-1889/galton-1886-jaigi-regression-stature.pdf",
+    "licence": "Public domain",
+    "licence_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "period": "heights returned to Galton's offer of prizes for Family Records, which the memoir says reached him the year before it was published in 1886",
+    "conditions": "928 adult children of 205 mid-parents, measured in inches without shoes. A mid-parent is the average of the two parents' heights with every female height first multiplied by 1.08 to put it on the male scale, which Galton says suits his data better than 1.07 or 1.09. Galton's note under the table says the medians were computed by taking each entry as referring to the middle of the square it stands in, and that the column headings run 62.2, 63.2 and so on rather than 62.5, 63.5 because the observations bunch on whole inches.",
+    "how_these_numbers_were_made": "Transcribed from the scan of Table I published at galton.org and checked against a second, independently produced scan held by UCLA, which agrees cell for cell. Every row's counts were then summed and compared with its printed row total, and the row totals summed and compared with the printed grand totals: all eleven rows agree, the adult children sum to 928 and the mid-parents to 205. The medians are Galton's own and have not been recomputed. No value here is derived, smoothed or interpolated.",
+    "excluded": "Galton prints two open-ended rows, mid-parents above 72.5 inches (4 adult children of 5 mid-parents) and below 64.5 inches (14 adult children of 1 mid-parent). Neither carries a median in the original, so neither is carried here, and their children are still inside the 928.",
+    "caveats": "Galton says of his numerical estimates that he offers them \"only as being serviceably approximate\", and notes that the precision of the data is poor, partly because in many cases it was unclear whether a height had been measured with the shoes on or off. The 72.5 inch row rests on 19 children of 6 mid-parents and is the one row that barely regresses at all."
+  },
+  "population_mean_inches": 68.25,
+  "population_mean_label": "68¼",
+  "population_mean_note": "Galton's own figure: \"In the population with which I deal the level of mediocrity is 68¼ inches (without shoes).\"",
+  "law": "The height-deviate of the offspring is, on the average, two-thirds of the height-deviate of its mid-parentage.",
+  "total_adult_children": 928,
+  "total_mid_parents": 205,
+  "scale": { "min_inches": 64, "max_inches": 73 },
+  "rows": [
+    { "mid_parent": 72.5, "adult_children": 19, "mid_parents": 6, "median_child": 72.2 },
+    { "mid_parent": 71.5, "adult_children": 43, "mid_parents": 11, "median_child": 69.9 },
+    { "mid_parent": 70.5, "adult_children": 68, "mid_parents": 22, "median_child": 69.5 },
+    { "mid_parent": 69.5, "adult_children": 183, "mid_parents": 41, "median_child": 68.9 },
+    { "mid_parent": 68.5, "adult_children": 219, "mid_parents": 49, "median_child": 68.2 },
+    { "mid_parent": 67.5, "adult_children": 211, "mid_parents": 33, "median_child": 67.6 },
+    { "mid_parent": 66.5, "adult_children": 78, "mid_parents": 20, "median_child": 67.2 },
+    { "mid_parent": 65.5, "adult_children": 66, "mid_parents": 12, "median_child": 66.7 },
+    { "mid_parent": 64.5, "adult_children": 23, "mid_parents": 5, "median_child": 65.8 }
+  ]
+}

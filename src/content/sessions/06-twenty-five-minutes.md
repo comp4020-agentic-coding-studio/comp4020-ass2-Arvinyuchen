@@ -24,19 +24,30 @@ claims:
       pages 107-110
   - kind: history
     text:
-      The twenty-five minute interval was arrived at by one person testing
-      interval lengths on himself. Cirillo began at two minutes, tried lengths
-      up to an hour, found the longer ones hard to sustain, and settled on
-      twenty-five.
+      The interval began as one student's bet with himself in the late 1980s,
+      using a tomato-shaped kitchen timer. The paper dates the method to 1992
+      and describes no trial of any interval length against any other.
     source:
-      Francesco Cirillo, The Pomodoro Technique (formalised 1992, released as a
-      free PDF 2006); author's own account at pomodorotechnique.com
+      Francesco Cirillo, The Pomodoro Technique, free paper released 19 October
+      2006, version 1.3 of 15 June 2007, preface and section 1
   - kind: history
     text:
-      Structured study periods of twenty to forty minutes with short breaks were
-      already in the popular literature before the technique was named, a debt
-      Cirillo acknowledges.
-    source: Tony Buzan, Use Your Head (1974)
+      The only sweep of interval lengths in that paper was run by work groups
+      Cirillo was mentoring, not on himself. They went from an hour to two
+      hours, down to forty-five minutes, then ten, and settled on thirty. The
+      same paper's results section recommends thirty minutes, not twenty-five.
+    source:
+      Francesco Cirillo, The Pomodoro Technique, section 3.2, The Length of the
+      Pomodoro
+  - kind: history
+    text:
+      The paper's one appeal to outside evidence about interval length, that
+      twenty to forty-five minute intervals maximise attention, footnotes a
+      Teach Yourself Literature Guide to Orwell's Animal Farm.
+    source:
+      Francesco Cirillo, The Pomodoro Technique, bibliography reference 15,
+      citing Iona McGregor with Tony Buzan, A Guide to Animal Farm, Hodder and
+      Stoughton, 1998, ISBN 0-340-66401-0
 spec:
   - your two conditions differ in exactly one respect
   - the order you tried them in is balanced, and you can show how
@@ -44,16 +55,17 @@ spec:
 ---
 
 The technique is named after a tomato. Francesco Cirillo, a university student in
-Rome in the late 1980s who could not concentrate, picked up a tomato-shaped
-kitchen timer and asked whether he could work for two minutes without
-interrupting himself. He could. He tried longer intervals, up to about an hour,
-found those hard to hold, and settled on twenty-five minutes.
+the late 1980s who could not concentrate, picked up a tomato-shaped kitchen timer
+and bet himself he could study, really study, for ten minutes. That is the origin
+as his own 2006 paper tells it. The account on his site today says the question
+was two minutes, which is worth knowing before you trust any other detail of the
+story.
 
-That is the entire provenance of the number. One person, one kitchen, a range of
-intervals tried and one chosen because it felt right. It was formalised in 1992,
-put online for free in 2006, and is now taught in schools, built into hundreds of
-applications, and recommended to you as though it were a property of human
-attention.
+That is the entire provenance of the number. One person, one timer, and an
+interval that the paper dates to 1992 without ever comparing it against another
+interval. It was put online for free in 2006, and is now taught in schools, built
+into hundreds of applications, and recommended to you as though it were a
+property of human attention.
 
 ## The awkward part
 
@@ -65,8 +77,11 @@ minutes beats forty, or eighteen, or however long you happen to be able to
 concentrate today. The interval is not disputed in the literature so much as
 absent from it.
 
-Cirillo, to his credit, has never claimed otherwise. He describes it as what
-worked for him. The overreach happened downstream, in everyone who repeated it.
+Cirillo, to his credit, has never claimed otherwise. His own paper describes
+twenty-five as what worked for him and then recommends thirty in its results
+section, which is a stronger admission than most of his readers have ever made.
+The overreach happened downstream, in everyone who repeated the number without
+reading the document it came from.
 
 ## So we test it
 
