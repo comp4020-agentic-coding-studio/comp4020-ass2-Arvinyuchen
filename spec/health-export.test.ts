@@ -32,6 +32,7 @@ import {
   parseAttributes,
   parseHealthDate,
   scanSleepWindow,
+  sliceNight,
   summarise,
   type ScanResult,
 } from "../src/lib/health-export";
@@ -140,7 +141,7 @@ describe("two instruments are two instruments", () => {
     expect(formatClock(night!.startWallMs)).toBe("23:41");
     expect(formatClock(night!.endWallMs)).toBe("07:06");
     expect(formatLength(totals.asleepMinutes)).toBe("7 h 8 m");
-    expect(totals.totals.map((total) => total.label)).toEqual(["Awake", "REM", "Core", "Deep"]);
+    expect(totals.totals.map((total) => total.label)).toEqual(["Awake", "Core", "Deep", "REM"]);
   });
 
   it("reports an export with no sleep stages without it looking broken", async () => {
@@ -152,6 +153,58 @@ describe("two instruments are two instruments", () => {
     expect(formatLength(totals.asleepMinutes)).toBe("7 h 32 m");
     expect(formatLength(totals.inBedMinutes)).toBe("7 h 55 m");
     expect(totals.totals.map((total) => total.label)).toEqual(["In bed", "Asleep"]);
+  });
+});
+
+describe("the ring cuts the night into parts that do not overlap", () => {
+  const nightOf = async (source: string) => {
+    const result = await scan(NIGHT);
+    const group = groupBySource(result.segments).find((one) => one.source === source);
+    return longestEpisode(episodesOf(group!.segments))!;
+  };
+
+  it("gives a staged night one part per state, adding to the whole", async () => {
+    const night = await nightOf(WATCH);
+    const slices = sliceNight(night.segments);
+    // Alphabetical among the sleep kinds, which is the order every figure and
+    // table uses: see STATE_ORDER for why it is not a depth scale.
+    expect(slices.map((slice) => slice.label)).toEqual(["Awake", "Core", "Deep", "REM"]);
+    const total = slices.reduce((sum, slice) => sum + slice.minutes, 0);
+    expect(formatLength(total)).toBe("7 h 25 m");
+    expect(total).toBe((night.endWallMs - night.startWallMs) / 60_000);
+  });
+
+  // The night a ring would get wrong if it simply drew every state it found:
+  // in bed and asleep cover the same hours, so adding them draws a fifteen hour
+  // night. In bed is the envelope and becomes the remainder instead.
+  it("never adds in bed to asleep, and names the remainder for what it is", async () => {
+    const night = await nightOf(PHONE);
+    const slices = sliceNight(night.segments);
+    expect(slices.map((slice) => slice.label)).toEqual(["Asleep", "In bed, not asleep"]);
+    expect(formatLength(slices[0].minutes)).toBe("7 h 32 m");
+    expect(formatLength(slices[1].minutes)).toBe("23 m");
+    const total = slices.reduce((sum, slice) => sum + slice.minutes, 0);
+    expect(formatLength(total)).toBe("7 h 55 m");
+    expect(total).toBe((night.endWallMs - night.startWallMs) / 60_000);
+  });
+
+  it("says so when the instrument recorded nothing for part of the night", async () => {
+    const night = await nightOf(WATCH);
+    // A watch that came off: drop three contiguous stretches, 01:44 to 03:52,
+    // out of the middle of the record.
+    const holed = night.segments.filter(
+      (segment) => !(formatClock(segment.startWallMs) >= "01:44" && formatClock(segment.startWallMs) <= "03:09"),
+    );
+    const slices = sliceNight(holed);
+    const gap = slices.find((slice) => slice.key === "unrecorded");
+    expect(gap, "a hole in the record is a part of the night, not an absence").toBeDefined();
+    expect(formatLength(gap!.minutes)).toBe("2 h 8 m");
+    const total = slices.reduce((sum, slice) => sum + slice.minutes, 0);
+    expect(total).toBe((night.endWallMs - night.startWallMs) / 60_000);
+  });
+
+  it("returns nothing at all for a night with no records", () => {
+    expect(sliceNight([])).toEqual([]);
   });
 });
 

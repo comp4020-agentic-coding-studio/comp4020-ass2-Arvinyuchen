@@ -117,8 +117,22 @@ const STATES: Record<string, { key: SleepStateKey; label: string }> = {
 /** The states that count as sleep. In bed is not one of them, and awake is not either. */
 export const ASLEEP_STATES: SleepStateKey[] = ["asleep", "core", "deep", "rem"];
 
-/** The order the lanes are drawn and the rows are listed in. */
-export const STATE_ORDER: SleepStateKey[] = ["inBed", "awake", "rem", "core", "asleep", "deep", "other"];
+/**
+ * The order every figure and every table puts the states in, so that a reader
+ * moving between them is not learning the night twice.
+ *
+ * Deliberately not a depth scale. Apple's own chart runs awake, REM, core, deep
+ * down the page and it draws beautifully, because almost every transition then
+ * lands between neighbouring rows. It also asserts that the four are points on
+ * one ordered quantity, which is the thing a wrist device cannot support: it
+ * infers a stage from movement and a pulse, it does not measure depth. So the
+ * sleep kinds are alphabetical, asleep, core, deep, REM, and deep sitting in the
+ * middle is the point rather than an accident: no monotone reading survives it.
+ * In bed leads because it is the envelope the rest sits inside, and awake
+ * follows it because asleep or not is the one distinction the instrument really
+ * does make.
+ */
+export const STATE_ORDER: SleepStateKey[] = ["inBed", "awake", "asleep", "core", "deep", "rem", "other"];
 
 /** Normalise a raw `value` attribute. Anything unrecognised keeps its own name
  * rather than being dropped: a value this course has not met is still a
@@ -548,6 +562,122 @@ export const longestEpisode = (episodes: Episode[]): Episode | null => {
     if (better) best = episode;
   }
   return best;
+};
+
+export interface NightSlice {
+  key: string;
+  label: string;
+  minutes: number;
+}
+
+type Interval = [start: number, end: number];
+
+const merge = (intervals: Interval[]): Interval[] => {
+  const sorted = [...intervals].sort((one, other) => one[0] - other[0]);
+  const out: Interval[] = [];
+  for (const [start, end] of sorted) {
+    const last = out[out.length - 1];
+    if (last && start <= last[1]) last[1] = Math.max(last[1], end);
+    else out.push([start, end]);
+  }
+  return out;
+};
+
+/** What is left of `whole` once every one of `taken` is removed. */
+const subtract = (whole: Interval, taken: Interval[]): Interval[] => {
+  const out: Interval[] = [];
+  let at = whole[0];
+  for (const [start, end] of merge(taken)) {
+    if (end <= at) continue;
+    if (start >= whole[1]) break;
+    if (start > at) out.push([at, Math.min(start, whole[1])]);
+    at = Math.max(at, end);
+    if (at >= whole[1]) break;
+  }
+  if (at < whole[1]) out.push([at, whole[1]]);
+  return out;
+};
+
+const overlapMinutes = (intervals: Interval[], against: Interval[]): number => {
+  let total = 0;
+  for (const [start, end] of intervals) {
+    for (const [otherStart, otherEnd] of against) {
+      const low = Math.max(start, otherStart);
+      const high = Math.min(end, otherEnd);
+      if (high > low) total += (high - low) / 60_000;
+    }
+  }
+  return total;
+};
+
+// Half a minute, below which a slice is a rounding artefact rather than a part
+// of the night.
+const SLICE_FLOOR = 0.5;
+
+/**
+ * One night cut into parts that do not overlap, which is what a ring can draw.
+ *
+ * The states an export names are not all of one kind. Awake and the sleep kinds
+ * are exclusive: a minute is in exactly one of them. In bed is not, it is the
+ * envelope the others sit inside, and an export written before watchOS 9 has an
+ * asleep record lying wholly within an in bed record. Adding those two together
+ * would draw a fifteen hour night out of a night of under eight, so in bed is
+ * never an arc.
+ *
+ * What it becomes instead is the remainder. The whole is the span of the record,
+ * first mark to last. Everything the instrument put in an exclusive state is an
+ * arc at its own length. Whatever is left over is split by what the file says
+ * about it: minutes inside an in bed record are "in bed, not asleep", which is
+ * a description of the record rather than a reading of it, and minutes inside
+ * nothing at all are "nothing recorded". Both are ordinary in a real export, the
+ * first because a phone knows when you lay down and not when you slept, the
+ * second because a watch comes off.
+ *
+ * Wall clock throughout, because a ring is a picture of the night as its own
+ * clock ran, and because the parts have to add to the whole exactly. The one
+ * night a year where that differs from elapsed time is a daylight saving change,
+ * and the tables beside it carry elapsed time for every stretch.
+ */
+export const sliceNight = (segments: SleepSegment[]): NightSlice[] => {
+  if (segments.length === 0) return [];
+  const span: Interval = [
+    Math.min(...segments.map((segment) => segment.startWallMs)),
+    Math.max(...segments.map((segment) => segment.endWallMs)),
+  ];
+
+  const exclusive = segments.filter((segment) => segment.state !== "inBed");
+  const inBed = segments.filter((segment) => segment.state === "inBed");
+
+  const byState = new Map<SleepStateKey, NightSlice>();
+  for (const segment of exclusive) {
+    const minutes = (segment.endWallMs - segment.startWallMs) / 60_000;
+    const running = byState.get(segment.state);
+    if (running) running.minutes += minutes;
+    else byState.set(segment.state, { key: segment.state, label: segment.label, minutes });
+  }
+
+  const slices = STATE_ORDER.flatMap((key) => {
+    const slice = byState.get(key);
+    return slice && slice.minutes >= SLICE_FLOOR ? [slice] : [];
+  });
+
+  const gaps = subtract(
+    span,
+    exclusive.map((segment) => [segment.startWallMs, segment.endWallMs] as Interval),
+  );
+  const inBedGap = overlapMinutes(
+    gaps,
+    inBed.map((segment) => [segment.startWallMs, segment.endWallMs] as Interval),
+  );
+  const gapMinutes = gaps.reduce((sum, [start, end]) => sum + (end - start) / 60_000, 0);
+
+  if (inBedGap >= SLICE_FLOOR) {
+    slices.push({ key: "inBedOnly", label: "In bed, not asleep", minutes: inBedGap });
+  }
+  if (gapMinutes - inBedGap >= SLICE_FLOOR) {
+    slices.push({ key: "unrecorded", label: "Nothing recorded", minutes: gapMinutes - inBedGap });
+  }
+  return slices;
 };
 
 const two = (value: number): string => String(value).padStart(2, "0");

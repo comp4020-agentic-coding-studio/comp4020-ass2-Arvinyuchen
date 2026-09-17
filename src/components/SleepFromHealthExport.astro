@@ -315,67 +315,194 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     margin-inline-end: 0.4rem;
   }
 
-  /* The figure.
+  /* The two figures.
    *
-   * One row per state the export actually names, and each block drawn at the
-   * clock time it was recorded at, so the row carries the category and the
-   * horizontal position carries the time. Nothing is encoded in colour alone:
-   * the lanes are labelled, and the table underneath says the same thing in
-   * words. A lane is what prose cannot do, which is show at once that a night
-   * was fourteen pieces rather than one.
+   * Both are drawings and both are aria-hidden, so each is followed by a table
+   * that is in the accessibility tree and off the screen. Neither prints, and
+   * that is not an oversight: the day sheet's own print rule hides every child
+   * of #main that is not the sheet, so a print of this page is the sheet and
+   * nothing else. It is the right behaviour to inherit. The file a student
+   * keeps is the sheet with two times written into it, and a second document
+   * would muddy what "the only copy" means in the promise at the foot of this
+   * block.
+   *
+   * Colour is one hue in both. A four step ramp on this brand's gold measures
+   * deltaE 11.0 between its middle pair against a floor of 15, so it is not a
+   * palette a reader could use; and the states are not ordered anyway, so a
+   * ramp would be asserting a scale the instrument cannot support. Position in
+   * the lanes and arc length in the ring carry the meaning instead.
    */
-  .night-out :global(figure) {
+  .night-out :global(.night-fig) {
     margin: var(--at-spacing-lg) 0;
   }
 
+  /* The lanes.
+   *
+   * Row geometry lives in these three custom properties because the stitches
+   * are positioned against it in script: a stitch has to start exactly at the
+   * bottom edge of one capsule and stop at the top edge of the next, and doing
+   * that arithmetic in two places would guarantee they drift apart. */
   .night-out :global(.lanes) {
-    display: grid;
-    grid-template-columns: 4.5rem minmax(0, 1fr);
-    gap: 0.25rem var(--at-spacing-sm);
-    align-items: center;
+    --lane-row: 1.4rem;
+    --lane-gap: 0.35rem;
+    --lane-inset: 0.28rem;
+
+    display: flex;
+    gap: var(--at-spacing-sm);
+    align-items: flex-start;
+  }
+
+  .night-out :global(.lane-names) {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--lane-gap);
+    width: 4.25rem;
   }
 
   .night-out :global(.lane-name) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: var(--lane-row);
+    overflow: hidden;
     color: var(--at-text-secondary);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     letter-spacing: 0.06em;
-    text-align: end;
     text-transform: uppercase;
   }
 
-  .night-out :global(.lane-track) {
-    position: relative;
-    height: 1.35rem;
-    border-radius: 2px;
-    background: color-mix(in srgb, var(--at-text) 7%, transparent);
+  .night-out :global(.lane-plot) {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
-  /* Minimum two pixels, because a four minute stretch in a seven hour night is
-     under one pixel wide and a block that cannot be seen is a block the figure
-     has dropped. */
-  .night-out :global(.lane-block) {
+  .night-out :global(.lane-rows) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--lane-gap);
+  }
+
+  /* The hour rules and the stitches, behind the capsules. First in the DOM so
+     that a capsule always wins the overlap without anyone having to invent a
+     stacking context for it. */
+  .night-out :global(.lane-under) {
     position: absolute;
-    inset-block: 0;
-    min-width: 2px;
-    border-radius: 2px;
+    inset: 0;
+  }
+
+  .night-out :global(.lane-row) {
+    position: relative;
+    height: var(--lane-row);
+  }
+
+  /* Capsules rather than rectangles, which is most of what makes a night read
+     as a night. Four pixels minimum because a four minute stretch inside a
+     seven hour one is two pixels wide on a phone and a stretch that cannot be
+     seen is a stretch the figure has dropped. That is a real distortion of
+     anything under about five minutes, taken knowingly, and the hidden table
+     carries the exact lengths. */
+  .night-out :global(.lane-capsule) {
+    position: absolute;
+    inset-block: var(--lane-inset);
+    min-width: 4px;
+    border-radius: 999px;
     background: var(--at-primary);
   }
 
+  .night-out :global(.lane-rule) {
+    position: absolute;
+    inset-block: 0;
+    width: 1px;
+    background: var(--at-border);
+    transform: translateX(-0.5px);
+  }
+
+  /* The stitch. Drawn in the gutter and never across a row it does not claim,
+     so it says these two stretches met and nothing more. */
+  .night-out :global(.lane-stitch) {
+    position: absolute;
+    width: 1px;
+    background: color-mix(in srgb, var(--at-primary) 60%, transparent);
+    transform: translateX(-0.5px);
+  }
+
+  /* No baseline rule: the hour lines already carry the axis, and a heavy line
+     under the lanes would be the loudest thing in a quiet figure. */
   .night-out :global(.lane-axis) {
     position: relative;
-    height: 1.2rem;
-    margin-block-start: 0.15rem;
-    border-block-start: 1px solid var(--at-border);
+    height: 1.1rem;
+    margin-block-start: 0.2rem;
   }
 
   .night-out :global(.lane-tick) {
     position: absolute;
-    top: 0.15rem;
+    top: 0;
     color: var(--at-text-secondary);
     font-size: 0.7rem;
     font-variant-numeric: tabular-nums;
     transform: translateX(-50%);
     white-space: nowrap;
+  }
+
+  /* The ring. Sized in real pixels by the script, so this only has to stop it
+     overflowing a narrow column. */
+  .night-out :global(.ring) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .night-out :global(.ring-arc) {
+    fill: none;
+    stroke: var(--at-primary);
+  }
+
+  .night-out :global(.ring-leader) {
+    fill: none;
+    stroke: var(--at-border);
+    stroke-width: 1;
+  }
+
+  /* Text wears text tokens. The arcs are all one colour, so a label tinted to
+     match its arc would say nothing and would cost contrast. */
+  .night-out :global(.ring-label) {
+    dominant-baseline: middle;
+    fill: var(--at-text);
+    font-size: 0.8125rem;
+  }
+
+  .night-out :global(.ring-length) {
+    fill: var(--at-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .night-out :global(.ring-centre) {
+    dominant-baseline: middle;
+    fill: var(--at-text);
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .night-out :global(.ring-centre-word) {
+    fill: var(--at-text-secondary);
+    font-size: 0.7rem;
+    font-variant-numeric: normal;
+  }
+
+  /* Forced colours throws a background away, which would empty both figures.
+     The system's own ink is what they are drawn in there. */
+  @media (forced-colors: active) {
+    .night-out :global(.lane-capsule),
+    .night-out :global(.lane-stitch) {
+      background: CanvasText;
+    }
+
+    .night-out :global(.ring-arc) {
+      stroke: CanvasText;
+    }
   }
 
   .night-out :global(figcaption) {
@@ -384,37 +511,17 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     font-size: var(--at-font-size-sm);
   }
 
-  .night-out :global(table) {
-    width: 100%;
-    margin-block: var(--at-spacing-md);
-    border-collapse: collapse;
-    font-size: var(--at-font-size-sm);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .night-out :global(:is(th, td)) {
-    padding: 0.3rem 0.5rem;
-    border-block-end: 1px solid var(--at-border);
-    text-align: start;
-  }
-
-  .night-out :global(thead th) {
-    color: var(--at-text-secondary);
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .night-out :global(.night-scroll) {
-    overflow-x: auto;
-  }
-
-  /* A caption says what the table is, so it sits above it and reads as a label
-     rather than as a centred title. */
-  .night-out :global(caption) {
-    margin-block-end: 0.3rem;
-    color: var(--at-text-secondary);
-    text-align: start;
+  /* In the accessibility tree, off the screen. Never display: none, which would
+     take it out of the tree as well and leave a drawing with no text at all. */
+  .night-out :global(.night-hidden) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .night-out :global(h4) {
@@ -438,11 +545,15 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     groupBySource,
     longestEpisode,
     looksLikeZip,
+    STATE_ORDER,
     nightWindowFor,
     scanSleepWindow,
+    sliceNight,
     summarise,
     type Episode,
+    type NightSlice,
     type SleepSegment,
+    type SleepStateKey,
     type SourceNight,
   } from "../lib/health-export";
   import { formatCourseDate } from "../lib/dates";
@@ -485,6 +596,15 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     return node;
   };
 
+  /** Wrapped rather than hidden in place: a table sizes to its own contents and
+   * ignores a width of one pixel, so the clipped box has to be a plain div
+   * around it or the page grows a horizontal scrollbar it never shows. */
+  const offScreen = (node: HTMLElement): HTMLElement => {
+    const wrap = make("div", "night-hidden");
+    wrap.append(node);
+    return wrap;
+  };
+
   const megabytes = (bytes: number): string =>
     bytes >= 1024 * 1024
       ? `${Math.round(bytes / (1024 * 1024))} MB`
@@ -506,71 +626,351 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     if (button) button.disabled = !chosen || !nightWindowFor(dateValue(root)) || reading;
   };
 
-  // The lanes, top to bottom. In bed first because it is the envelope the rest
-  // sits inside, then awake, then the stages. Not a depth axis and never
-  // labelled as one: the order is for reading, and claiming it is a scale would
-  // be interpreting the night rather than reporting it.
-  const LANES = ["inBed", "awake", "rem", "core", "asleep", "deep"];
-
-  const laneFigure = (episode: Episode, source: string): HTMLElement => {
-    const span = Math.max(1, episode.endWallMs - episode.startWallMs);
-    const at = (ms: number): number => ((ms - episode.startWallMs) / span) * 100;
-
-    const present = LANES.filter((lane) =>
-      episode.segments.some((segment) => segment.state === lane),
+  // The row order, and the arc order, are one decision and it lives in
+  // src/lib/health-export.ts beside the states themselves, with the reasoning:
+  // it is deliberately not a depth scale, and the cost of that is that more of
+  // the stitches below have to skip a row than would under Apple's ordering.
+  const lanesOf = (segments: SleepSegment[]): SleepStateKey[] => {
+    const present = STATE_ORDER.filter((lane) =>
+      segments.some((segment) => segment.state === lane),
     );
-    const others = Array.from(
+    const rest = Array.from(
       new Set(
-        episode.segments
-          .filter((segment) => !LANES.includes(segment.state))
+        segments
+          .filter((segment) => !STATE_ORDER.includes(segment.state))
           .map((segment) => segment.state),
       ),
     );
+    return [...present, ...rest] as SleepStateKey[];
+  };
 
-    const figure = make("figure");
+  /**
+   * The night as capsules on a shared clock.
+   *
+   * Drawn after Apple Health's own sleep chart for its form and none of its
+   * claims: capsules rather than rectangles so a four minute stretch reads as a
+   * lozenge instead of a sliver, no filled lane tracks, hairline hour rules
+   * instead of a baseline, and a stitch joining consecutive stretches so the
+   * night reads as one run rather than as four independent rows.
+   *
+   * The stitch is drawn in pieces, one per gutter between rows, and that is the
+   * whole of its honesty. A single line from the REM row down to the deep row
+   * would cross the core row, and a reader is entitled to read a line crossing
+   * a row as passing through it. The night did not pass through core: it went
+   * from one stretch straight to the next. Drawn as separate pieces the stitch
+   * is absent from every row it does not claim, and present only in the space
+   * between them. It is drawn at all only where one stretch ends exactly where
+   * the next begins, so it is never asserting a continuity the file does not
+   * have.
+   *
+   * Colour carries nothing here. The row already says which state a capsule is,
+   * so a second channel would be redundant, and the four step ramp that would
+   * be needed to spend it fails the normal vision floor on this brand's single
+   * hue anyway: #e5a74f against #c18427 is deltaE 11.0 against a floor of 15.
+   * One hue, and position does the work.
+   */
+  const laneFigure = (episode: Episode, source: string): HTMLElement => {
+    const span = Math.max(1, episode.endWallMs - episode.startWallMs);
+    const at = (ms: number): number => ((ms - episode.startWallMs) / span) * 100;
+    const rows = lanesOf(episode.segments);
+
+    const figure = make("figure", "night-fig");
     const lanes = make("div", "lanes");
     lanes.setAttribute("aria-hidden", "true");
+    lanes.style.setProperty("--lane-count", String(rows.length));
 
-    for (const lane of [...present, ...others]) {
+    const names = make("div", "lane-names");
+    const plot = make("div", "lane-plot");
+    const rowsBox = make("div", "lane-rows");
+    const under = make("div", "lane-under");
+    rowsBox.append(under);
+
+    for (const lane of rows) {
       const inLane = episode.segments.filter((segment) => segment.state === lane);
-      lanes.append(make("div", "lane-name", inLane[0]?.label ?? lane));
-      const track = make("div", "lane-track");
+      names.append(make("div", "lane-name", inLane[0]?.label ?? lane));
+      const row = make("div", "lane-row");
       for (const segment of inLane) {
-        const block = make("div", "lane-block");
-        block.style.insetInlineStart = `${at(segment.startWallMs)}%`;
-        block.style.width = `${Math.max(0, at(segment.endWallMs) - at(segment.startWallMs))}%`;
-        track.append(block);
+        const capsule = make("div", "lane-capsule");
+        capsule.style.insetInlineStart = `${at(segment.startWallMs)}%`;
+        capsule.style.width = `${Math.max(0, at(segment.endWallMs) - at(segment.startWallMs))}%`;
+        row.append(capsule);
       }
-      lanes.append(track);
+      rowsBox.append(row);
     }
 
-    // An axis with a mark on the hour. Every hour while the night is short
-    // enough for the labels not to collide, every second hour after that.
+    // The axis is filled in after the figure is on the page, because how many
+    // hours it can name depends on how wide it actually is.
     const axis = make("div", "lane-axis");
-    const hours = span / 3_600_000;
-    const step = hours > 9 ? 2 : 1;
-    const first = Math.ceil(episode.startWallMs / 3_600_000) * 3_600_000;
-    for (let tick = first; tick <= episode.endWallMs; tick += step * 3_600_000) {
-      const mark = make("div", "lane-tick", formatClock(tick));
-      mark.style.insetInlineStart = `${at(tick)}%`;
-      axis.append(mark);
-    }
-    lanes.append(make("div"), axis);
-    figure.append(lanes);
 
+    // The stitches. Only between consecutive stretches that meet, and only in
+    // the gutters, one piece per row crossed.
+    const ordered = episode.segments
+      .filter((segment) => segment.state !== "inBed")
+      .sort((one, other) => one.startWallMs - other.startWallMs);
+    for (let index = 0; index < ordered.length - 1; index += 1) {
+      const from = ordered[index];
+      const to = ordered[index + 1];
+      // A second of slack, which absorbs rounding rather than joining two
+      // stretches with a real gap between them.
+      if (Math.abs(to.startWallMs - from.endWallMs) > 1000) continue;
+      const fromRow = rows.indexOf(from.state);
+      const toRow = rows.indexOf(to.state);
+      if (fromRow < 0 || toRow < 0 || fromRow === toRow) continue;
+      for (let row = Math.min(fromRow, toRow); row < Math.max(fromRow, toRow); row += 1) {
+        const stitch = make("div", "lane-stitch");
+        stitch.style.insetInlineStart = `${at(to.startWallMs)}%`;
+        stitch.style.insetBlockStart =
+          `calc((var(--lane-row) + var(--lane-gap)) * ${row} + var(--lane-row) - var(--lane-inset))`;
+        stitch.style.height = "calc(var(--lane-gap) + var(--lane-inset) * 2)";
+        under.append(stitch);
+      }
+    }
+
+    plot.append(rowsBox, axis);
+    lanes.append(names, plot);
+    figure.append(lanes);
     figure.append(
       make(
         "figcaption",
         undefined,
-        `Each row is one of the states this export names, and each block is one stretch ${source} put in that state, drawn at the clock time it recorded. The table below lists the same stretches in words. Recorded by ${source}; read from the file you chose.`,
+        `Each row is a state this export names and each capsule is one stretch ${source} put in that state, drawn at the clock time it recorded. A hairline joins two stretches that ran back to back, and skips any row it does not touch. Recorded by ${source}; read from the file you chose.`,
       ),
     );
     return figure;
   };
 
-  const segmentTable = (episode: Episode): HTMLElement => {
-    const wrap = make("div", "night-scroll");
+  /**
+   * The hour marks, decided from the width the figure really got.
+   *
+   * This runs after the figure is in the page rather than while it is being
+   * built, because the answer is a measurement: an hourly mark is twenty eight
+   * pixels apart in a phone's column and all eight labels sit on top of each
+   * other. Measured at 390px that is exactly what happened, which is the whole
+   * reason this is a second pass. The step is whatever keeps a label clear of
+   * its neighbour, and a mark whose label would hang off either end of the plot
+   * is dropped rather than shifted, since a time label that is not centred on
+   * its own rule is pointing at the wrong minute.
+   */
+  const addHourAxis = (figure: HTMLElement, episode: Episode): void => {
+    const plot = figure.querySelector<HTMLElement>(".lane-plot");
+    const under = figure.querySelector<HTMLElement>(".lane-under");
+    const axis = figure.querySelector<HTMLElement>(".lane-axis");
+    if (!plot || !under || !axis) return;
+    const width = plot.clientWidth;
+    const span = Math.max(1, episode.endWallMs - episode.startWallMs);
+    if (width < 40) return;
+
+    const probe = make("div", "lane-tick", "00:00");
+    axis.append(probe);
+    const labelWidth = probe.getBoundingClientRect().width || 36;
+    probe.remove();
+
+    const hour = 3_600_000;
+    const perHour = (width / span) * hour;
+    const step = Math.max(1, Math.ceil((labelWidth + 14) / Math.max(perHour, 1)));
+    const first = Math.ceil(episode.startWallMs / hour) * hour;
+
+    for (let tick = first; tick <= episode.endWallMs; tick += step * hour) {
+      const fraction = (tick - episode.startWallMs) / span;
+      const rule = make("div", "lane-rule");
+      rule.style.insetInlineStart = `${fraction * 100}%`;
+      under.append(rule);
+      const centre = fraction * width;
+      if (centre - labelWidth / 2 < 0 || centre + labelWidth / 2 > width) continue;
+      const mark = make("div", "lane-tick", formatClock(tick));
+      mark.style.insetInlineStart = `${fraction * 100}%`;
+      axis.append(mark);
+    }
+  };
+
+  /**
+   * The same night as parts of a whole.
+   *
+   * A ring rather than the stacked bar the form guidance defaults to, because
+   * the author asked for one and because this is the case where a ring is
+   * allowed: at most six parts, read at a glance, and parts that differ by an
+   * order of magnitude rather than the close values a ring hides. That last
+   * point is what separates it from the pie this repo already refused in
+   * CertaintyOfStrong, where four of five categories sat at 18, 18, 24 and 31
+   * and no reader could judge the angles.
+   *
+   * What the arcs are is decided in src/lib/health-export.ts and is the only
+   * interesting part: in bed is never an arc, because it is the envelope the
+   * other states sit inside and adding it to asleep would draw a fifteen hour
+   * night. The whole is the span of the record and every minute of it is
+   * accounted for, including the minutes the instrument left unlabelled.
+   *
+   * Every arc is the same hue, separated by the two pixel surface gap the
+   * visualisation guidance asks for and labelled directly with its own name and
+   * length. That is not a fallback from a palette that failed: a ramp would
+   * assert an order these states do not have, and the ramp fails on measurement
+   * as well, so colour here carries nothing and arc length plus the label carry
+   * all of it.
+   */
+  const ringFigure = (slices: NightSlice[], source: string, width: number): HTMLElement => {
+    const figure = make("figure", "night-fig");
+    const total = slices.reduce((sum, slice) => sum + slice.minutes, 0);
+    if (total <= 0 || slices.length === 0) return figure;
+
+    // Laid out in real pixels rather than in a scaled viewBox, so the labels are
+    // the size they are asked to be on a phone as well as on a laptop. The
+    // viewBox is the rendered box, so one user unit is one CSS pixel.
+    const W = Math.max(250, Math.min(width, 520));
+    const LABEL = 74;
+    const LEADER = 12;
+    const outer = Math.max(44, Math.min((W - 2 * (LABEL + LEADER) - 6) / 2, 104));
+    const band = Math.max(13, outer * 0.3);
+    const mid = outer - band / 2;
+    const H = Math.round(2 * outer + 60);
+    const cx = W / 2;
+    const cy = H / 2;
+    const circumference = 2 * Math.PI * mid;
+    const GAP = 2;
+
+    const svgNs = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNs, "svg");
+    svg.setAttribute("class", "ring");
+    svg.setAttribute("viewBox", `0 0 ${Math.round(W)} ${H}`);
+    svg.setAttribute("width", String(Math.round(W)));
+    svg.setAttribute("height", String(H));
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+
+    const arcs = document.createElementNS(svgNs, "g");
+    arcs.setAttribute("transform", `rotate(-90 ${cx} ${cy})`);
+    svg.append(arcs);
+
+    const sides: { left: Label[]; right: Label[] } = { left: [], right: [] };
+    interface Label {
+      slice: NightSlice;
+      y: number;
+      anchorX: number;
+      edgeX: number;
+      edgeY: number;
+      side: 1 | -1;
+    }
+
+    let run = 0;
+    for (const slice of slices) {
+      const length = (slice.minutes / total) * circumference;
+      // Two pixels of surface between arcs, and never less than a sliver of
+      // arc left over: a three minute stretch is a hairline on this ring and a
+      // hairline is still the honest width for three minutes.
+      const drawn = Math.max(length - GAP, 1.5);
+      const arc = document.createElementNS(svgNs, "circle");
+      arc.setAttribute("class", "ring-arc");
+      arc.setAttribute("cx", String(cx));
+      arc.setAttribute("cy", String(cy));
+      arc.setAttribute("r", String(mid));
+      arc.setAttribute("stroke-width", String(band));
+      arc.setAttribute("stroke-dasharray", `${drawn} ${circumference - drawn}`);
+      arc.setAttribute("stroke-dashoffset", String(-(run + GAP / 2)));
+      arcs.append(arc);
+
+      const angle = ((run + length / 2) / circumference) * 2 * Math.PI - Math.PI / 2;
+      const side: 1 | -1 = Math.cos(angle) >= 0 ? 1 : -1;
+      sides[side === 1 ? "right" : "left"].push({
+        slice,
+        y: cy + outer * Math.sin(angle),
+        anchorX: side === 1 ? cx + outer + LEADER + 4 : cx - outer - LEADER - 4,
+        edgeX: cx + outer * Math.cos(angle),
+        edgeY: cy + outer * Math.sin(angle),
+        side,
+      });
+      run += length;
+    }
+
+    // Labels pushed apart where two arcs meet at nearly the same angle, so a
+    // short stretch beside a long one still has a readable name.
+    // Two lines of label at thirteen pixels come to twenty eight, so anything
+    // under about thirty four has them touching rather than merely close.
+    const SPACING = 34;
+    for (const key of ["left", "right"] as const) {
+      const list = sides[key].sort((one, other) => one.y - other.y);
+      for (let index = 1; index < list.length; index += 1) {
+        if (list[index].y - list[index - 1].y < SPACING) {
+          list[index].y = list[index - 1].y + SPACING;
+        }
+      }
+      const overflow = list.length ? list[list.length - 1].y - (H - 16) : 0;
+      if (overflow > 0) for (const label of list) label.y -= overflow;
+      for (const label of list) {
+        const leader = document.createElementNS(svgNs, "polyline");
+        leader.setAttribute("class", "ring-leader");
+        leader.setAttribute(
+          "points",
+          `${label.edgeX},${label.edgeY} ${label.edgeX + label.side * LEADER * 0.6},${label.y} ${label.anchorX - label.side * 4},${label.y}`,
+        );
+        svg.append(leader);
+
+        const text = document.createElementNS(svgNs, "text");
+        text.setAttribute("class", "ring-label");
+        text.setAttribute("x", String(label.anchorX));
+        text.setAttribute("y", String(label.y));
+        text.setAttribute("text-anchor", label.side === 1 ? "start" : "end");
+        const name = document.createElementNS(svgNs, "tspan");
+        name.textContent = label.slice.label;
+        name.setAttribute("x", String(label.anchorX));
+        const length = document.createElementNS(svgNs, "tspan");
+        length.setAttribute("class", "ring-length");
+        length.setAttribute("x", String(label.anchorX));
+        length.setAttribute("dy", "1.15em");
+        length.textContent = formatLength(label.slice.minutes);
+        text.append(name, length);
+        svg.append(text);
+      }
+    }
+
+    const centre = document.createElementNS(svgNs, "text");
+    centre.setAttribute("class", "ring-centre");
+    centre.setAttribute("x", String(cx));
+    centre.setAttribute("y", String(cy - 8));
+    centre.setAttribute("text-anchor", "middle");
+    const centreValue = document.createElementNS(svgNs, "tspan");
+    centreValue.setAttribute("x", String(cx));
+    centreValue.textContent = formatLength(total);
+    const centreWord = document.createElementNS(svgNs, "tspan");
+    centreWord.setAttribute("class", "ring-centre-word");
+    centreWord.setAttribute("x", String(cx));
+    centreWord.setAttribute("dy", "1.3em");
+    centreWord.textContent = "in the record";
+    centre.append(centreValue, centreWord);
+    svg.append(centre);
+
+    figure.append(svg);
+    figure.append(
+      make(
+        "figcaption",
+        undefined,
+        `The same night as parts of one whole: each arc is one part at the length ${source} recorded for it, labelled with its own name. The parts do not overlap, and together they are the whole of the record. Recorded by ${source}; read from the file you chose.`,
+      ),
+    );
+    return figure;
+  };
+
+  /**
+   * Every stretch, in words, kept in the accessibility tree and off the screen.
+   *
+   * Sixteen rows of times is not something a sighted reader is going to work
+   * through, and the author is right that it was the heaviest thing on the
+   * page. It is not, however, decoration: the lane figure is aria-hidden, so
+   * this table is the only account of it a screen reader ever gets, and the
+   * build's axe pass cannot catch its loss because axe never sees anything
+   * built in script. So it is hidden the way a caption for a drawing is hidden,
+   * with the project's own visually hidden rule, and never with display none,
+   * which would take it out of the tree along with the pixels.
+   *
+   * The totals are a different case and stay visible, as the ring's own labels.
+   */
+  const stretchTable = (episode: Episode, source: string): HTMLElement => {
     const table = make("table");
+    table.append(
+      make(
+        "caption",
+        undefined,
+        `Every stretch of the night ${source} recorded, in order. This is the drawing above in words.`,
+      ),
+    );
     const head = make("thead");
     const headRow = make("tr");
     for (const name of ["Started", "Ended", "Length", "What it called it"]) {
@@ -591,44 +991,45 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
       body.append(row);
     }
     table.append(head, body);
-    const caption = make("caption", undefined, "Every stretch of the night, in order.");
-    table.prepend(caption);
-    wrap.append(table);
-    return wrap;
+    return offScreen(table);
   };
 
-  const totalsTable = (
-    totals: { label: string; minutes: number; count: number }[],
-  ): HTMLElement => {
-    const wrap = make("div", "night-scroll");
+  /** The ring in words, for the same reason: the ring is a drawing, and its
+   * direct labels are text inside an aria-hidden drawing. */
+  const sliceTable = (slices: NightSlice[], source: string): HTMLElement => {
     const table = make("table");
+    table.append(
+      make("caption", undefined, `The parts of the night ${source} recorded, added up.`),
+    );
     const head = make("thead");
     const headRow = make("tr");
-    for (const name of ["State", "Stretches", "Total"]) {
+    for (const name of ["Part of the night", "Total"]) {
       const cell = make("th", undefined, name);
       cell.setAttribute("scope", "col");
       headRow.append(cell);
     }
     head.append(headRow);
     const body = make("tbody");
-    for (const total of totals) {
+    for (const slice of slices) {
       const row = make("tr");
-      const label = make("th", undefined, total.label);
+      const label = make("th", undefined, slice.label);
       label.setAttribute("scope", "row");
       row.append(label);
-      row.append(make("td", undefined, String(total.count)));
-      row.append(make("td", undefined, formatLength(total.minutes)));
+      row.append(make("td", undefined, formatLength(slice.minutes)));
       body.append(row);
     }
     table.append(head, body);
-    table.prepend(make("caption", undefined, "Added up, by the name the export gave it."));
-    wrap.append(table);
-    return wrap;
+    return offScreen(table);
   };
 
   /** One source's night, drawn. Called again when the reader picks the other
    * source: the two are never on the page together. */
   const drawNight = (group: SourceNight, host: HTMLElement): void => {
+    // Measured rather than assumed, because the ring is laid out in real pixels
+    // so that its labels are the size they were asked to be on a phone as well
+    // as on a laptop.
+    const width = host.clientWidth || host.parentElement?.clientWidth || 320;
+    shown = { group, host, width };
     host.replaceChildren();
     const episodes = episodesOf(group.segments);
     const night = longestEpisode(episodes);
@@ -706,10 +1107,32 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     );
     host.append(carry);
 
-    host.append(laneFigure(night, group.source));
-    host.append(segmentTable(night));
-    host.append(totalsTable(totals.totals));
+    const slices = sliceNight(night.segments);
+    const lanes = laneFigure(night, group.source);
+    host.append(lanes);
+    addHourAxis(lanes, night);
+    host.append(stretchTable(night, group.source));
+    host.append(ringFigure(slices, group.source, width));
+    host.append(sliceTable(slices, group.source));
   };
+
+  // What is on the page now, so a window that changes width can have the ring
+  // redrawn at the size it should have been. Held in a variable and nowhere
+  // else: it goes with the tab, like everything here.
+  let shown: { group: SourceNight; host: HTMLElement; width: number } | null = null;
+  let resizeTimer = 0;
+
+  window.addEventListener("resize", () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      if (!shown?.host.isConnected) return;
+      const width = shown.host.clientWidth;
+      // Redrawn only on a real change of width, since replacing the contents
+      // of the host is itself something that could look like a resize.
+      if (Math.abs(width - shown.width) < 24) return;
+      drawNight(shown.group, shown.host);
+    }, 150);
+  });
 
   const render = (root: HTMLElement, segments: SleepSegment[], date: string): void => {
     const out = el<HTMLElement>(root, "[data-out]");
