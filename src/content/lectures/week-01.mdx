@@ -14,6 +14,7 @@ import Callout from "astro-theme-university/components/Callout.astro";
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import Narrowing from "../../components/Narrowing.astro";
+import UvSeason from "../../components/UvSeason.astro";
 
 ## Course premise
 
@@ -49,13 +50,16 @@ more specific than they look.
 
 The same rule gives different instructions at different latitudes. Australia's
 sun rule is a single number: protect yourself whenever the UV index reaches 3,
-and below 3 do not, so your skin can make vitamin D. In New South Wales the
-index is 3 or above for at least ten months of the year, which makes the rule
-effectively always on. In the United Kingdom the shortfall runs the other way,
-and everyone over four is advised to consider ten micrograms of vitamin D daily
-from October to March, because there is not enough sun in those months to make
-it. One sentence, two countries, and the instruction inverts: the first thing to
-find is not the advice but the advice written for your latitude.
+and below 3 do not, so your skin can make vitamin D. One threshold, over a
+country spanning more than thirty degrees of latitude, which means the rule is
+on all twelve months of the year in Darwin, ten in Sydney and eight in Hobart.
+In the United Kingdom the shortfall runs the other way, and everyone over four
+is advised to consider ten micrograms of vitamin D daily from October to March,
+because there is not enough sun in those months to make it. Same sentence, and
+the instruction inverts: the first thing to find is not the advice but the
+advice written for your latitude.
+
+<UvSeason />
 
 <Callout type="info">
   And not for the reason most people think. Cancer Council WA published an
@@ -72,10 +76,12 @@ find is not the advice but the advice written for your latitude.
 
 ### When it is
 
-The same rule also changes through the year in one place. In Hobart and
-Melbourne the UV index sits below 3 through most of winter, when sun protection
-is not recommended at all, so the same person in the same city is told to cover
-up in January and to get some sun in July, for the same reason both times.
+The same rule also changes through the year in one place, which is the table
+above read by row instead of by column. Hobart's average noon index is below 3
+from May to August and Melbourne's from May to July, the months when sun
+protection is not recommended at all, so the same person in the same city is
+told to cover up in January and to get some sun in July, for the same reason
+both times.
 Neither instruction is a revision of the other; the number moved and the rule
 did not. A recommendation with no season attached is therefore incomplete, and
 the ones worth trusting say when they apply.

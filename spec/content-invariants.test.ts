@@ -9,7 +9,7 @@
 // Same shape as data-integrity.test.ts: read the built API, not the source, so
 // the checks test what ships.
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { glossaryTerms } from "../src/glossary";
@@ -177,6 +177,49 @@ describe("rule 2: a claim carries its own evidence", () => {
           `${where} asserts an effect, so it needs blinded as true, false or "n/a", got ${JSON.stringify(blinded)}`,
         ).toBe(true);
       });
+    }
+  });
+
+  // Rule 2 for datasets rather than sentences. A figure drawn from published
+  // data makes a claim as surely as a paragraph does, and the thing that makes
+  // it checkable is not the numbers but where they came from, what licence they
+  // arrive under, and what they cannot tell you. The UV figure exists only
+  // because the Bureau publishes grids under CC BY; a copy of those numbers with
+  // that fact left off would be unusable and unattributed at once.
+  //
+  // Every field here earned its place from that one dataset: period, because a
+  // 1979 to 2007 average is not today; conditions, because these are cloud-free
+  // noon values and the real advice keys off the daily forecast; grid, because
+  // 1.5 degree cells describe a region and not a city. A future dataset with no
+  // equivalent caveats still has to say so in these fields.
+  it("gives every dataset its provenance, licence and limits", () => {
+    const files = globSync("src/data/*.json");
+    expect(files.length, "no datasets found: this check is pointing at nothing").toBeGreaterThan(0);
+
+    for (const file of files) {
+      const data = JSON.parse(readFileSync(file, "utf8")) as Record<string, unknown>;
+      const source = data._source as Record<string, unknown> | undefined;
+      expect(source, `${file} must carry a _source block`).toBeTruthy();
+
+      for (const field of [
+        "dataset",
+        "publisher",
+        "url",
+        "licence",
+        "licence_url",
+        "period",
+        "how_these_numbers_were_made",
+      ] as const) {
+        expect(
+          str(source?.[field]).length,
+          `${file} needs _source.${field}: a dataset without it cannot be checked or credited`,
+        ).toBeGreaterThan(0);
+      }
+
+      expect(
+        str(source?.url).startsWith("http"),
+        `${file} needs _source.url to be a resolvable address, got ${JSON.stringify(source?.url)}`,
+      ).toBe(true);
     }
   });
 

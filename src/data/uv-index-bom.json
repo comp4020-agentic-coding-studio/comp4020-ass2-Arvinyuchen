@@ -1,0 +1,263 @@
+{
+  "_source": {
+    "dataset": "Average solar ultraviolet (UV) Index, gridded climatology",
+    "publisher": "Bureau of Meteorology, Commonwealth of Australia",
+    "product_code": "IDCJCM0045",
+    "url": "https://www.bom.gov.au/climate/maps/averages/uv-index/",
+    "licence": "CC BY 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+    "period": "1979 to 2007",
+    "conditions": "cloud-free, at local noon (representative of 11am to 1pm local standard time)",
+    "grid": {
+      "cellsize_degrees": 1.5,
+      "ncols": 31,
+      "nrows": 29,
+      "xllcorner": 110.25,
+      "yllcorner": -51.42
+    },
+    "how_these_numbers_were_made": "Each city's value is the single grid cell containing its coordinates, read from the monthly and annual grids published as uv-<period>.zip. Cells are 1.5 degrees, roughly 165 km, so a value describes the region around a city rather than the city itself; each cell's centre is recorded below so the offset is visible.",
+    "threshold_note": "Australian sun-protection advice keys off the forecast or observed UV for the day. These are cloud-free monthly averages at noon, so they show when the threshold of 3 is typically crossed, not what any particular day will do."
+  },
+  "months": [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec"
+  ],
+  "threshold": 3,
+  "cities": [
+    {
+      "name": "Darwin",
+      "lat": -12.46,
+      "lon": 130.84,
+      "cell_centre": {
+        "lat": -13.17,
+        "lon": 130.5
+      },
+      "annual": 11.72,
+      "monthly": [
+        13.91,
+        14.27,
+        13.49,
+        11.19,
+        8.95,
+        7.9,
+        8.38,
+        10.37,
+        12.06,
+        13.27,
+        13.47,
+        13.42
+      ],
+      "months_at_or_above_threshold": 12
+    },
+    {
+      "name": "Cairns",
+      "lat": -16.92,
+      "lon": 145.77,
+      "cell_centre": {
+        "lat": -16.17,
+        "lon": 145.5
+      },
+      "annual": 11.3,
+      "monthly": [
+        14.22,
+        14.3,
+        13.16,
+        10.6,
+        8.22,
+        7.04,
+        7.57,
+        9.45,
+        11.34,
+        12.83,
+        13.36,
+        13.54
+      ],
+      "months_at_or_above_threshold": 12
+    },
+    {
+      "name": "Brisbane",
+      "lat": -27.47,
+      "lon": 153.03,
+      "cell_centre": {
+        "lat": -28.17,
+        "lon": 153.0
+      },
+      "annual": 8.52,
+      "monthly": [
+        13.14,
+        12.43,
+        10.13,
+        7.13,
+        4.83,
+        3.68,
+        4.0,
+        5.48,
+        7.59,
+        9.77,
+        11.47,
+        12.64
+      ],
+      "months_at_or_above_threshold": 12
+    },
+    {
+      "name": "Perth",
+      "lat": -31.95,
+      "lon": 115.86,
+      "cell_centre": {
+        "lat": -32.67,
+        "lon": 115.5
+      },
+      "annual": 7.47,
+      "monthly": [
+        12.45,
+        11.53,
+        8.89,
+        5.89,
+        3.67,
+        2.75,
+        2.97,
+        4.24,
+        6.16,
+        8.48,
+        10.56,
+        12.03
+      ],
+      "months_at_or_above_threshold": 10
+    },
+    {
+      "name": "Sydney",
+      "lat": -33.87,
+      "lon": 151.21,
+      "cell_centre": {
+        "lat": -34.17,
+        "lon": 151.5
+      },
+      "annual": 7.06,
+      "monthly": [
+        12.07,
+        10.95,
+        8.41,
+        5.54,
+        3.33,
+        2.37,
+        2.59,
+        3.76,
+        5.74,
+        8.06,
+        10.2,
+        11.73
+      ],
+      "months_at_or_above_threshold": 10
+    },
+    {
+      "name": "Adelaide",
+      "lat": -34.93,
+      "lon": 138.6,
+      "cell_centre": {
+        "lat": -35.67,
+        "lon": 138.0
+      },
+      "annual": 6.72,
+      "monthly": [
+        11.8,
+        10.62,
+        8.02,
+        5.16,
+        2.98,
+        2.12,
+        2.3,
+        3.42,
+        5.32,
+        7.59,
+        9.84,
+        11.46
+      ],
+      "months_at_or_above_threshold": 9
+    },
+    {
+      "name": "Canberra",
+      "lat": -35.28,
+      "lon": 149.13,
+      "cell_centre": {
+        "lat": -35.67,
+        "lon": 148.5
+      },
+      "annual": 6.84,
+      "monthly": [
+        11.98,
+        10.82,
+        8.17,
+        5.28,
+        3.04,
+        2.13,
+        2.32,
+        3.45,
+        5.4,
+        7.75,
+        10.03,
+        11.64
+      ],
+      "months_at_or_above_threshold": 10
+    },
+    {
+      "name": "Melbourne",
+      "lat": -37.81,
+      "lon": 144.96,
+      "cell_centre": {
+        "lat": -37.17,
+        "lon": 145.5
+      },
+      "annual": 6.44,
+      "monthly": [
+        11.54,
+        10.32,
+        7.71,
+        4.84,
+        2.71,
+        1.88,
+        2.05,
+        3.11,
+        4.97,
+        7.27,
+        9.59,
+        11.26
+      ],
+      "months_at_or_above_threshold": 9
+    },
+    {
+      "name": "Hobart",
+      "lat": -42.88,
+      "lon": 147.33,
+      "cell_centre": {
+        "lat": -43.17,
+        "lon": 147.0
+      },
+      "annual": 5.16,
+      "monthly": [
+        10.05,
+        8.71,
+        6.15,
+        3.41,
+        1.7,
+        1.12,
+        1.26,
+        2.07,
+        3.63,
+        5.71,
+        8.15,
+        9.9
+      ],
+      "months_at_or_above_threshold": 8
+    }
+  ]
+}

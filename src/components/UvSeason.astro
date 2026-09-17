@@ -1,0 +1,248 @@
+---
+// When Australia's one sun rule is switched on, by place and by month.
+//
+// The section this sits in argues that the same rule gives different
+// instructions at different latitudes. Australia's rule is a single threshold,
+// so the argument has a shape: the number of months the threshold is crossed
+// shrinks as you go south, from twelve in Darwin to eight in Hobart. That is
+// what the figure draws.
+//
+// It is a real table, not a picture of one. A heatmap whose cells hold no text
+// hands a screen reader nothing, and this is a course about reading numbers, so
+// the numbers are on the page where a reader can check them. The shading is a
+// second channel on top of the text, never the only one.
+//
+// Earlier I refused to draw a UV figure at all, because I had ARPANSA's
+// qualitative "below 3 for most of winter" and not monthly values, and drawing
+// a curve from that would have been inventing data on a page about reading data
+// honestly. The Bureau publishes the grids under CC BY, which is what changed.
+// Provenance, licence and both caveats live in src/data/uv-index-bom.json and
+// are printed under the figure rather than kept in a commit message.
+import data from "../data/uv-index-bom.json";
+
+const MONTH_LABELS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const { threshold, cities } = data;
+
+// Scaled from the data rather than a fixed ceiling, so adding a city cannot
+// silently push the top of the range off the end of the scale.
+const peak = Math.max(...cities.flatMap((city) => city.monthly));
+
+// Capped well short of opaque: the cell's number has to stay readable, and it
+// is the channel that carries the data. The shading only has to make the shape
+// visible at a glance.
+const shade = (value: number): number =>
+  value < threshold ? 0 : 0.06 + (0.32 * (value - threshold)) / (peak - threshold);
+
+const latitude = (lat: number): string => `${Math.abs(Math.round(lat))}°S`;
+---
+
+<figure class="uv">
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col" class="place">Place</th>
+          {
+            MONTH_LABELS.map((label, index) => (
+              <th scope="col" class="month">
+                <abbr title={MONTH_NAMES[index]}>{label}</abbr>
+              </th>
+            ))
+          }
+          <th scope="col" class="count">Months {threshold}+</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          cities.map((city) => (
+            <tr>
+              <th scope="row" class="place">
+                {city.name} <span class="lat">{latitude(city.lat)}</span>
+              </th>
+              {city.monthly.map((value) => (
+                <td
+                  class:list={["cell", { below: value < threshold }]}
+                  style={`--shade: ${shade(value).toFixed(3)}`}
+                >
+                  {value.toFixed(2)}
+                </td>
+              ))}
+              <td class="count">{city.months_at_or_above_threshold}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <figcaption>
+    <p>
+      Average UV index at local noon under cloud-free skies, {data._source.period},
+      by month. Australia advises sun protection whenever the index reaches {threshold};
+      shaded cells are at or above it, unshaded are below. The right-hand column
+      is the number of months the rule is on: twelve in the tropics, eight in
+      Hobart. Same rule, same country, different instruction.
+    </p>
+    <p class="caveat">
+      Two things this cannot tell you. The grid is {
+        data._source.grid.cellsize_degrees
+      } degrees, roughly 165 km, so each value describes the region around a city
+      rather than the city itself. And the real advice keys off the forecast for
+      the day, so a month averaging just under {threshold} still has days above
+      it: these averages show when the threshold is typically crossed, not what
+      any particular day will do.
+    </p>
+    <p class="caveat">
+      Worth reading the two rows at 35°S against each other. Adelaide averages
+      2.98 in May and Canberra 3.04, so the rule is off in one and on in the
+      other on a difference of six hundredths of an index point. The threshold
+      is a decision laid across a smooth gradient, not a line found in nature,
+      and that is true of every cut-off this course will show you.
+    </p>
+    <p class="credit">
+      Drawn from <a href={data._source.url}>{data._source.dataset}</a> ({
+        data._source.product_code
+      }), {data._source.publisher}, used under <a href={data._source.licence_url}
+        >{data._source.licence}</a
+      >.
+    </p>
+  </figcaption>
+</figure>
+
+<style>
+  .uv {
+    margin-block: var(--at-spacing-lg);
+    margin-inline: 0;
+  }
+
+  /* The table is thirteen columns wide and the content column is 48rem, so on a
+     phone it has to scroll. Scrolling inside this box rather than taking the
+     page with it: the claims table on the lab pages shipped without this and
+     pushed the whole viewport sideways, which no build check noticed. */
+  .scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.7rem;
+  }
+
+  th,
+  td {
+    padding: 0.3rem 0.35rem;
+    text-align: center;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  /* The theme paints table headers with the brand colour and stripes the body
+     rows, and both fight this figure. The gold bar outweighed the data it was
+     labelling, and put secondary grey text on a saturated background. The
+     stripes put a second background signal underneath the one that carries the
+     values, so a light cell on a striped row read as shaded. Shading is the
+     only fill on this table now.
+     Not !important, unlike the RelatedContent overrides: the theme's rules
+     here are element selectors, so a class on the figure outweighs them
+     without one. Verified by reading computed backgrounds, and the first
+     verification was wrong in a way worth recording: I measured `thead th`,
+     got transparent, and called the gold bar fixed while it was still on
+     screen. The paint is on `thead` itself, and transparent cells simply let
+     it through. Measuring the element you changed proves nothing about the one
+     doing the painting.
+     `.uv tbody td` is deliberately not in this list. It would be (0,1,2) and
+     .cell is (0,1,0), so the reset would have outranked the shading it exists
+     to leave alone and flattened the whole figure. The stripes are painted on
+     the tr, so resetting the tr is enough. */
+  .uv thead,
+  .uv thead th,
+  .uv tbody tr,
+  .uv tbody th {
+    background: transparent;
+  }
+
+  thead th {
+    color: var(--at-text-secondary);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-block-end: 1px solid var(--at-border);
+  }
+
+  /* The month initials repeat (two Js, two Ms, two As), so the full name is
+     attached rather than left to the reader to infer from position. */
+  thead .month abbr {
+    text-decoration: none;
+    cursor: help;
+  }
+
+  th.place {
+    text-align: start;
+    padding-inline-end: var(--at-spacing-sm);
+  }
+
+  tbody th.place {
+    font-size: 0.8rem;
+  }
+
+  .lat {
+    color: var(--at-text-secondary);
+    font-size: 0.7rem;
+  }
+
+  /* Shading is the second channel. The number in the cell is the first, which
+     is why the opacity stops at 0.38: past that the digits start to fight the
+     fill, and losing the digits would lose the data. */
+  .cell {
+    background: color-mix(in srgb, currentColor calc(var(--shade) * 100%), transparent);
+  }
+
+  .cell.below {
+    color: var(--at-text-secondary);
+  }
+
+  .count {
+    padding-inline-start: var(--at-spacing-sm);
+    border-inline-start: 1px solid var(--at-border);
+    font-size: 0.8rem;
+  }
+
+  tbody .count {
+    font-weight: 600;
+  }
+
+  figcaption {
+    margin-block-start: var(--at-spacing-md);
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  figcaption p {
+    margin-block: 0 0.5rem;
+  }
+
+  figcaption p:last-child {
+    margin-block-end: 0;
+  }
+
+  .caveat,
+  .credit {
+    font-size: 0.78rem;
+  }
+</style>
