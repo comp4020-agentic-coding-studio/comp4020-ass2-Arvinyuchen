@@ -1,0 +1,179 @@
+---
+title: Why You Felt Better Anyway
+description:
+  Almost everything appears to work, because almost everybody starts on their
+  worst day
+week: 9
+teachers: [priya-ramanathan]
+date: 2027-05-03
+phase: rethinking
+method: regression to the mean
+component: the bad day
+needs: [2, 5, 8]
+risk: med
+stopping_rule: >-
+  Stop and say so if reading your own low days back leaves you worse than when
+  you started, or if you find yourself returning to them outside the lab. You
+  finish the hour on the previous year's record, and the sheet you have already
+  written goes home with you unread.
+harm_boundary: >-
+  This is not an exercise in ranking your bad days or in accounting for them.
+  Six numbers leave your sheet and nothing else does: they carry no name, no
+  units and no dates, and you are never asked what you were measuring in week 5
+  or what happened on the day. We are looking at what tends to follow an unusual
+  measurement, never at why you had one.
+opt_out: >-
+  Run the same six steps on the anonymised class record from a previous year,
+  which is a set of week 5 records with the names taken off. The pairs come out
+  of it exactly as they come out of yours, and nothing of your own is opened,
+  written down or put on the board.
+claims:
+  - kind: effect
+    text: >-
+      Blood pressure regressed in both directions. Among people whose baseline
+      24-hour systolic pressure was 150 mmHg or above, the mean was 156 at
+      baseline and 141 at follow-up; among those under 120, it was 113 and then
+      119. The authors report regression in the control groups as well as the
+      treated ones, which is what stops the treatment explaining it.
+    n: 5
+    unit: pooled studies
+    blinded: "n/a"
+    source: >-
+      Moore MN, Atkins ER, Salam A et al., Regression to the mean of repeated
+      ambulatory blood pressure monitoring in five studies, Journal of
+      Hypertension 2019;37(1):24-29. The abstract reports five pooled studies
+      and no participant total, so the sample size here counts studies rather
+      than people.
+  - kind: history
+    text: >-
+      Galton put numbers to the pattern in 1886 by the move this lab repeats. He
+      grouped 205 parent couples by their average height, read off the median
+      height of their 928 adult children, and found each group's children nearer
+      the general average of 68.25 inches than their parents were, in all nine
+      rows of the table that carry a median.
+    source: >-
+      Francis Galton, Regression towards Mediocrity in Hereditary Stature,
+      Journal of the Anthropological Institute of Great Britain and Ireland,
+      volume 15 (1886), pages 246 to 263
+spec:
+  - >-
+    you bring your week 5 record as one number a day, in date order, with every
+    day marked A, B or C for its phase
+  - >-
+    your sheet carries three pairs of days, low, high and control, and the two
+    distances you worked out for each pair
+  - >-
+    you hand in one sentence saying why an intervention begun on your lowest day
+    would have looked successful, and the sentence does not contain the words
+    "regression to the mean"
+---
+
+import Callout from "astro-theme-university/components/Callout.astro";
+
+Bring your week 5 record. Today you measure the improvement you get for doing
+nothing.
+
+Unusual measurements tend to be followed by ordinary ones, so the day after your
+worst day was always going to be better, whatever you did about it. That is
+[regression to the mean](/glossary/#regression-to-the-mean). The lecture is where
+it gets argued; this hour is where you find out how large it is in your own
+numbers, which is the version you will need for the report.
+
+## What your record has to look like
+
+Week 5 is the only run of consecutive daily numbers you own: one measure, one
+value a day, across a phase where you measured the thing as it was, a phase
+where you took something away, and a phase where you put it back. Nothing else
+in the course will do. Week 1 is a single day, week 3 is a single night, week 4
+is three days and so has no middle worth the name, and week 6 alternates its two
+conditions from one day to the next by design, so two days running there differ
+by more than chance.
+
+You need eight days or more, and you need to be able to find three pairs of
+consecutive days in it that each sit inside one phase. If your record is shorter
+than that, or if the gaps fall in the wrong places, take the previous year's
+anonymised record instead and run the same six steps on it. That is the same
+exercise and it costs you nothing.
+
+## In the lab, in order
+
+1. **Lay the record out.** Your numbers in date order, one row a day, every row
+   marked A, B or C for its phase. Leave a gap where a day is missing rather
+   than filling it in.
+2. **Find your middle day.** Copy the numbers, put them in order of size, take
+   the one in the middle. If you have an even number of days, take the lower of
+   the two.
+3. **Find your range.** Your highest day minus your lowest day. One number, and
+   everything below is a fraction of it.
+4. **Work out a distance.** A day's distance is how far its number sits from
+   your middle day, ignoring which side it falls on, divided by your range.
+   Every distance comes out between 0 and 1. Your lowest day's distance and your
+   highest day's distance add to exactly 1, which is how you check the
+   arithmetic before you go on.
+5. **Take three pairs**, each of them two consecutive days inside a single
+   phase. The low pair is your lowest day and the day straight after it. The
+   high pair is your highest day and the day straight after it. The control pair
+   is the earliest day whose distance is under a quarter, with the day straight
+   after it, and it uses none of the four days already spoken for. If an extreme
+   day is the last day of its phase, use your next lowest or next highest day
+   that is not.
+6. **Six distances on the board.** The board has three columns, low, high and
+   control, and you add your pair to each of them. No name, no units and no
+   dates go up with them.
+
+## Reading the board
+
+Each column holds pairs of the same shape: how far a day sat from that person's
+middle, and how far the next day sat. That is Galton's two columns with days in
+place of families, which is why the lab is built this way and not some other
+way.
+
+The first distance in a low pair or a high pair is large, because that is how the
+day was chosen. The second one is not chosen at all, and the question the board
+answers is where it lands. If it lands down among the control distances, then a
+day picked for being extreme is followed by a day that is not, and an
+intervention starting on the extreme day would have been credited with the whole
+of that move.
+
+If the second distances in the low and high columns are not visibly smaller than
+the first, say so out loud. The published evidence is clear about which way this
+goes, and one room's fortnight in March is not the published evidence. A board that
+refuses to show the effect is the most interesting hour we could have, and it is
+reported as a result rather than quietly re-run.
+
+<Callout type="info">
+  There is an objection to make at step 5, and it is half right. The day after
+  your lowest day cannot be lower than your lowest day, so the value could only
+  go up, and an exercise that put the direction on the board would be rigged by
+  construction. That is exactly why the direction is not what goes up there. A
+  distance from your middle day is free to be anything from 0 up to the largest
+  distance in your record, so the second number in each pair can land anywhere,
+  and where it actually lands is the finding. If you spot the rigged version of an
+  argument before anyone tells you it is rigged, you are doing the thing this
+  course is for.
+</Callout>
+
+## What the board cannot tell you
+
+It cannot tell you how much of your own week 5 result was this. Every person on
+the board is measuring something different on a scale of their own, so the
+distances are comparable in shape and not in units, and no total from them means
+anything. Nor can eight or ten days each settle how large the effect is in
+general: the blood pressure figures below rest on five pooled studies read at
+long-term follow-up, and the class board rests on one fortnight in March.
+
+There is a second reading of the low column, and week 8 is why it has to be
+named. A day is unusual because several things went wrong at once, and those
+things, a deadline and a cold and an argument, mostly end. Part of what the board
+shows is those things ending. That is not a rival explanation to what you are
+looking at, it is the same one told from underneath, and it is the reason there
+is no mechanism to go hunting for.
+
+## What you take to the report
+
+Two things, and both are small. The first is the day your removal phase began,
+and its distance, which tells you where in your own record the experiment
+started. The second is the sentence, written before you leave the room: why an
+intervention begun on your lowest day would have looked successful, said without
+using the words regression to the mean. If you can only say it with the phrase,
+you have the label and not the idea, and the label is worth no marks at all.
