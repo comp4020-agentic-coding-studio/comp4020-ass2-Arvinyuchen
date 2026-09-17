@@ -1,0 +1,905 @@
+---
+// The sleep block, read back off the watch that was awake for it.
+//
+// Why this is on week 1 at all. The day sheet above works for every hour the
+// student was conscious: it is filled in as the day goes, which is the whole
+// instruction. Sleep is the one block of the twenty-four hours that cannot be
+// filled in as it happens, so it is the only part of the day that gets
+// reconstructed in the morning from memory. A watch or a phone was awake for
+// it and wrote down what it thought was going on. This reads that back.
+//
+// It keeps week 1 a baseline. Nothing here asks the student to sleep
+// differently, to sleep at a different time, or to go to bed knowing they are
+// being measured. The night on the screen has already happened and is finished.
+//
+// What it must not do, and this is the constraint that shaped everything else.
+//
+// Week 3 is the two instruments week: one night recorded by a device and by a
+// paper diary, and the student reports the disagreement in minutes without
+// resolving it. Rule 4 in CLAUDE.md gives each week its own method and no two
+// weeks may share one, so this component compares nothing. It does not score
+// the night, does not put a device's number beside anything the student typed,
+// does not say better or worse and does not say how far apart two sources are.
+// It reports what one instrument recorded and stops. That restraint is also
+// why a night held by two sources is shown one source at a time: laying a phone
+// over a watch is not a neater timeline, it is week 3 three weeks early.
+//
+// It also interprets nothing. Wrist staging is a guess made from movement and a
+// pulse, not a recording of a brain, and telling a student their deep sleep was
+// short would be personalised clinical advice, which CLAUDE.md puts out of
+// scope. Every number on the page is attributed to the instrument that produced
+// it, in those words.
+//
+// Scope. An export holds years, and the course is about one day. So the date is
+// asked for before the file is, and the scan keeps only the records overlapping
+// that one night: not the week around it, not a second night for context, not a
+// trend. Everything else in the file goes past without being retained, which is
+// the scope rule and the privacy promise in the same mechanism.
+//
+// Midday to midday, because "the night of the fifteenth" has to mean one thing
+// and a night crosses midnight. That window also takes in the afternoon of the
+// day chosen, so an afternoon sleep turns up in it. Rather than hide that, the
+// reader splits the window into the stretches the instrument actually recorded
+// and names the long one as the night, so nobody is told their sleep began at
+// ten past three in the afternoon.
+//
+// Size is the real engineering problem. export.xml is routinely hundreds of
+// megabytes, because it holds every heart rate sample the person has ever
+// taken, and DOMParser or a single read into a string would kill the tab. The
+// scanning lives in src/lib/health-export.ts: slices from the blob, a streaming
+// TextDecoder, a carry buffer across the boundary so a record cut in half is
+// not lost, and everything that is not a sleep record dropped as it goes. The
+// boundary case is the bug this would actually have, so spec/health-export
+// reads the same file at every chunk size down to one byte and requires the
+// same night out of all of them.
+//
+// The zip is refused deliberately. Health exports export.zip holding export.xml
+// and export_cda.xml, and unzipping in the browser would be a dependency and a
+// second decompression of a file this size for the sake of one instruction. So
+// the page asks for the unzipped file and, if it is handed a zip or handed the
+// clinical document instead, says which file it wants rather than finding
+// nothing and looking broken.
+//
+// Privacy is the same promise the sheet above makes, and it is kept the same
+// way: read in the page, nothing sent, nothing written to the browser, all of
+// it gone on reload. This site is static files on Pages, so there is no server
+// here to receive an upload even in principle. The single network request this
+// component can make is for the sample night, and only when a reader presses
+// the button that says so.
+//
+// The sample night is the opt out, and it is not a lesser route. A student
+// without a watch, or one who would rather not hand a health export to a web
+// page, reads a published night instead and takes the same thing out of it. The
+// file is synthetic and says so in its own first comment.
+//
+// What it cannot do: fill the sheet in. DayRecorder is another agent's file
+// this week, so the two times come out as text for the student to carry up the
+// page by hand.
+import { withBase } from "astro-theme-university/url";
+
+const SAMPLE = "/samples/apple-health-sleep-sample.xml";
+---
+
+<section
+  class="night"
+  data-sleep-export
+  data-sample={withBase(SAMPLE)}
+  aria-labelledby="night-title"
+>
+  <h3 id="night-title">The night the watch was awake for</h3>
+
+  <p class="night-lead">
+    One night, read off an Apple Health export. It compares nothing and keeps nothing.
+  </p>
+
+  <h4>Which night</h4>
+
+  <p class="night-help">
+    The date first, because the file holds years and this page will only ever open one night of it.
+    The night meant is the one that closes that day: everything recorded between midday on the date
+    below and midday the next.
+  </p>
+
+  <label class="field night-date">
+    <span class="field-name">The day you recorded</span>
+    <input type="date" data-night-date />
+  </label>
+
+  <h4>The file</h4>
+
+  <p class="night-help">
+    On the phone: Health, then your own picture at the top, then Export All Health Data. That gives
+    you <b>export.zip</b>. Unzip it and choose <b>export.xml</b> from inside it, which is the large
+    one. This page does not open zip files and does not want the other file in there.
+  </p>
+
+  <label class="field night-file">
+    <span class="field-name">Your export.xml file</span>
+    <input type="file" accept=".xml,text/xml,application/xml" data-night-file />
+  </label>
+
+  <p class="night-actions">
+    <button type="button" class="night-read" data-action="read" disabled>Read that night</button>
+    <button type="button" data-action="sample">Read the sample night instead</button>
+  </p>
+
+  <p class="night-progress" data-progress hidden></p>
+  <p class="night-status" role="status" data-status></p>
+
+  <div class="night-out" data-out hidden></div>
+
+  <h4>If you would rather not</h4>
+
+  <p>
+    There is a route through this week that needs no watch and no export, and it costs you nothing:
+    fill the sleep block on the sheet above from memory, the way you fill the rest of the day. That
+    is the week's actual method, and memory is the instrument week 1 is built on. If you would like
+    to see what a device records without handing over your own file, press <b>
+      Read the sample night instead
+    </b> above, or take
+    <a href={withBase(SAMPLE)} download>the sample export</a> and choose it as the file. It is a
+    night that was generated rather than slept: it describes nobody.
+  </p>
+
+  <p class="night-privacy">
+    Nothing here is saved and nothing is sent. Your export is read inside this tab, a slice at a
+    time, and this site is a set of static files with no server behind it to receive one. Nothing is
+    written to this browser, and a reload loses every bit of it. The only request this page can make
+    is for the sample night above, and only if you press the button for it. Same promise as the
+    sheet, and the same policy behind it: <a
+      href={withBase("/policies/#the-records-you-make-are-yours")}
+      >the records you make</a
+    > are yours.
+  </p>
+</section>
+
+<style>
+  /* Outlined like the sheet above it and sitting directly under it, because
+     they are two halves of one twenty-four hours rather than two tools. The
+     only tinted block on a lab page is the safety block. */
+  .night {
+    margin-block: var(--at-spacing-xl);
+    padding: var(--at-spacing-lg);
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+  }
+
+  .night h3 {
+    margin-block: 0 var(--at-spacing-xs);
+  }
+
+  .night h4 {
+    margin-block: var(--at-spacing-xl) var(--at-spacing-xs);
+  }
+
+  .night-lead {
+    margin-block: 0 var(--at-spacing-lg);
+    color: var(--at-text-secondary);
+  }
+
+  .night-help,
+  .night-progress {
+    margin-block: var(--at-spacing-xs) var(--at-spacing-md);
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .field {
+    display: block;
+    margin-block-end: var(--at-spacing-sm);
+  }
+
+  .field-name {
+    display: block;
+    color: var(--at-text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+
+  .night-date {
+    max-width: 11rem;
+  }
+
+  .night input[type="date"] {
+    width: 100%;
+    padding: 0.3rem 0.45rem;
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg);
+    color: var(--at-text);
+    font: inherit;
+    font-size: var(--at-font-size-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .night input[type="file"] {
+    display: block;
+    max-width: 100%;
+    font-size: var(--at-font-size-sm);
+  }
+
+  /* Stated rather than inherited, for the same reason the sheet states it:
+     every control in here is an unstyled element the theme never sees. */
+  .night :is(input, button, a, summary):focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 2px;
+  }
+
+  .night button {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-alt);
+    color: var(--at-text);
+    font: inherit;
+    font-size: var(--at-font-size-sm);
+    cursor: pointer;
+  }
+
+  .night button:hover:not(:disabled) {
+    border-color: var(--at-primary);
+  }
+
+  .night button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  /* The one action that produces something takes the brand, as the sheet's
+     print button does. The gold is the border and not the words. */
+  .night .night-read {
+    border-color: var(--at-primary);
+    border-width: 2px;
+    font-weight: 600;
+  }
+
+  .night-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--at-spacing-sm);
+    margin-block: var(--at-spacing-md) var(--at-spacing-sm);
+  }
+
+  .night-status:empty {
+    display: none;
+  }
+
+  .night-status {
+    margin-block: var(--at-spacing-sm);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .night-status[data-tone="wrong"] {
+    color: var(--at-warning);
+  }
+
+  .night-privacy {
+    margin-block-start: var(--at-spacing-lg);
+    font-size: var(--at-font-size-sm);
+  }
+
+  /* Everything below here is built by the script rather than written in the
+     template above, so it is reached through :global. An Astro scoped selector
+     compiles to .lanes[data-astro-cid-x], and an element made in
+     document.createElement carries no such attribute: the rule would simply
+     never match. Same arrangement the day sheet uses for its printable sheet.
+     The scope is kept by hanging every one of them off .night-out, which is in
+     the template and does carry it. */
+
+  /* The source picker. A night written by two instruments is two records, and
+     this is where the reader chooses which one to look at, one at a time. */
+  .night-out :global(fieldset) {
+    margin: var(--at-spacing-md) 0;
+    padding: var(--at-spacing-sm) var(--at-spacing-md);
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+  }
+
+  .night-out :global(legend) {
+    padding-inline: 0.4rem;
+    color: var(--at-text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .night-out :global(fieldset label) {
+    display: block;
+    margin-block: 0.15rem;
+  }
+
+  .night-out :global(input[type="radio"]) {
+    accent-color: var(--at-primary);
+    margin-inline-end: 0.4rem;
+  }
+
+  /* The figure.
+   *
+   * One row per state the export actually names, and each block drawn at the
+   * clock time it was recorded at, so the row carries the category and the
+   * horizontal position carries the time. Nothing is encoded in colour alone:
+   * the lanes are labelled, and the table underneath says the same thing in
+   * words. A lane is what prose cannot do, which is show at once that a night
+   * was fourteen pieces rather than one.
+   */
+  .night-out :global(figure) {
+    margin: var(--at-spacing-lg) 0;
+  }
+
+  .night-out :global(.lanes) {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 0.25rem var(--at-spacing-sm);
+    align-items: center;
+  }
+
+  .night-out :global(.lane-name) {
+    color: var(--at-text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-align: end;
+    text-transform: uppercase;
+  }
+
+  .night-out :global(.lane-track) {
+    position: relative;
+    height: 1.35rem;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--at-text) 7%, transparent);
+  }
+
+  /* Minimum two pixels, because a four minute stretch in a seven hour night is
+     under one pixel wide and a block that cannot be seen is a block the figure
+     has dropped. */
+  .night-out :global(.lane-block) {
+    position: absolute;
+    inset-block: 0;
+    min-width: 2px;
+    border-radius: 2px;
+    background: var(--at-primary);
+  }
+
+  .night-out :global(.lane-axis) {
+    position: relative;
+    height: 1.2rem;
+    margin-block-start: 0.15rem;
+    border-block-start: 1px solid var(--at-border);
+  }
+
+  .night-out :global(.lane-tick) {
+    position: absolute;
+    top: 0.15rem;
+    color: var(--at-text-secondary);
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .night-out :global(figcaption) {
+    margin-block-start: var(--at-spacing-sm);
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .night-out :global(table) {
+    width: 100%;
+    margin-block: var(--at-spacing-md);
+    border-collapse: collapse;
+    font-size: var(--at-font-size-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .night-out :global(:is(th, td)) {
+    padding: 0.3rem 0.5rem;
+    border-block-end: 1px solid var(--at-border);
+    text-align: start;
+  }
+
+  .night-out :global(thead th) {
+    color: var(--at-text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .night-out :global(.night-scroll) {
+    overflow-x: auto;
+  }
+
+  /* A caption says what the table is, so it sits above it and reads as a label
+     rather than as a centred title. */
+  .night-out :global(caption) {
+    margin-block-end: 0.3rem;
+    color: var(--at-text-secondary);
+    text-align: start;
+  }
+
+  .night-out :global(h4) {
+    margin-block: var(--at-spacing-xl) var(--at-spacing-xs);
+  }
+
+  .night-out :global(input:focus-visible) {
+    outline: 2px solid var(--at-primary);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  // Wiring. Everything that reads the file is in src/lib/health-export.ts,
+  // which is a pure module with no DOM in it, so the streaming and the
+  // boundary case are tested directly rather than through a page.
+  import {
+    episodesOf,
+    formatClock,
+    formatLength,
+    groupBySource,
+    longestEpisode,
+    looksLikeZip,
+    nightWindowFor,
+    scanSleepWindow,
+    summarise,
+    type Episode,
+    type SleepSegment,
+    type SourceNight,
+  } from "../lib/health-export";
+  import { formatCourseDate } from "../lib/dates";
+
+  // The file the reader chose, as a handle rather than as data: a File is a
+  // pointer at something on disk, and holding one keeps nothing in the page.
+  // Re-read on demand, so that changing the date is a deliberate act with a
+  // button press rather than a night that quietly swaps itself for another.
+  let chosen: File | null = null;
+  let reading = false;
+
+  const el = <T extends Element>(root: Element, selector: string): T | null =>
+    root.querySelector<T>(selector);
+
+  const say = (root: HTMLElement, message: string, tone: "plain" | "wrong" = "plain"): void => {
+    const status = el<HTMLElement>(root, "[data-status]");
+    if (!status) return;
+    status.dataset.tone = tone;
+    status.textContent = message;
+  };
+
+  const progress = (root: HTMLElement, message: string | null): void => {
+    const line = el<HTMLElement>(root, "[data-progress]");
+    if (!line) return;
+    line.hidden = message === null;
+    line.textContent = message ?? "";
+  };
+
+  const clearOut = (root: HTMLElement): void => {
+    const out = el<HTMLElement>(root, "[data-out]");
+    if (!out) return;
+    out.replaceChildren();
+    out.hidden = true;
+  };
+
+  const make = (tag: string, className?: string, text?: string): HTMLElement => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+
+  const megabytes = (bytes: number): string =>
+    bytes >= 1024 * 1024
+      ? `${Math.round(bytes / (1024 * 1024))} MB`
+      : `${Math.max(1, Math.round(bytes / 1024))} kB`;
+
+  /** A date input's value, or today if the reader has not set one. */
+  const dateValue = (root: HTMLElement): string => {
+    const field = el<HTMLInputElement>(root, "[data-night-date]");
+    return field?.value?.trim() ?? "";
+  };
+
+  const setDate = (root: HTMLElement, value: string): void => {
+    const field = el<HTMLInputElement>(root, "[data-night-date]");
+    if (field) field.value = value;
+  };
+
+  const readyToRead = (root: HTMLElement): void => {
+    const button = el<HTMLButtonElement>(root, "[data-action='read']");
+    if (button) button.disabled = !chosen || !nightWindowFor(dateValue(root)) || reading;
+  };
+
+  // The lanes, top to bottom. In bed first because it is the envelope the rest
+  // sits inside, then awake, then the stages. Not a depth axis and never
+  // labelled as one: the order is for reading, and claiming it is a scale would
+  // be interpreting the night rather than reporting it.
+  const LANES = ["inBed", "awake", "rem", "core", "asleep", "deep"];
+
+  const laneFigure = (episode: Episode, source: string): HTMLElement => {
+    const span = Math.max(1, episode.endWallMs - episode.startWallMs);
+    const at = (ms: number): number => ((ms - episode.startWallMs) / span) * 100;
+
+    const present = LANES.filter((lane) =>
+      episode.segments.some((segment) => segment.state === lane),
+    );
+    const others = Array.from(
+      new Set(
+        episode.segments
+          .filter((segment) => !LANES.includes(segment.state))
+          .map((segment) => segment.state),
+      ),
+    );
+
+    const figure = make("figure");
+    const lanes = make("div", "lanes");
+    lanes.setAttribute("aria-hidden", "true");
+
+    for (const lane of [...present, ...others]) {
+      const inLane = episode.segments.filter((segment) => segment.state === lane);
+      lanes.append(make("div", "lane-name", inLane[0]?.label ?? lane));
+      const track = make("div", "lane-track");
+      for (const segment of inLane) {
+        const block = make("div", "lane-block");
+        block.style.insetInlineStart = `${at(segment.startWallMs)}%`;
+        block.style.width = `${Math.max(0, at(segment.endWallMs) - at(segment.startWallMs))}%`;
+        track.append(block);
+      }
+      lanes.append(track);
+    }
+
+    // An axis with a mark on the hour. Every hour while the night is short
+    // enough for the labels not to collide, every second hour after that.
+    const axis = make("div", "lane-axis");
+    const hours = span / 3_600_000;
+    const step = hours > 9 ? 2 : 1;
+    const first = Math.ceil(episode.startWallMs / 3_600_000) * 3_600_000;
+    for (let tick = first; tick <= episode.endWallMs; tick += step * 3_600_000) {
+      const mark = make("div", "lane-tick", formatClock(tick));
+      mark.style.insetInlineStart = `${at(tick)}%`;
+      axis.append(mark);
+    }
+    lanes.append(make("div"), axis);
+    figure.append(lanes);
+
+    figure.append(
+      make(
+        "figcaption",
+        undefined,
+        `Each row is one of the states this export names, and each block is one stretch ${source} put in that state, drawn at the clock time it recorded. The table below lists the same stretches in words. Recorded by ${source}; read from the file you chose.`,
+      ),
+    );
+    return figure;
+  };
+
+  const segmentTable = (episode: Episode): HTMLElement => {
+    const wrap = make("div", "night-scroll");
+    const table = make("table");
+    const head = make("thead");
+    const headRow = make("tr");
+    for (const name of ["Started", "Ended", "Length", "What it called it"]) {
+      const cell = make("th", undefined, name);
+      cell.setAttribute("scope", "col");
+      headRow.append(cell);
+    }
+    head.append(headRow);
+    const body = make("tbody");
+    for (const segment of episode.segments) {
+      const row = make("tr");
+      const start = make("th", undefined, formatClock(segment.startWallMs));
+      start.setAttribute("scope", "row");
+      row.append(start);
+      row.append(make("td", undefined, formatClock(segment.endWallMs)));
+      row.append(make("td", undefined, formatLength(segment.minutes)));
+      row.append(make("td", undefined, segment.label));
+      body.append(row);
+    }
+    table.append(head, body);
+    const caption = make("caption", undefined, "Every stretch of the night, in order.");
+    table.prepend(caption);
+    wrap.append(table);
+    return wrap;
+  };
+
+  const totalsTable = (
+    totals: { label: string; minutes: number; count: number }[],
+  ): HTMLElement => {
+    const wrap = make("div", "night-scroll");
+    const table = make("table");
+    const head = make("thead");
+    const headRow = make("tr");
+    for (const name of ["State", "Stretches", "Total"]) {
+      const cell = make("th", undefined, name);
+      cell.setAttribute("scope", "col");
+      headRow.append(cell);
+    }
+    head.append(headRow);
+    const body = make("tbody");
+    for (const total of totals) {
+      const row = make("tr");
+      const label = make("th", undefined, total.label);
+      label.setAttribute("scope", "row");
+      row.append(label);
+      row.append(make("td", undefined, String(total.count)));
+      row.append(make("td", undefined, formatLength(total.minutes)));
+      body.append(row);
+    }
+    table.append(head, body);
+    table.prepend(make("caption", undefined, "Added up, by the name the export gave it."));
+    wrap.append(table);
+    return wrap;
+  };
+
+  /** One source's night, drawn. Called again when the reader picks the other
+   * source: the two are never on the page together. */
+  const drawNight = (group: SourceNight, host: HTMLElement): void => {
+    host.replaceChildren();
+    const episodes = episodesOf(group.segments);
+    const night = longestEpisode(episodes);
+    if (!night) return;
+    const totals = summarise(night.segments);
+
+    // The two times are the first and last moment this instrument had the
+    // reader asleep, which is not the same as the ends of the stretch: a night
+    // that opens with twenty minutes in bed and closes with eight minutes
+    // awake would otherwise be reported as sleep that it never called sleep.
+    const asleep = totals.asleepMinutes > 0;
+    const started = formatClock(totals.firstAsleepWallMs ?? night.startWallMs);
+    const ended = formatClock(totals.lastAsleepWallMs ?? night.endWallMs);
+    const awake = totals.totals.find((total) => total.key === "awake");
+
+    const lead = make("p");
+    lead.append(
+      document.createTextNode(
+        asleep
+          ? `${group.source} recorded ${formatLength(totals.asleepMinutes)} of sleep between ${started} and ${ended}, in ${night.segments.length} stretches`
+          : `${group.source} recorded no sleep at all here, over ${night.segments.length} stretches between ${formatClock(night.startWallMs)} and ${formatClock(night.endWallMs)}`,
+      ),
+    );
+    lead.append(
+      document.createTextNode(
+        awake
+          ? `, ${formatLength(awake.minutes)} of which it marked awake. `
+          : ". ",
+      ),
+    );
+    lead.append(
+      document.createTextNode(
+        totals.inBedMinutes > 0
+          ? `It has you in bed for ${formatLength(totals.inBedMinutes)}, which is a different thing and is not counted as sleep. `
+          : "",
+      ),
+    );
+    lead.append(
+      document.createTextNode(
+        totals.hasStages
+          ? "The stage names are the instrument's own: it is guessing them from your wrist, and whether that guess is any good is week 3's question rather than this week's."
+          : "This export names no sleep stages. Stages arrived with watchOS 9 and iOS 16, so an instrument older than that says in bed and asleep and nothing more. That is the whole of what it can say, not a fault in the file.",
+      ),
+    );
+    host.append(lead);
+
+    const rest = episodes.filter((episode) => episode !== night);
+    if (rest.length > 0) {
+      host.append(
+        make(
+          "p",
+          undefined,
+          `Also inside this window, and not part of that stretch: ${rest
+            .map(
+              (episode) =>
+                `${formatLength((episode.endWallMs - episode.startWallMs) / 60_000)} from ${formatClock(episode.startWallMs)} to ${formatClock(episode.endWallMs)}`,
+            )
+            .join(", ")}. The window runs midday to midday, so it takes in the afternoon of the day you asked for.`,
+        ),
+      );
+    }
+
+    const carry = make("p");
+    carry.append(
+      document.createTextNode(
+        asleep
+          ? `To put this on the sheet above: press Asleep from here at ${started}, which is when this instrument first had you asleep. It last had you asleep at ${ended}, the next morning. `
+          : `There is no time to carry up to the sheet from this source. It has you in bed and never has you asleep, which is all it was ever able to say. `,
+      ),
+    );
+    carry.append(
+      document.createTextNode(
+        "The sheet has its own waking time at the top, typed when you started the day, and this page does not ask you to square the two. Putting a device's number next to your own and reporting the gap is week 3, and doing it now spends that week early.",
+      ),
+    );
+    host.append(carry);
+
+    host.append(laneFigure(night, group.source));
+    host.append(segmentTable(night));
+    host.append(totalsTable(totals.totals));
+  };
+
+  const render = (root: HTMLElement, segments: SleepSegment[], date: string): void => {
+    const out = el<HTMLElement>(root, "[data-out]");
+    if (!out) return;
+    out.replaceChildren();
+    out.hidden = false;
+
+    const groups = groupBySource(segments);
+    const heading = make("h4", undefined, `The night of ${formatCourseDate(date)}`);
+    out.append(heading);
+
+    const host = make("div");
+
+    if (groups.length > 1) {
+      // Two instruments wrote this night, which is ordinary: a phone and a
+      // watch both keep sleep. They are not merged and they are not shown
+      // together. One at a time, named, and the others said out loud so
+      // nothing is quietly dropped.
+      out.append(
+        make(
+          "p",
+          undefined,
+          `${groups.length} sources wrote records for this night: ${groups
+            .map((group) => group.source)
+            .join(", ")}. They are separate instruments and this page keeps them separate, so pick one. Reading two against each other is week 3's exercise and it is worth arriving at it without having done it already.`,
+        ),
+      );
+
+      const fieldset = make("fieldset");
+      const legend = make("legend", undefined, "Whose record to read");
+      fieldset.append(legend);
+      groups.forEach((group, index) => {
+        const label = make("label");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "night-source";
+        radio.value = String(index);
+        radio.checked = index === 0;
+        radio.addEventListener("change", () => {
+          if (radio.checked) drawNight(group, host);
+        });
+        label.append(radio, document.createTextNode(group.source));
+        fieldset.append(label);
+      });
+      out.append(fieldset);
+    } else {
+      out.append(
+        make("p", undefined, `One source wrote this night: ${groups[0].source}.`),
+      );
+    }
+
+    out.append(host);
+    drawNight(groups[0], host);
+  };
+
+  const readBlob = async (root: HTMLElement, blob: Blob, name: string): Promise<void> => {
+    const date = dateValue(root);
+    const nightWindow = nightWindowFor(date);
+    if (!nightWindow) {
+      say(root, "Set the date of the day you recorded first. This page opens one night, not a file.", "wrong");
+      return;
+    }
+    if (reading) return;
+    reading = true;
+    readyToRead(root);
+    clearOut(root);
+
+    try {
+      if (await looksLikeZip(blob)) {
+        say(
+          root,
+          `${name} is a zip. Unzip it first and choose export.xml from inside: this page reads the XML rather than the archive, which is one instruction against a lot of code that would have to run over a file this size.`,
+          "wrong",
+        );
+        return;
+      }
+
+      say(root, `Reading ${name}. Nothing is being sent anywhere.`);
+      const result = await scanSleepWindow(blob, nightWindow, {
+        onProgress: (read, total) =>
+          progress(root, `Read ${megabytes(read)} of ${megabytes(total)}.`),
+        // A slice at a time, with the page given a turn in between, so a
+        // half gigabyte file does not freeze the tab while it is scanned.
+        yieldBetweenChunks: () => new Promise((resume) => setTimeout(resume, 0)),
+      });
+      progress(root, null);
+
+      if (result.sawClinicalDocument) {
+        say(
+          root,
+          `${name} is the clinical document that ships in the same zip as the file this page wants. The one to choose is export.xml, which is the much larger of the two.`,
+          "wrong",
+        );
+        return;
+      }
+      if (!result.sawHealthData && result.recordsSeen === 0) {
+        say(root, `${name} does not look like an Apple Health export: there is no health data in it.`, "wrong");
+        return;
+      }
+      if (result.sleepRecordsSeen === 0) {
+        say(
+          root,
+          `${name} holds no sleep records at all, for any night. Nothing was ever written to Health by a watch, a phone or an app, so there is nothing here to read back and the sleep block on the sheet comes from memory like the rest of the day.`,
+          "wrong",
+        );
+        return;
+      }
+      if (result.segments.length === 0) {
+        say(
+          root,
+          `Nothing was recorded for the night of ${formatCourseDate(date)}. The file holds ${result.sleepRecordsSeen} sleep records from other nights, and this page will not open them. A night with nothing in it is a result: the sheet's sleep block comes from memory, which is what week 1 asks for anyway.`,
+        );
+        return;
+      }
+
+      render(root, result.segments, date);
+      say(
+        root,
+        `Read ${megabytes(result.bytesRead)}. Of the ${result.sleepRecordsSeen} sleep records in the file, the ${result.segments.length} from that one night were kept and the rest went past without being held. None of it left the tab, and a reload loses this.`,
+      );
+    } catch (failure) {
+      progress(root, null);
+      say(
+        root,
+        `That file could not be read: ${failure instanceof Error ? failure.message : String(failure)}. Nothing was sent anywhere.`,
+        "wrong",
+      );
+    } finally {
+      reading = false;
+      readyToRead(root);
+    }
+  };
+
+  const setUp = (): void => {
+    const root = document.querySelector<HTMLElement>("[data-sleep-export]");
+    if (!root) return;
+    chosen = null;
+    reading = false;
+
+    const file = el<HTMLInputElement>(root, "[data-night-file]");
+    file?.addEventListener("change", () => {
+      chosen = file.files?.[0] ?? null;
+      clearOut(root);
+      if (chosen) {
+        say(
+          root,
+          `${chosen.name}, ${megabytes(chosen.size)}. Nothing has been read yet: press Read that night.`,
+        );
+      } else {
+        say(root, "");
+      }
+      readyToRead(root);
+    });
+
+    el<HTMLInputElement>(root, "[data-night-date]")?.addEventListener("change", () => {
+      // A new date is a new night, so the old one comes off the page rather
+      // than sitting under a heading that no longer describes it.
+      clearOut(root);
+      readyToRead(root);
+    });
+
+    el<HTMLButtonElement>(root, "[data-action='read']")?.addEventListener("click", () => {
+      if (chosen) void readBlob(root, chosen, chosen.name);
+    });
+
+    el<HTMLButtonElement>(root, "[data-action='sample']")?.addEventListener("click", async () => {
+      const url = root.dataset.sample;
+      if (!url || reading) return;
+      // The night the sample was written around. Set here rather than asked
+      // for, because a reader pressing this button wants to see the thing
+      // work, not to guess which date the file has anything on.
+      setDate(root, "2027-02-22");
+      readyToRead(root);
+      say(root, "Fetching the sample night from this site. It is generated and it is nobody's.");
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`the sample would not load (${response.status})`);
+        await readBlob(root, await response.blob(), "the sample night");
+      } catch (failure) {
+        say(
+          root,
+          `The sample could not be fetched: ${failure instanceof Error ? failure.message : String(failure)}.`,
+          "wrong",
+        );
+      }
+    });
+
+    readyToRead(root);
+  };
+
+  setUp();
+  document.addEventListener("astro:page-load", setUp);
+</script>

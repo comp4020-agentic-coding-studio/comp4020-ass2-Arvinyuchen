@@ -9,7 +9,7 @@ date: 2027-03-08
 phase: realisation
 method: measurement error
 component: sleep
-needs: [2]
+needs: [1, 2]
 risk: high
 stopping_rule:
   Stop recording and tell us if you find yourself checking your sleep data
@@ -18,10 +18,11 @@ stopping_rule:
 harm_boundary:
   Nothing in this week asks you to sleep less, sleep more, or go to bed at a
   different time. You are measuring the sleep you were already going to have.
-opt_out:
-  Compare two instruments on someone else's published night (the class has a
-  shared set of records from previous years) or compare a paper diary against
-  your own morning recall, with no device at all.
+opt_out: >-
+  Compare two instruments on someone else's published night: the sample export
+  on the week 1 lab page holds one night written by a phone and a watch at
+  once, and the two do not agree. Or compare a paper diary against your own
+  morning recall, with no device at all.
 claims:
   - kind: effect
     text: >-
@@ -75,7 +76,14 @@ agreed with you.
 
 ## The risk in this particular week
 
-This is the first week with a real way to hurt yourself, and it is not sleep
+You have met sleep data in this course once already. Week 1 read one night back
+off a watch after the night was over, chose the date itself, and stopped there,
+and it carried a stopping rule for doing even that much.
+
+This week is the other thing, and the difference is the whole of why it is the
+riskier one. You know before you go to bed that tonight is the night being
+measured, and you will go looking for the answer in the morning. That is where
+the real way to hurt yourself in this course starts, and it is not sleep
 deprivation. It is the measuring.
 
 In 2017 a group of sleep clinicians gave a name to something they kept seeing:

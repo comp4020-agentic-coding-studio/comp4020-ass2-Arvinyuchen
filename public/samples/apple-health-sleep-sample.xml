@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  A sample Apple Health export, for SLOP1638 week 1.
+
+  Every record in this file was generated. It describes nobody: there is no
+  person called Ada, no watch, and no night. It exists because the week 1 lab
+  reads a real export in the browser and a course that asked for a real one to
+  demonstrate with would be publishing somebody's sleep history permanently.
+
+  What it is for: a student with no watch, or one who would rather not hand
+  their own health export to a web page, reads this instead and takes the same
+  thing out of it. Week 3 uses it too, where the point is that the two sources
+  below disagree about the same night.
+
+  What it carries, because each of these is a shape the reader has to survive:
+
+    * one night recorded by two sources at once, a watch and a phone, which is
+      what an ordinary export holds and what must never be silently merged
+    * the staged shape, Core, Deep, REM and Awake, which exists only in exports
+      written by watchOS 9 and iOS 16 and later
+    * the unstaged shape, in bed and asleep, which is all an older instrument
+      could say and is a complete record rather than a broken one
+    * a short afternoon stretch, inside the midday to midday window the reader
+      uses and outside the night itself
+    * a second night, which the reader is expected to discard
+    * heart rate, steps, a workout and an activity summary, which is what the
+      hundreds of megabytes of a real export are actually made of
+    * records with MetadataEntry children, so the tag scanner cannot assume a
+      Record is self closing, and escaped characters in attribute values
+
+  The DOCTYPE below is Apple's, trimmed to the elements this file uses.
+-->
+<!DOCTYPE HealthData [
+<!ELEMENT HealthData (ExportDate,Me,(Record|Correlation|Workout|ActivitySummary)*)>
+<!ATTLIST HealthData locale CDATA #REQUIRED>
+<!ELEMENT ExportDate EMPTY>
+<!ATTLIST ExportDate value CDATA #REQUIRED>
+<!ELEMENT Me EMPTY>
+<!ELEMENT Record (MetadataEntry*)>
+<!ELEMENT MetadataEntry EMPTY>
+<!ELEMENT Correlation (MetadataEntry*,Record*)>
+<!ELEMENT Workout (MetadataEntry*)>
+<!ELEMENT ActivitySummary EMPTY>
+]>
+<HealthData locale="en_AU">
+ <ExportDate value="2027-02-24 09:12:38 +1100"/>
+ <Me HKCharacteristicTypeIdentifierBiologicalSex="HKBiologicalSexNotSet" HKCharacteristicTypeIdentifierBloodType="HKBloodTypeNotSet"/>
+
+ <!-- Ordinary traffic. A real export runs to millions of lines of this. -->
+ <Record type="HKQuantityTypeIdentifierHeartRate" sourceName="Ada's Apple Watch" sourceVersion="10.2" device="&lt;&lt;HKDevice: 0x28016fd90&gt;, name:Apple Watch, manufacturer:Apple Inc., model:Watch, hardware:Watch6,2, software:10.2&gt;" unit="count/min" creationDate="2027-02-22 21:02:11 +1100" startDate="2027-02-22 21:01:55 +1100" endDate="2027-02-22 21:01:55 +1100" value="68">
+  <MetadataEntry key="HKMetadataKeyHeartRateMotionContext" value="0"/>
+ </Record>
+ <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Ada's iPhone" sourceVersion="15.6" unit="count" creationDate="2027-02-22 21:30:02 +1100" startDate="2027-02-22 21:14:00 +1100" endDate="2027-02-22 21:29:00 +1100" value="312"/>
+ <Record type="HKQuantityTypeIdentifierHeartRate" sourceName="Ada's Apple Watch" sourceVersion="10.2" unit="count/min" creationDate="2027-02-22 22:40:09 +1100" startDate="2027-02-22 22:39:51 +1100" endDate="2027-02-22 22:39:51 +1100" value="61"/>
+
+ <!-- The phone's account of the night of 22 February. In bed and asleep, no
+      stages: this is everything an instrument of that vintage can say. -->
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's iPhone" sourceVersion="15.6" creationDate="2027-02-23 07:15:40 +1100" startDate="2027-02-22 23:20:00 +1100" endDate="2027-02-23 07:15:00 +1100" value="HKCategoryValueSleepAnalysisInBed"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's iPhone" sourceVersion="15.6" creationDate="2027-02-23 07:15:40 +1100" startDate="2027-02-22 23:38:00 +1100" endDate="2027-02-23 07:10:00 +1100" value="HKCategoryValueSleepAnalysisAsleep"/>
+
+ <!-- The watch's account of the same night, staged, and disagreeing with the
+      phone. Week 1 shows one of these two at a time. Week 3 is where the
+      disagreement is the point. -->
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" device="&lt;&lt;HKDevice: 0x28016fd90&gt;, name:Apple Watch, manufacturer:Apple Inc., model:Watch, hardware:Watch6,2, software:10.2&gt;" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-22 23:41:00 +1100" endDate="2027-02-22 23:57:00 +1100" value="HKCategoryValueSleepAnalysisAsleepCore">
+  <MetadataEntry key="HKTimeZone" value="Australia/Sydney"/>
+ </Record>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-22 23:57:00 +1100" endDate="2027-02-23 00:31:00 +1100" value="HKCategoryValueSleepAnalysisAsleepDeep"/>
+ <Record type="HKQuantityTypeIdentifierHeartRate" sourceName="Ada's Apple Watch" sourceVersion="10.2" unit="count/min" creationDate="2027-02-23 00:12:00 +1100" startDate="2027-02-23 00:11:44 +1100" endDate="2027-02-23 00:11:44 +1100" value="52"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 00:31:00 +1100" endDate="2027-02-23 01:12:00 +1100" value="HKCategoryValueSleepAnalysisAsleepCore"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 01:12:00 +1100" endDate="2027-02-23 01:39:00 +1100" value="HKCategoryValueSleepAnalysisAsleepREM"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 01:39:00 +1100" endDate="2027-02-23 01:44:00 +1100" value="HKCategoryValueSleepAnalysisAwake"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 01:44:00 +1100" endDate="2027-02-23 02:38:00 +1100" value="HKCategoryValueSleepAnalysisAsleepCore"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 02:38:00 +1100" endDate="2027-02-23 03:09:00 +1100" value="HKCategoryValueSleepAnalysisAsleepDeep"/>
+ <Record type="HKQuantityTypeIdentifierHeartRate" sourceName="Ada's Apple Watch" sourceVersion="10.2" unit="count/min" creationDate="2027-02-23 02:55:00 +1100" startDate="2027-02-23 02:54:41 +1100" endDate="2027-02-23 02:54:41 +1100" value="49"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 03:09:00 +1100" endDate="2027-02-23 03:52:00 +1100" value="HKCategoryValueSleepAnalysisAsleepCore"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 03:52:00 +1100" endDate="2027-02-23 04:25:00 +1100" value="HKCategoryValueSleepAnalysisAsleepREM"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 04:25:00 +1100" endDate="2027-02-23 04:29:00 +1100" value="HKCategoryValueSleepAnalysisAwake"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 04:29:00 +1100" endDate="2027-02-23 05:16:00 +1100" value="HKCategoryValueSleepAnalysisAsleepCore"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 05:16:00 +1100" endDate="2027-02-23 05:38:00 +1100" value="HKCategoryValueSleepAnalysisAsleepDeep"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 05:38:00 +1100" endDate="2027-02-23 06:14:00 +1100" value="HKCategoryValueSleepAnalysisAsleepCore"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 06:14:00 +1100" endDate="2027-02-23 06:58:00 +1100" value="HKCategoryValueSleepAnalysisAsleepREM"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 07:06:12 +1100" startDate="2027-02-23 06:58:00 +1100" endDate="2027-02-23 07:06:00 +1100" value="HKCategoryValueSleepAnalysisAwake"/>
+
+ <!-- The afternoon of 22 February, which the midday to midday window takes in
+      and the night does not. -->
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-22 15:34:20 +1100" startDate="2027-02-22 15:12:00 +1100" endDate="2027-02-22 15:34:00 +1100" value="HKCategoryValueSleepAnalysisAsleepCore"/>
+
+ <!-- A different night, and a third source with an escaped ampersand in its
+      name. The reader is expected to throw all of this away. -->
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Bed &amp; Rest" sourceVersion="4.1" creationDate="2027-02-20 06:50:00 +1100" startDate="2027-02-19 23:50:00 +1100" endDate="2027-02-20 06:45:00 +1100" value="HKCategoryValueSleepAnalysisAsleepUnspecified"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-20 06:40:00 +1100" startDate="2027-02-19 23:55:00 +1100" endDate="2027-02-20 02:10:00 +1100" value="HKCategoryValueSleepAnalysisAsleepCore"/>
+ <Record type="HKCategoryTypeIdentifierSleepAnalysis" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-20 06:40:00 +1100" startDate="2027-02-20 02:10:00 +1100" endDate="2027-02-20 06:40:00 +1100" value="HKCategoryValueSleepAnalysisAsleepREM"/>
+
+ <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Ada's iPhone" sourceVersion="15.6" unit="count" creationDate="2027-02-23 08:02:00 +1100" startDate="2027-02-23 07:31:00 +1100" endDate="2027-02-23 07:58:00 +1100" value="1842"/>
+ <Correlation type="HKCorrelationTypeIdentifierBloodPressure" sourceName="Ada's iPhone" sourceVersion="15.6" creationDate="2027-02-23 08:30:00 +1100" startDate="2027-02-23 08:29:00 +1100" endDate="2027-02-23 08:29:00 +1100">
+  <Record type="HKQuantityTypeIdentifierBloodPressureSystolic" sourceName="Ada's iPhone" sourceVersion="15.6" unit="mmHg" creationDate="2027-02-23 08:30:00 +1100" startDate="2027-02-23 08:29:00 +1100" endDate="2027-02-23 08:29:00 +1100" value="118"/>
+  <Record type="HKQuantityTypeIdentifierBloodPressureDiastolic" sourceName="Ada's iPhone" sourceVersion="15.6" unit="mmHg" creationDate="2027-02-23 08:30:00 +1100" startDate="2027-02-23 08:29:00 +1100" endDate="2027-02-23 08:29:00 +1100" value="76"/>
+ </Correlation>
+ <Workout workoutActivityType="HKWorkoutActivityTypeWalking" duration="32.4" durationUnit="min" sourceName="Ada's Apple Watch" sourceVersion="10.2" creationDate="2027-02-23 18:44:00 +1100" startDate="2027-02-23 18:10:00 +1100" endDate="2027-02-23 18:42:00 +1100">
+  <MetadataEntry key="HKIndoorWorkout" value="0"/>
+ </Workout>
+ <ActivitySummary dateComponents="2027-02-22" activeEnergyBurned="412" activeEnergyBurnedGoal="500" activeEnergyBurnedUnit="kcal" appleExerciseTime="24" appleExerciseTimeGoal="30" appleStandHours="11" appleStandHoursGoal="12"/>
+</HealthData>
