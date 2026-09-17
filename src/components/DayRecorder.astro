@@ -35,6 +35,18 @@
 // hours of room and a twenty minute one offers a line: the field tells you how
 // much of the day you are describing before you have written a word of it.
 //
+// Where the words go, which is a rule and not a preference. Everything that
+// tells a reader how to fill the sheet sits in one block above the drawing and
+// is met once, before they start: what the drawing is, the keyboard route
+// through it, and what the one tick column means. Beside a control there is
+// nothing but a short hint, a sentence attached to the button or the line it
+// is about. Nothing explanatory sits under the drawing, where it would be read
+// after the moment it could have helped, if it were read at all. What is under
+// the drawing is derived rather than explanatory: how many blocks there are,
+// how much of the day they cover, and the admission, printed only while it is
+// true of something on the sheet, that a block under half an hour is drawn
+// taller than it ran.
+//
 // Three things had to be solved before any of that was worth building.
 //
 // Dragging is never the only way, because WCAG 2.2 success criterion 2.5.7
@@ -131,86 +143,107 @@ const PAPER_ROWS = 14;
   </p>
 
   <div class="recorder-live" data-live>
-    <h4>The day</h4>
+    <div class="recorder-how">
+      <h4>How to fill it in</h4>
 
-    <label class="field day-date">
-      <span class="field-name">Date</span>
-      <input type="date" data-field="date" />
-    </label>
+      <p class="recorder-help">
+        Say when you woke up, then pull the line down to open a block: where you let go is when
+        it ended, and the space between the lines is where you write what you were doing. A pixel
+        is a minute. Keep going until you went to bed, then press the sleep button, which records
+        the rest as sleep and closes the twenty-four hours. Nothing has to be dragged: every time
+        here is a field you can type into, and the button under the line opens a half hour block,
+        which you then correct by typing its end time on the line below it.
+      </p>
 
-    <h4>The twenty-four hours</h4>
+      <details class="recorder-keys">
+        <summary>Keyboard</summary>
+        <ul>
+          <li>Enter walks the start time, then what you were doing, then opens the next block.</li>
+          <li>Shift with Enter starts a new line inside one.</li>
+          <li>The arrows on a time move it a minute, or an hour on the hours.</li>
+        </ul>
+      </details>
 
-    <p class="recorder-help">
-      Say when you woke up, then pull the line down to open a block: where you let go is when it
-      ended, and the space between the lines is where you write what you were doing. A pixel is a
-      minute. Keep going until you went to bed, then press the sleep button, which records the rest
-      as sleep and closes the twenty-four hours. Nothing has to be dragged: every time here is a
-      field you can type into.
-    </p>
-
-    <div class="tl" data-timeline>
-      <ol class="tl-blocks" data-blocks></ol>
-
-      <div class="tl-row tl-end is-wake" data-end>
-        <div class="tl-gutter">
-          <label class="tl-time">
-            <span class="field-name" data-end-label>Woke at</span>
-            <input type="time" value={DEFAULT_WAKE} data-end-time />
-          </label>
-        </div>
-        <div class="tl-body">
-          <div class="tl-grip" data-grip aria-hidden="true">
-            <span class="tl-grip-bar"></span>
-            <span class="tl-readout" data-readout></span>
-          </div>
-          <p class="tl-actions">
-            <button type="button" data-action="open">Open the next block</button>
-            <button type="button" data-action="sleep">Asleep from here</button>
-            <button type="button" data-action="reopen" hidden>Reopen the day</button>
-          </p>
-          <p class="recorder-help tl-hint">
-            The button opens a half hour block, which you then correct by typing its end time on the
-            line below it; a drag makes one any length. Enter walks the start time, then what you
-            were doing, then opens the next block, and Shift with Enter starts a new line inside
-            one. The arrows on a time move it a minute, or an hour on the hours.
-          </p>
-        </div>
-      </div>
+      <p class="recorder-help">
+        Tick <b>change</b> on a block you would be willing to run differently and could actually
+        reach. That is narrower than a block you dislike: the hour you resent is often the one
+        somebody else's timetable fixed, and the one you could actually move is duller. The tick
+        changes nothing about today. Week 1 is a baseline, and a baseline you have begun improving
+        is not one, so the block goes down as it happened. Weeks 5 to 7 are the course's Change
+        move, where you choose one thing and alter it. The tick is a note to yourself then, not a
+        plan now.
+      </p>
     </div>
 
-    <p class="blocks-total" data-total></p>
+    <div class="recorder-work">
+      <h4>The sheet</h4>
 
-    <p class="recorder-help" data-floored hidden></p>
+      <label class="field day-date">
+        <span class="field-name">Date</span>
+        <input type="date" data-field="date" />
+      </label>
 
-    <p class="recorder-help">
-      Tick <b>change</b> on a block you would be willing to run differently and could actually
-      reach. That is narrower than a block you dislike: the hour you resent is often the one
-      somebody else's timetable fixed, and the one you could actually move is duller. The tick
-      changes nothing about today. Week 1 is a baseline, and a baseline you have begun improving is
-      not one, so the block goes down as it happened. Weeks 5 to 7 are the course's Change move,
-      where you choose one thing and alter it. The tick is a note to yourself then, not a plan now.
-    </p>
+      <div class="tl" data-timeline>
+        <ol class="tl-blocks" data-blocks></ol>
 
-    <h4>Taking it away</h4>
+        <div class="tl-row tl-end is-wake" data-end>
+          <div class="tl-gutter">
+            <label class="tl-time">
+              <span class="field-name" data-end-label>Woke at</span>
+              <input type="time" value={DEFAULT_WAKE} data-end-time />
+            </label>
+          </div>
+          <div class="tl-body">
+            <div class="tl-grip" data-grip aria-hidden="true">
+              <span class="tl-grip-bar"></span>
+              <span class="tl-readout" data-readout></span>
+            </div>
+            <p class="tl-actions">
+              <button type="button" data-action="open">Open the next block</button>
+              <button type="button" data-action="sleep">Asleep from here</button>
+              <button type="button" data-action="reopen" hidden>Reopen the day</button>
+            </p>
+            <p class="recorder-help tl-hint">Pull the line down, or press Open the next block.</p>
+          </div>
+        </div>
+      </div>
 
-    <p class="recorder-privacy">
-      Nothing here is saved. This page sends nothing anywhere, writes nothing to this browser, and
-      loses the lot when the tab is closed or reloaded. The file you print is the only copy and it
-      is yours, which is what the course's policy on
-      <a href={withBase("/policies/#the-records-you-make-are-yours")}>the records you make</a> says
-      too.
-    </p>
+      <div class="tally" data-total>
+        <p class="tally-empty" data-tally-empty>Nothing recorded yet.</p>
 
-    <p class="recorder-tools">
-      <button type="button" class="print-button" data-action="print">
-        Print the sheet, or save it as a PDF
-      </button>
-    </p>
+        <div class="tally-figures" data-tally-figures hidden>
+          <p class="tally-head">
+            <span class="tally-value" data-tally-covered></span>
+            <span class="tally-of">of the twenty-four hours</span>
+            <span class="tally-state" data-tally-state></span>
+          </p>
+          <div class="tally-meter" aria-hidden="true">
+            <span class="tally-meter-fill" data-tally-fill></span>
+          </div>
+          <p class="tally-rest" data-tally-rest></p>
+          <p class="tally-facts">
+            <span data-tally-blocks></span>
+            <span data-tally-marked hidden></span>
+          </p>
+        </div>
 
-    <p class="recorder-help">
-      Your browser's print dialogue has a Save as PDF destination. The printed sheet carries the
-      day and the marks, and none of the page around them.
-    </p>
+        <p class="recorder-help tally-floored" data-floored hidden></p>
+      </div>
+
+      <p class="recorder-privacy">
+        Nothing here is saved. This page sends nothing anywhere, writes nothing to this browser, and
+        loses the lot when the tab is closed or reloaded. The file you print is the only copy and it
+        is yours, which is what the course's policy on
+        <a href={withBase("/policies/#the-records-you-make-are-yours")}>the records you make</a> says
+        too.
+      </p>
+
+      <p class="recorder-tools">
+        <button type="button" class="print-button" data-action="print">
+          Print the sheet, or save it as a PDF
+        </button>
+      </p>
+    </div>
 
     <p class="recorder-status" role="status" data-status></p>
   </div>
@@ -306,6 +339,34 @@ const PAPER_ROWS = 14;
     color: var(--at-text-secondary);
   }
 
+  /* Two zones, and the gap between them is the whole mechanism.
+   *
+   * The component used to be prose with a drawing in the middle of it: an
+   * instruction, a field, another instruction, the sheet, a paragraph about
+   * the tick, then the sheet's figures. A reader could not tell where the
+   * reading stopped and the doing started, because it stopped and started four
+   * times. Now it is how to fill it in, all of it, once; then the sheet, with
+   * everything that acts on the sheet, including the button that takes it
+   * away.
+   *
+   * Drawn with a hairline, a heading and a great deal of air, and emphatically
+   * not with a second bordered box. The author has asked for the rounded
+   * corner block to go so the region fills its width like a table, and
+   * answering "separate these two" with a card would walk that straight back.
+   *
+   * Sixty-four pixels above the rule and thirty-two below it. The largest gap
+   * anywhere inside either zone is the thirty-two an h4 sets, so the boundary
+   * is three times the biggest interior gap and reads as a boundary without
+   * anything being drawn heavily. The rule is --at-border rather than the
+   * fainter --at-divider the figures use, so the two hairlines in the
+   * component rank: one separates the zones, one separates a readout from the
+   * drawing it describes. */
+  .recorder-work {
+    margin-block-start: var(--at-spacing-2xl);
+    padding-block-start: var(--at-spacing-xl);
+    border-block-start: 1px solid var(--at-border);
+  }
+
   /* Instructions, not prose: one step smaller and quieter than the lesson
      around them, and never carrying a fact that is not also in a control. */
   .recorder-help {
@@ -317,6 +378,60 @@ const PAPER_ROWS = 14;
   .field {
     display: block;
     margin-block-end: var(--at-spacing-sm);
+  }
+
+  /* Keyboard help, behind a native disclosure.
+   *
+   * <details> and <summary> rather than a button and a hidden div: it is
+   * keyboard operable, it is announced as expandable, and it opens and closes
+   * without a line of script, so there is nothing here to rebind on
+   * astro:page-load and nothing that breaks with JavaScript off. Closed by
+   * default because the shortcuts are the fast path for a reader who already
+   * knows the sheet, not five lines to meet on arrival.
+   *
+   * It sat beside the buttons in the end row for one version, on the reading
+   * that a disclosure is a hint attached to a control. It is not. What is
+   * behind it is the typing route through the whole day, Enter walking time to
+   * activity to the next block, which is an instruction for filling the sheet
+   * and belongs with the others in front of it. The end row is also the worst
+   * possible shelf: it is the live edge of the drawing and it moves down the
+   * page every time a block opens, so a reader who wanted the shortcuts twice
+   * had to go looking for them.
+   *
+   * It never prints, and needs no rule of its own to make that true: the print
+   * stylesheet below hides the whole of .recorder-live. That is the right
+   * answer as well as the free one. The printed sheet is filled in with a pen,
+   * and keyboard shortcuts on paper are ink somebody paid for, describing a
+   * control they are not holding. */
+  .recorder-keys {
+    margin-block: 0 var(--at-spacing-md);
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  /* fit-content rather than display: inline-block, which would take the
+     disclosure triangle with it: the marker is drawn because summary is a
+     list-item, and changing its display removes the marker in Chrome. */
+  .recorder-keys > summary {
+    width: fit-content;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+    cursor: pointer;
+  }
+
+  .recorder-keys > summary:hover {
+    border-color: var(--at-primary);
+    color: var(--at-text);
+  }
+
+  .recorder-keys ul {
+    margin-block: var(--at-spacing-xs) 0;
+    padding-inline-start: 1.2rem;
+  }
+
+  .recorder-keys li {
+    margin-block-end: 0.15rem;
   }
 
   .field-name {
@@ -403,7 +518,7 @@ const PAPER_ROWS = 14;
      never sees; a form this size is exactly where a missing ring strands a
      keyboard user. Gold against either page colour clears the 3:1 that a
      non-text indicator owes. */
-  .recorder :is(input, textarea, button, a):focus-visible {
+  .recorder :is(input, textarea, button, a, summary):focus-visible {
     outline: 2px solid var(--at-primary);
     outline-offset: 2px;
   }
@@ -751,16 +866,160 @@ const PAPER_ROWS = 14;
     margin: 0;
   }
 
+  /* One sentence, on its own line under the controls it describes. The bottom
+     margin goes because the timeline already sets the gap to what follows, and
+     margins on a flex item do not collapse into it. */
+  .recorder .tl-hint {
+    flex: 1 1 100%;
+    margin-block: var(--at-spacing-xs) 0;
+  }
+
   .tl-end .tl-body {
     flex-wrap: wrap;
     grid-column: 2 / -1;
     border-inline-start-color: transparent;
   }
 
-  .blocks-total {
-    margin-block: 0 var(--at-spacing-sm);
-    font-size: var(--at-font-size-sm);
+  /* The figures under the sheet.
+   *
+   * One thing is the headline and the rest are footnotes to it, which is the
+   * whole design. Coverage of the twenty-four hours leads because it is the
+   * week's own spec line and because it is the only figure here that cannot be
+   * gamed: splitting a block in two changes the count and leaves the coverage
+   * exactly where it was. Everything else is set small, in secondary ink, with
+   * no bar to fill and no target to hit. Eleven blocks is not better than six,
+   * and a sheet that implied otherwise would buy itself a more eventful day,
+   * which is the one failure week 1 warns about and week 4 writes a stopping
+   * rule for.
+   *
+   * No border and no fill. The lab page allows one tinted box and the safety
+   * block has it; this is set apart by a hairline and by type instead, which
+   * also keeps it from reading as a scorecard panel.
+   *
+   * Not a live region, deliberately. layout() runs on every keystroke in a
+   * time field, so a polite region here would recite the coverage after every
+   * arrow press. The settled outcome of each action is already announced by
+   * .recorder-status, which fires once per block opened, removed or closed.
+   *
+   * It does not print, and does not need a rule to say so: the print
+   * stylesheet hides .recorder-live, and the printed sheet states coverage in
+   * its own facts line, computed from the same fields. A student who fills the
+   * sheet on screen and prints it still gets the summary, set for paper. */
+  .tally {
+    margin-block: 0 var(--at-spacing-md);
+    padding-block-start: var(--at-spacing-sm);
+    border-block-start: 1px solid var(--at-divider);
     font-variant-numeric: tabular-nums;
+  }
+
+  .tally-empty {
+    margin: 0;
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .tally-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.5em;
+    margin: 0;
+  }
+
+  /* Large enough to be the one thing read first, and nowhere near a dashboard
+     hero: this is a readout under a lab exercise, not a scoreboard. */
+  .tally-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .tally-of {
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  /* A state, not a statistic, so it is a word with a shape beside it and never
+     a colour on its own: a ring while the day is open, the same ring filled
+     once it is closed. The words are the channel that survives greyscale, a
+     colourblind reader and forced colours; the dot is the thing the eye finds
+     from across the page. */
+  .tally-state {
+    display: inline-flex;
+    align-items: center;
+    margin-inline-start: auto;
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .tally-state::before {
+    content: "";
+    display: inline-block;
+    width: 0.6em;
+    height: 0.6em;
+    margin-inline-end: 0.45em;
+    border: 2px solid var(--at-primary);
+    border-radius: 50%;
+  }
+
+  .tally-state[data-closed="true"]::before {
+    background: var(--at-primary);
+  }
+
+  /* On a phone the headline and its unit already fill the line, so the state
+     wraps. Pushed right it landed alone against the right edge, which read as
+     a stray; on its own full line at the left it reads as the next thing
+     down. Same breakpoint the flag word uses. */
+  @media (width < 30rem) {
+    .tally-state {
+      flex-basis: 100%;
+      margin-inline-start: 0;
+    }
+  }
+
+  /* The day laid flat. Six pixels and a three pixel radius are the grip bar's
+     own dimensions, on purpose: the reader has spent the last ten minutes
+     pulling that shape down the page, and this is the same line wrapped into
+     twenty-four hours. The track is a light step of the one hue, so the fill
+     and the unfilled part read as the same scale rather than as two colours.
+     Marked aria-hidden: every number it draws is written out beside it. */
+  .tally-meter {
+    overflow: hidden;
+    height: 6px;
+    margin-block: var(--at-spacing-xs) 0;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--at-primary) 14%, transparent);
+  }
+
+  .tally-meter-fill {
+    display: block;
+    width: var(--covered, 0%);
+    height: 100%;
+    border-radius: 3px;
+    background: var(--at-primary);
+  }
+
+  .tally-rest {
+    margin-block: var(--at-spacing-xs) 0;
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  /* The facts nobody is being scored on. Same size as the rest line, one step
+     quieter than the headline, separated by the site's own middot. */
+  .tally-facts {
+    margin-block: 0.15rem 0;
+    color: var(--at-text-muted);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .tally-facts > span + span::before {
+    content: "·";
+    margin-inline: 0.45em;
+  }
+
+  .recorder .tally-floored {
+    margin-block: var(--at-spacing-xs) 0;
   }
 
   .recorder-privacy {
@@ -772,14 +1031,34 @@ const PAPER_ROWS = 14;
     margin-block: 0 var(--at-spacing-xs);
   }
 
-  /* Announced and shown. Everything the buttons and the drag do happens
-     somewhere other than where the pointer was, so a line that only screen
-     readers heard would leave everyone else guessing. */
+  /* Announced, not shown.
+   *
+   * It was both for several versions, on the reasoning that everything the
+   * buttons and the drag do happens somewhere other than where the pointer
+   * was. The author has taken the visible half out: it was a sixth paragraph
+   * of grey text under a sheet that already carries four, and it sat after
+   * the drawing, where nothing explanatory is meant to sit.
+   *
+   * What it must not become is display: none, which would take the element out
+   * of the accessibility tree and stop role="status" announcing anything at
+   * all. That would leave a screen reader user with no evidence that the
+   * button did something, since what it does is change a table they cannot
+   * see. So it is clipped by the project's visually hidden pattern, the one
+   * CertaintyOfStrong.astro uses: one pixel, positioned out, inset(50%).
+   *
+   * The cost is on the record and it is real. A sighted keyboard user pressing
+   * Open the next block now has only the drawing to tell them what happened,
+   * and the line that said "nothing was saved" after the print dialogue closed
+   * is no longer read by anyone who is not using a screen reader. */
   .recorder-status {
-    min-height: 1.5em;
-    margin-block: 0;
-    color: var(--at-text-secondary);
-    font-size: var(--at-font-size-sm);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .recorder-hidden {
@@ -862,7 +1141,15 @@ const PAPER_ROWS = 14;
    * page's text colour is a light-dark() pair, so a reader in dark mode prints
    * near-white text, which arrives as a blank sheet of paper on any printer
    * that is not also asked to flood the page with ink. Black on white, stated.
-   */
+   *
+   * Both zones go, and neither is a close call. The instructions are read once
+   * on a screen by somebody who has not started yet, and a printed copy of
+   * them is four paragraphs of ink explaining a drag to a reader holding a
+   * pen. The sheet zone goes for the older reason: its input boxes print as
+   * empty rectangles and its sixty pixels an hour would put a waking day
+   * across three sheets. What replaces both is the record, rebuilt from the
+   * fields, which carries the coverage figure in its own facts line so a
+   * student who filled the sheet on screen still prints the summary. */
   @media print {
     :global(body > *:not(#main)) {
       display: none !important;
@@ -1174,18 +1461,60 @@ const PAPER_ROWS = 14;
           : `${plural(floored, "block")} ran under half an hour and ${floored === 1 ? "is" : "are"} drawn half an hour tall: on ${floored === 1 ? "that one" : "those"} the two times are the record and the height is not.`;
     }
 
+    // The figures.
+    //
+    // One headline and three footnotes, sorted by whether the number is
+    // something a student could decide to go and get more of.
+    //
+    // Coverage leads. It is the week's own spec line, twenty-four continuous
+    // hours, and it is the only figure here that cannot be improved by
+    // recording differently: splitting one block into three changes the count
+    // and leaves the coverage where it was. What is left over is named with
+    // the hours it runs between rather than as a bare number, because on this
+    // sheet the unrecorded time is never a hole in the middle. Blocks are
+    // drawn end to end from the wake line down, so the only thing missing is
+    // always the stretch from the last line back around to waking, and saying
+    // where it is turns a percentage into an instruction to press the sleep
+    // button.
+    //
+    // The count of blocks is a fact and not a score: eleven is not better than
+    // six, and a sheet that implied otherwise would be paid in a more eventful
+    // day. The count of marks is quieter still and is not rendered at all
+    // while it is zero, because "0 marked" is a nudge to go and mark
+    // something, and the tick is meant to be optional.
     const marked = blocks.filter((block) => flagOf(block).checked).length;
-    const marks = `Might change: ${plural(marked, "block")}`;
-    const totalLine = root.querySelector<HTMLElement>("[data-total]");
-    if (totalLine) {
-      if (blocks.length === 0) {
-        totalLine.textContent = "No blocks yet. Pull the line down, or press Open the next block.";
-      } else if (closed) {
-        const sleep = minsOf(blocks[blocks.length - 1]);
-        totalLine.textContent = `${plural(blocks.length, "block")} covering 24 h, including ${formatSpan(sleep)} asleep. ${marks}.`;
-      } else {
-        totalLine.textContent = `${plural(blocks.length, "block")}, ${formatSpan(offset)} since you woke. The day is still open. ${marks}.`;
-      }
+    const emptyLine = root.querySelector<HTMLElement>("[data-tally-empty]");
+    const figures = root.querySelector<HTMLElement>("[data-tally-figures]");
+    if (emptyLine) emptyLine.hidden = blocks.length > 0;
+    if (figures) figures.hidden = blocks.length === 0;
+
+    const covered = root.querySelector<HTMLElement>("[data-tally-covered]");
+    if (covered) covered.textContent = formatSpan(offset);
+    const fill = root.querySelector<HTMLElement>("[data-tally-fill]");
+    if (fill) {
+      fill.style.setProperty("--covered", `${((offset / MINUTES_IN_DAY) * 100).toFixed(2)}%`);
+    }
+
+    const state = root.querySelector<HTMLElement>("[data-tally-state]");
+    if (state) {
+      state.textContent = closed ? "Day closed" : "Day open";
+      state.dataset.closed = String(closed);
+    }
+
+    const rest = root.querySelector<HTMLElement>("[data-tally-rest]");
+    if (rest) {
+      const sleep = closed ? minsOf(blocks[blocks.length - 1]) : 0;
+      rest.textContent = closed
+        ? `${formatSpan(sleep)} of it recorded as sleep.`
+        : `${formatSpan(MINUTES_IN_DAY - offset)} unaccounted for, from ${formatClock(wake + offset)} back around to ${formatClock(wake)}.`;
+    }
+
+    const blockCount = root.querySelector<HTMLElement>("[data-tally-blocks]");
+    if (blockCount) blockCount.textContent = plural(blocks.length, "block");
+    const markCount = root.querySelector<HTMLElement>("[data-tally-marked]");
+    if (markCount) {
+      markCount.hidden = marked === 0;
+      markCount.textContent = marked === 0 ? "" : `${marked} marked change`;
     }
 
     renderSheet(root);
