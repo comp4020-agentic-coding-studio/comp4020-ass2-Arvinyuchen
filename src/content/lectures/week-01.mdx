@@ -11,10 +11,9 @@ related:
 ---
 
 import Callout from "astro-theme-university/components/Callout.astro";
-import Card from "astro-theme-university/components/Card.astro";
-import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import UvSeason from "../../components/UvSeason.astro";
 import UvCurves from "../../components/UvCurves.astro";
+import GuidelineMap from "../../components/GuidelineMap.astro";
 
 ## Course premise
 
@@ -135,6 +134,35 @@ worth trusting say when they apply.
 
 <UvCurves />
 
+Australia and the United Kingdom are two answers to the same question, and the
+question is worth asking of more than two countries. The map below takes five
+whose guidance is published in English and colours each one by how it states
+when its advice applies: a season, a condition, both, or neither. The documents
+themselves are listed underneath, each with the sentence the colour was read
+off, so you can disagree with a classification by reading the sentence rather
+than by trusting the map.
+
+<GuidelineMap />
+
+Three of the five state a condition and stop there, and all three pick the same
+number. Australia, the United States and Canada each key their advice to a UV
+index of 3, which is one threshold arrived at independently in three countries
+that overlap on almost no latitude. Two of them then refuse the calendar in
+nearly the same words: Health Canada asks for protection all year round rather
+than only in summer, and the Centers for Disease Control and Prevention says
+all year, not just during the summer. The United Kingdom is the only country
+here naming a season, and it names one for the opposite rule, a supplement for
+the months the sun cannot supply what it usually does.
+
+New Zealand is where three categories stopped being enough. Health New Zealand
+puts the season and the condition in one sentence, avoid the sun from September
+to April and whenever UV levels are 3 or higher, joined by "and" so that both
+apply at once. That is not a season case with a condition attached, nor a
+condition case that happens to mention months, and forcing it into either box
+would have hidden the only country in the set doing what this lecture keeps
+asking guidance to do. The fourth box, neither, stayed empty across all five,
+which is a fact about these five bodies rather than about guidance in general.
+
 The narrowing runs out before it reaches you. A category like "dark skin from
 South Asian backgrounds" covers enormous variation in skin, in where people
 live, in time spent outdoors. It is a better guess than no guess, and it is
@@ -142,21 +170,7 @@ still a guess about a group. Guidance narrows from everyone to a group you
 belong to, and good guidance says so plainly. The last step of this course is
 that same move, carried to the only group with no variation left inside it.
 
-We are in Australia, so these are the three documents to start from. Each one
-states who it is written for and what evidence it rests on, which is the part
-to read before the numbers.
-
-<CardGrid columns={2}>
-  <Card title="Australian Dietary Guidelines" href="https://www.eatforhealth.gov.au/guidelines/guidelines">
-    Five recommendations, and a summary booklet where the practical tips sit.
-    Worth noticing which of the two you are reading.
-  </Card>
-  <Card title="24-Hour Movement Guidelines" href="https://www.health.gov.au/topics/physical-activity/24-hour-movement-guidelines-for-all-australians?language=en">
-    Activity, sedentary time and sleep in one document, split by age band. The
-    step figure lives in the companion statement, not the recommendations.
-  </Card>
-  <Card title="NHMRC guidelines" href="https://www.nhmrc.gov.au/guidelines">
-    Everything else the council publishes, alcohol included. Each carries the
-    evidence it was built from, which is the part to read.
-  </Card>
-</CardGrid>
+We are in Australia, so three national documents are the place to start, and
+they sit in Australia's entry on the map above rather than in a list of their
+own. Each states who it is written for and what evidence it rests on, which is
+the part to read before the numbers.
