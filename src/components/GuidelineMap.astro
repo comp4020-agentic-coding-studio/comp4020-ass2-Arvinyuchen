@@ -78,6 +78,12 @@ interface GuidelineCountry {
   category: string;
   summary: string;
   documents: GuidelineDocument[];
+  // Kept because the data carries it and it is the record of what was searched
+  // for, but no longer rendered. Eight of the eleven had no equivalent of
+  // NHMRC, so the page printed the same negative eight times about a slot that
+  // exists only because Australia happens to have one. That is a fact about the
+  // shape of this comparison rather than about those countries, and it belongs
+  // in the dataset, not in front of a reader.
   gap?: string;
   path: string;
   pin: { x: number; y: number; leader: { x: number; y: number } | null };
@@ -310,12 +316,6 @@ const languageName = (code: string): string => LANGUAGE_NAMES[code] ?? code;
               </div>
             ))}
           </dl>
-          {country.gap && (
-            <div class="gap">
-              <p class="gap-lead">No equivalent of NHMRC found</p>
-              <p class="gap-text">{country.gap}</p>
-            </div>
-          )}
         </li>
       ))
     }
@@ -829,23 +829,4 @@ const languageName = (code: string): string => LANGUAGE_NAMES[code] ?? code;
     font-size: 0.75rem;
   }
 
-  /* An absence, set like the documents above it so it reads as part of the
-     record rather than as an apology. Most of the eleven have nothing that sits
-     cleanly in NHMRC's slot, and saying so is the finding. */
-  .gap {
-    margin-block-start: var(--at-spacing-md);
-    padding-block-start: var(--at-spacing-sm);
-    border-block-start: 1px solid var(--at-border);
-    font-size: 0.85rem;
-  }
-
-  .gap-lead {
-    margin-block: 0;
-    font-weight: 600;
-  }
-
-  .gap-text {
-    margin-block: 0.15rem 0;
-    color: var(--at-text-secondary);
-  }
 </style>
