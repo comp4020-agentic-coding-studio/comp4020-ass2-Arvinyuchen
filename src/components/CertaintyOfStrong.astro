@@ -52,11 +52,20 @@ const STATES: { id: State; label: string; note: string }[] = [
 const countFor = (state: State): number =>
   rows.filter((row) => stateOf(row.certainty) === state).reduce((sum, row) => sum + row.count, 0);
 
-const grouped = STATES.map((state) => ({
-  ...state,
-  count: countFor(state.id),
-  rows: rows.filter((row) => stateOf(row.certainty) === state.id),
-}));
+const grouped = STATES.map((state) => {
+  const own = rows.filter((row) => stateOf(row.certainty) === state.id);
+  return {
+    ...state,
+    count: countFor(state.id),
+    // The published categories, inline. A state that maps to a single category
+    // would otherwise repeat its own label and count, so that one says what the
+    // category is instead.
+    breakdown:
+      own.length > 1
+        ? own.map((row) => `${row.certainty.toLowerCase()} ${row.count}`).join(" · ")
+        : state.note,
+  };
+});
 
 // One entry per recommendation, in state order.
 const squares = grouped.flatMap((group) => Array.from({ length: group.count }, () => group.id));
@@ -84,30 +93,23 @@ const share = (n: number): string => `${((n / data.strong) * 100).toFixed(1)}%`;
         <th scope="col" class="num">Share</th>
       </tr>
     </thead>
-    {
-      grouped.map((group) => (
-        <tbody>
-          <tr class="group">
+    <tbody>
+      {
+        grouped.map((group) => (
+          <tr>
             <td class="swatch-cell">
               <span class:list={["unit", group.id]} />
             </td>
-            <th scope="rowgroup">
-              {group.label} <span class="note">({group.note})</span>
+            <th scope="row">
+              {group.label}
+              <span class="breakdown">{group.breakdown}</span>
             </th>
-            <td class="num total">{group.count}</td>
-            <td class="num total">{share(group.count)}</td>
+            <td class="num count">{group.count}</td>
+            <td class="num share">{share(group.count)}</td>
           </tr>
-          {group.rows.length > 1 && group.rows.map((row) => (
-            <tr class="detail">
-              <td />
-              <th scope="row">{row.certainty}</th>
-              <td class="num">{row.count}</td>
-              <td class="num">{row.percent}%</td>
-            </tr>
-          ))}
-        </tbody>
-      ))
-    }
+        ))
+      }
+    </tbody>
   </table>
 
   <figcaption>
@@ -196,10 +198,40 @@ const share = (n: number): string => `${((n / data.strong) * 100).toFixed(1)}%`;
 
   th,
   td {
-    padding: 0.3rem 0.5rem;
+    padding: 0.45rem 0.5rem;
     text-align: start;
     font-weight: 400;
     vertical-align: baseline;
+  }
+
+  /* A hairline per row rather than per group, now that there are three rows and
+     the groups are the rows. */
+  tbody tr + tr th,
+  tbody tr + tr td {
+    border-block-start: 1px solid var(--at-border);
+  }
+
+  tbody th[scope="row"] {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  /* The published categories and their counts, under the state they belong to.
+     They were three extra rows and a parenthetical saying the same thing twice;
+     inline they cost one line and the table loses four rows. */
+  .breakdown {
+    display: block;
+    color: var(--at-text-secondary);
+    font-size: 0.78rem;
+    letter-spacing: 0.01em;
+  }
+
+  .count {
+    font-weight: 600;
+  }
+
+  .share {
+    color: var(--at-text-secondary);
   }
 
   thead th {
@@ -221,35 +253,7 @@ const share = (n: number): string => `${((n / data.strong) * 100).toFixed(1)}%`;
     display: block;
     width: 0.8rem;
     height: 0.8rem;
-  }
-
-  .group th {
-    font-size: 0.95rem;
-  }
-
-  .group .total {
-    font-weight: 600;
-  }
-
-  .note {
-    color: var(--at-text-secondary);
-    font-size: 0.8rem;
-  }
-
-  /* The five published categories, indented under the state they map to, so the
-     grouping is visibly an interpretation of the source rather than the
-     source's own shape. Suppressed where a state maps to a single category,
-     because "There is no evidence (no studies included) 18" followed by "No
-     studies 18" is the same row twice. */
-  .detail th {
-    padding-inline-start: var(--at-spacing-sm);
-    color: var(--at-text-secondary);
-    font-size: 0.85rem;
-  }
-
-  .detail td {
-    color: var(--at-text-secondary);
-    font-size: 0.85rem;
+    margin-block-start: 0.15rem;
   }
 
   .num {
