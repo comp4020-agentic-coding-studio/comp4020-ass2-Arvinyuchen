@@ -303,8 +303,8 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
    * it now. The first is the word itself, under every week number, which is
    * the channel that survives with colour ignored and the only one that
    * answers "which move is week 9 in" without scrolling back up. The second is
-   * the rail down the inline start edge, which runs from the first week of a
-   * band to the last and stops at each heading, so the band also has a shape.
+   * the rail down the inline start edge, which runs from the top of the band's
+   * heading to its last week, so the band also has a shape.
    *
    * The rail is an inset shadow rather than a border because the table is
    * border-collapse: a 3px collapsed border would hang half its width outside
@@ -353,16 +353,30 @@ const totalWeight = assessments.reduce((sum, entry) => sum + entry.data.weight, 
      first week. The hairline is the band boundary; the first band needs none,
      because the painted header row is already its boundary, and it opens on
      27px so that it too sits closer to its weeks than to the row of column
-     names. */
+     names.
+
+     The rail starts where the heading's own text starts, which is why that
+     gap is a variable rather than a number: one value is both the air above
+     the heading and the distance the rail is held down from the top of the
+     cell, and the two cannot drift apart. It is drawn as a gradient because
+     the inset shadow the week rows use paints the full height of a cell and
+     this one has to begin partway down. */
   .phase-row th {
-    padding-block: var(--at-spacing-xl) var(--at-spacing-md);
+    --phase-rail-top: var(--at-spacing-xl);
+
+    padding-block: var(--phase-rail-top) var(--at-spacing-md);
     border-block-start: 1px solid var(--at-border);
+    background-image: linear-gradient(var(--at-primary), var(--at-primary));
+    background-repeat: no-repeat;
+    background-position: 0 var(--phase-rail-top);
+    background-size: 3px calc(100% - var(--phase-rail-top));
     text-align: start;
     font-weight: 400;
   }
 
   .band:first-of-type .phase-row th {
-    padding-block-start: var(--at-spacing-lg);
+    --phase-rail-top: var(--at-spacing-lg);
+
     border-block-start: none;
   }
 
