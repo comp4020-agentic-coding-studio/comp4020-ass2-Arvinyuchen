@@ -1,89 +1,119 @@
 ---
-// What the evidence behind a strong recommendation actually looks like.
+// What the evidence behind a strong recommendation actually looks like, one
+// square per recommendation.
 //
-// The block this sits in argues that a guideline rates itself twice, and that
-// the two ratings come apart. That has a shape: ordered by certainty, the
-// counts are 24, 31, 18, 60, 18, so the largest single group of strong
-// recommendations rests on the weakest evidence there is. Prose can say that in
-// sequence but cannot show the lump at the bottom, which is what earns the
-// figure.
+// This was a bar chart first, and the bars were wrong for the job. The question
+// the block asks is "how much of this is well supported", which is a part to
+// whole question, and five bars make a reader sum four of them to answer it.
+// One square per recommendation answers it by area, and keeps 151 feeling like
+// 151 real recommendations in real guidelines rather than a percentage.
 //
-// A real table rather than a picture of one, for the same reason as the UV
-// figure: the numbers are the content, and a course about reading numbers puts
-// them where a reader can check them. The bars are a second channel over the
-// top.
+// A pie was the other candidate and loses on the same numbers: four of the five
+// categories are 18, 18, 24 and 31, and nobody can judge angles that close, so
+// the slices a reader might want to compare are the ones a pie hides.
 //
-// The concordant and discordant groups are separated by labelled row groups,
-// not by colour. Colour is doing no work here that the text does not already
-// do, which is deliberate: the figure has to survive being printed, and axe
-// runs the full rule set over this page at build time.
+// Three visual states, not five, and that number came from the validator rather
+// than from taste. Certainty is ordered, so the ramp is one hue stepped by
+// lightness, which means ink density reads as evidential support. Stepped five
+// ways on this surface the pale end collapses: #f4ebdd against #ebdbc0 is
+// deltaE 5.0 to normal vision against a floor of 15, so "sub-shaded by which"
+// is not a thing a reader could have seen. Three steps spread across the full
+// range clear it at 16.
+//
+// So the five published categories map onto three states that are themselves
+// meaningful rather than convenient: the evidence backs it, the evidence is
+// weak, or there is no evidence. The exact five way counts stay in the table,
+// which is also what discharges the validator's contrast warning: every state
+// carries a visible label and an exact number, so nothing rests on the fill
+// alone.
+//
+// No per square hover. The skill's default is a tooltip on every cell, and it
+// is wrong here: the squares are interchangeable units with no identity of
+// their own, so a tooltip would say "very low certainty" sixty times.
 import data from "../data/grade-discordance.json";
 
 const rows = data.certainty_of_strong_recommendations;
-const peak = Math.max(...rows.map((row) => row.count));
 
-const concordant = rows.filter((row) => !row.discordant);
-const discordant = rows.filter((row) => row.discordant);
-const concordantTotal = concordant.reduce((sum, row) => sum + row.count, 0);
+// Ordered worst last, so the grid reads from support to its absence.
+type State = "backed" | "weak" | "none";
+const stateOf = (certainty: string): State =>
+  certainty === "High" || certainty === "Moderate"
+    ? "backed"
+    : certainty === "No studies"
+      ? "none"
+      : "weak";
+
+const STATES: { id: State; label: string; note: string }[] = [
+  { id: "backed", label: "The evidence backs it", note: "high or moderate certainty" },
+  { id: "weak", label: "The evidence is weak", note: "low or very low certainty" },
+  { id: "none", label: "There is no evidence", note: "no studies included" },
+];
+
+const countFor = (state: State): number =>
+  rows.filter((row) => stateOf(row.certainty) === state).reduce((sum, row) => sum + row.count, 0);
+
+const grouped = STATES.map((state) => ({
+  ...state,
+  count: countFor(state.id),
+  rows: rows.filter((row) => stateOf(row.certainty) === state.id),
+}));
+
+// One entry per recommendation, in state order.
+const squares = grouped.flatMap((group) => Array.from({ length: group.count }, () => group.id));
+
+const share = (n: number): string => `${((n / data.strong) * 100).toFixed(1)}%`;
 ---
 
 <figure class="certainty">
+  <!-- The grid is the picture of the table below it, so it is hidden from
+       assistive tech rather than announced as 151 anonymous list items. The
+       table carries every number. -->
+  <div class="grid" aria-hidden="true">
+    {squares.map((state) => <span class:list={["unit", state]} />)}
+  </div>
+
   <table>
     <caption class="visually-hidden">
-      The {data.strong} strong recommendations, broken down by the certainty of
-      the evidence supporting each one.
+      The {data.strong} strong recommendations, by the certainty of the evidence
+      behind each one.
     </caption>
     <thead>
       <tr>
-        <th scope="col">Certainty</th>
-        <th scope="col">Strong recommendations</th>
+        <th scope="col" colspan="2">Certainty</th>
+        <th scope="col" class="num">Count</th>
         <th scope="col" class="num">Share</th>
       </tr>
     </thead>
-    <tbody>
-      <tr class="group">
-        <th scope="colgroup" colspan="3">
-          Backed by high or moderate certainty: {concordantTotal} of {data.strong}
-        </th>
-      </tr>
-      {
-        concordant.map((row) => (
-          <tr>
-            <th scope="row">{row.certainty}</th>
-            <td class="bar-cell">
-              <span class="bar" style={`--w: ${(row.count / peak) * 100}%`} />
-              <span class="count">{row.count}</span>
+    {
+      grouped.map((group) => (
+        <tbody>
+          <tr class="group">
+            <td class="swatch-cell">
+              <span class:list={["unit", group.id]} />
             </td>
-            <td class="num">{row.percent}%</td>
+            <th scope="rowgroup">
+              {group.label} <span class="note">({group.note})</span>
+            </th>
+            <td class="num total">{group.count}</td>
+            <td class="num total">{share(group.count)}</td>
           </tr>
-        ))
-      }
-      <tr class="group">
-        <th scope="colgroup" colspan="3">
-          Discordant, strong on low certainty or none: {data.discordant} of {data.strong}
-        </th>
-      </tr>
-      {
-        discordant.map((row) => (
-          <tr class="is-discordant">
-            <th scope="row">{row.certainty}</th>
-            <td class="bar-cell">
-              <span class="bar" style={`--w: ${(row.count / peak) * 100}%`} />
-              <span class="count">{row.count}</span>
-            </td>
-            <td class="num">{row.percent}%</td>
-          </tr>
-        ))
-      }
-    </tbody>
+          {group.rows.length > 1 && group.rows.map((row) => (
+            <tr class="detail">
+              <td />
+              <th scope="row">{row.certainty}</th>
+              <td class="num">{row.count}</td>
+              <td class="num">{row.percent}%</td>
+            </tr>
+          ))}
+        </tbody>
+      ))
+    }
   </table>
+
   <figcaption>
     <p>
-      Each bar is the number of strong recommendations resting on that level of
-      certainty, out of {data.strong} strong recommendations in {
-        data.guidelines_analysed
-      } guidelines. Rows are grouped by whether the strength rating and the
-      certainty rating agree. From <a href={data._source.url}
+      One square per strong recommendation, {data.strong} of them, shaded by how
+      much evidence stands behind it. From <a href={data._source.url}
         >{data._source.dataset}</a
       >. {data._source.publisher}. Used under <a href={data._source.licence_url}
         >{data._source.licence}</a
@@ -98,16 +128,46 @@ const concordantTotal = concordant.reduce((sum, row) => sum + row.count, 0);
     margin-inline: 0;
   }
 
+  /* A fixed column count rather than auto-fill, because a waffle is read as a
+     block and a reflowing one changes shape as the window moves. 151 is prime,
+     so the last row is short whatever is chosen; that is the exact count
+     showing, not a defect. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 26), 1fr);
+    gap: 2px;
+    max-width: 34rem;
+  }
+
+  .unit {
+    aspect-ratio: 1;
+    border-radius: 1px;
+  }
+
+  /* One hue, stepped by lightness, so density means support. The two filled
+     steps sit at deltaE 16 from each other and from the surface; the third
+     state is the absence of fill, which is a shape difference and therefore
+     survives greyscale, print and forced colours. */
+  .unit.backed {
+    background: var(--at-primary);
+  }
+
+  .unit.weak {
+    background: color-mix(in srgb, var(--at-primary) 28%, transparent);
+  }
+
+  .unit.none {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--at-border);
+  }
+
   table {
     width: 100%;
+    margin-block-start: var(--at-spacing-md);
     border-collapse: collapse;
     font-variant-numeric: tabular-nums;
   }
 
-  /* The table caption states what the table is for a screen reader, which the
-     figcaption cannot do because it is outside the table. Hidden rather than
-     removed: axe wants tables named, and sighted readers already have the
-     heading above and the caption below. */
   .visually-hidden {
     position: absolute;
     width: 1px;
@@ -119,13 +179,10 @@ const concordantTotal = concordant.reduce((sum, row) => sum + row.count, 0);
     white-space: nowrap;
   }
 
-  /* The theme paints table headers with the brand colour and stripes the body
-     rows. Both were fought once already on the UV table: the gold bar outweighs
-     the data it labels and puts secondary grey on a saturated ground, and the
-     stripes add a background under the one carrying the values. Note this
-     resets `thead` itself, not only `thead th`. Resetting the cells leaves the
-     paint on the ancestor and it shows straight through them, which cost a
-     round of "fixed" that was still visibly gold on screen. */
+  /* The theme paints table headers with the brand colour and stripes body rows.
+     Reset `thead` itself and not only `thead th`: transparent cells let an
+     ancestor's paint straight through, which cost a round of "fixed" on the UV
+     table while the bar was still visibly gold on screen. */
   .certainty thead,
   .certainty thead th,
   .certainty tbody tr,
@@ -135,10 +192,10 @@ const concordantTotal = concordant.reduce((sum, row) => sum + row.count, 0);
 
   th,
   td {
-    padding: 0.35rem 0.5rem;
+    padding: 0.3rem 0.5rem;
     text-align: start;
     font-weight: 400;
-    vertical-align: middle;
+    vertical-align: baseline;
   }
 
   thead th {
@@ -149,55 +206,51 @@ const concordantTotal = concordant.reduce((sum, row) => sum + row.count, 0);
     border-block-end: 1px solid var(--at-border);
   }
 
-  /* The group rows are the non-colour channel. Whether a row is discordant is
-     stated in words once per group rather than encoded in the bar's fill. */
+  .swatch-cell {
+    width: 1.5rem;
+    padding-inline-end: 0;
+  }
+
+  /* The swatch has to be big enough to read as the same mark as a grid square
+     without being so big it reads as a button. */
+  .swatch-cell .unit {
+    display: block;
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
   .group th {
-    padding-block-start: var(--at-spacing-md);
+    font-size: 0.95rem;
+  }
+
+  .group .total {
+    font-weight: 600;
+  }
+
+  .note {
     color: var(--at-text-secondary);
     font-size: 0.8rem;
   }
 
-  tbody th[scope="row"] {
-    width: 1%;
-    white-space: nowrap;
-    font-size: 0.9rem;
-  }
-
-  .bar-cell {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .bar {
-    display: block;
-    width: var(--w);
-    height: 0.7rem;
-    border-radius: 2px;
-    background: currentColor;
-    opacity: 0.22;
-    flex: 0 0 auto;
-  }
-
-  /* The lump at the bottom is the finding, so the row that carries it is the
-     one drawn at full strength. Colour is reinforcing the group label here,
-     never replacing it. */
-  .is-discordant .bar {
-    background: var(--at-primary);
-    opacity: 0.85;
-  }
-
-  .count {
+  /* The five published categories, indented under the state they map to, so the
+     grouping is visibly an interpretation of the source rather than the
+     source's own shape. Suppressed where a state maps to a single category,
+     because "There is no evidence (no studies included) 18" followed by "No
+     studies 18" is the same row twice. */
+  .detail th {
+    padding-inline-start: var(--at-spacing-sm);
+    color: var(--at-text-secondary);
     font-size: 0.85rem;
-    font-variant-numeric: tabular-nums;
+  }
+
+  .detail td {
+    color: var(--at-text-secondary);
+    font-size: 0.85rem;
   }
 
   .num {
     text-align: end;
     white-space: nowrap;
-    font-size: 0.85rem;
-    color: var(--at-text-secondary);
   }
 
   figcaption {
@@ -212,8 +265,8 @@ const concordantTotal = concordant.reduce((sum, row) => sum + row.count, 0);
   }
 
   @media (width < 34rem) {
-    .bar-cell {
-      flex-wrap: wrap;
+    .grid {
+      --cols: 15;
     }
   }
 </style>
