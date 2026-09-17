@@ -128,15 +128,19 @@ const share = (n: number): string => `${((n / data.strong) * 100).toFixed(1)}%`;
     margin-inline: 0;
   }
 
-  /* A fixed column count rather than auto-fill, because a waffle is read as a
-     block and a reflowing one changes shape as the window moves. 151 is prime,
-     so the last row is short whatever is chosen; that is the exact count
-     showing, not a defect. */
+  /* Full width, matching the table below it, because a narrower block above a
+     full width table reads as an accident rather than a choice.
+     A fixed column count rather than auto-fill, because a waffle is read as a
+     block and a reflowing one changes shape as the window moves. The count
+     rises with the width instead of the squares growing, so a unit stays about
+     22px at every size and the block gets shorter rather than chunkier.
+     151 is prime, so the last row is short whatever is chosen; that is the
+     exact count showing, not a defect. 35 leaves 11 in the last row, 25 leaves
+     1, which would look like a mistake. */
   .grid {
     display: grid;
-    grid-template-columns: repeat(var(--cols, 26), 1fr);
+    grid-template-columns: repeat(var(--cols, 35), 1fr);
     gap: 2px;
-    max-width: 34rem;
   }
 
   .unit {
@@ -262,6 +266,12 @@ const share = (n: number): string => `${((n / data.strong) * 100).toFixed(1)}%`;
 
   figcaption p {
     margin-block: 0;
+  }
+
+  @media (width < 52rem) {
+    .grid {
+      --cols: 26;
+    }
   }
 
   @media (width < 34rem) {
