@@ -14,15 +14,17 @@
 // geography would encode nothing at all and a plain list would do the same job
 // better.
 //
-// One entry at a time, and the base state does it without scripting. The
-// guidelines are a list of eleven <details>, each one individually operable,
-// each headed by its number, its country and its category in words. Australia
-// is the one left open, because the lecture's closing paragraph points at
-// Australia's three documents and this figure is that paragraph carried
-// outward. The map is eleven links into that list. With scripting off, every
-// country's entry is still there and still opens; with scripting on, opening
-// one closes the others and the map and the list agree about which one is
-// showing.
+// One entry at a time, in one place, and the base state does it without
+// scripting. All eleven entries are in the document; CSS shows the one the
+// fragment names and hides the rest, so a pin is an ordinary in-page anchor
+// and clicking a different number replaces the entry on screen rather than
+// adding to a stack of them. Australia shows before anything is chosen,
+// because the lecture's closing paragraph points at Australia's three
+// documents and this figure is that paragraph carried outward. With scripting
+// off this is the whole interaction and it is unchanged; with scripting on,
+// the map draws a ring around the country whose entry is showing, which is the
+// one thing CSS cannot do here, because the country is a sibling of the entry
+// rather than an ancestor of it.
 //
 // Labels are the hard part at eleven countries, and this is the third attempt.
 // Visible names collided: Germany, France and the Netherlands sit 25 units
@@ -30,14 +32,17 @@
 // than the continent. Names on selection only were tried next and rejected,
 // because a name's background halo is wider than the name, so the one country
 // naming itself wiped out the numbers of the two beside it, which is the thing
-// that makes the numbers work. So every country wears a number and the numbers
-// key to the list, where the country and its category are spelled out. Nothing
-// here is hover-only: each country's link is named "6. France: the waking hours
-// only" before a pointer goes anywhere near it.
+// that makes the numbers work. So every country wears a number, and the entry
+// the number opens is headed by that same number with the country and its
+// category spelled out. Nothing here is hover-only: each country's link is
+// named "6. France: the waking hours only" before a pointer goes anywhere near
+// it, and the <title> inside the link is a convenience on top of that name
+// rather than the place the name lives.
 //
 // Category is carried three times over, never by colour alone: fill and hatch
-// are two visual channels, the number names the country in the accessible name
-// of its link, and every entry in the list below states its category in words.
+// are two visual channels, each link's accessible name states the country and
+// its category before anything is clicked, and the entry that opens states the
+// category again in words.
 // The hatch says sleep is a target somewhere in the national guidance. A solid
 // hatch means it is set in a document integrated with activity; a broken hatch
 // means it is set in a document of its own, which is Japan. The gold fill says
@@ -158,6 +163,14 @@ const languageName = (code: string): string => LANGUAGE_NAMES[code] ?? code;
               data-country={country.iso}
               aria-label={`${index + 1}. ${country.name}: ${labelFor(country.category).toLowerCase()}. Show its guidelines.`}
             >
+              {/* A supplement, not a channel. aria-label wins the accessible
+                  name, so this changes nothing for a screen reader; what it
+                  adds is that a pointer resting on a pin says which country it
+                  belongs to, which used to be answerable from the list under
+                  the figure and now is not. It is deliberately not the only
+                  place the pairing appears: the accessible name carries it,
+                  and so does the entry the pin opens. */}
+              <title>{`${index + 1}. ${country.name}`}</title>
               <path class:list={["shape", country.category]} d={country.path} />
               {hatchFor(country.category) && (
                 <path
@@ -218,10 +231,11 @@ const languageName = (code: string): string => LANGUAGE_NAMES[code] ?? code;
         national guidance sets a sleep target, solid where that target shares a
         document with activity and broken where it has a document of its own;
         the gold fill marks a country whose adult guidance covers the whole day
-        in one document, so the fill is always laid over the hatch. Each country
-        carries a number, and the numbered list under the figure gives its name,
-        its category in words and the sentences the category was read off.
-        Select a country to open its entry. The projection is equirectangular,
+        in one document, so the fill is always laid over the hatch. Selecting a
+        country shows its entry under the figure, in place of whichever country
+        was showing before, headed by the same number the country wears on the
+        map and giving its name, its category in words and the sentences the
+        category was read off. The projection is equirectangular,
         which stretches area badly away from the equator and is used anyway
         because nothing here is encoded as area. Outlines from
         <a href={data._source.url}>Natural Earth 110m</a>, public domain,
@@ -235,73 +249,73 @@ const languageName = (code: string): string => LANGUAGE_NAMES[code] ?? code;
   <ul class="guidelines">
     {
       countries.map((country, index) => (
-        <li class="panel-item">
-          <details
-            class="panel"
-            data-panel={country.iso}
-            data-default={country.iso === DEFAULT_ISO ? "true" : undefined}
-            open={country.iso === DEFAULT_ISO}
-          >
-            <summary id={panelId(country.iso)}>
-              <span class="panel-num" aria-hidden="true">
-                {index + 1}
-              </span>
-              <span class="panel-name">{country.name}</span>
-              <span class:list={["tag", country.category]}>{labelFor(country.category)}</span>
-            </summary>
-            <div class="panel-body">
-              <p class="says">{country.summary}</p>
-              <dl class="docs">
-                {country.documents.map((source) => (
-                  <div class:list={["doc", { classifies: source.classifies }]}>
-                    <dt>
-                      <a href={source.url}>{source.title}</a>
-                      <span class="pub">{source.publisher}</span>
-                      {source.classifies && (
-                        <span class="mark">the sentence the category rests on</span>
+        <li
+          class="panel"
+          id={panelId(country.iso)}
+          data-panel={country.iso}
+          data-default={country.iso === DEFAULT_ISO ? "true" : undefined}
+          tabindex="-1"
+        >
+          {/* The spaces are explicit because Astro drops the whitespace
+              between elements on separate lines, and without them the heading
+              is one unbroken run: a screen reader said "4Japan" and a copied
+              heading came out the same way. The gap in the flex row is
+              layout, not text. */}
+          <h4>
+            <span class="panel-num">{index + 1}</span>{" "}
+            <span class="panel-name">{country.name}</span>{" "}
+            <span class:list={["tag", country.category]}>{labelFor(country.category)}</span>
+          </h4>
+          <p class="says">{country.summary}</p>
+          <dl class="docs">
+            {country.documents.map((source) => (
+              <div class:list={["doc", { classifies: source.classifies }]}>
+                <dt>
+                  <a href={source.url}>{source.title}</a>
+                  <span class="pub">{source.publisher}</span>
+                  {source.classifies && (
+                    <span class="mark">the sentence the category rests on</span>
+                  )}
+                </dt>
+                <dd>
+                  {source.lang ? (
+                    <span class="said-in">{languageName(source.lang)}, as published</span>
+                  ) : null}
+                  <q lang={source.lang ?? undefined}>{source.quote}</q>
+                  {source.english && (
+                    <div class="englished">
+                      {source.english.kind === "publisher" ? (
+                        <>
+                          <span class="said-in">
+                            English, from the publisher's own edition
+                          </span>
+                          <q>{source.english.text}</q>
+                        </>
+                      ) : (
+                        <>
+                          <span class="said-in">
+                            English, translated for this course and not by the publisher
+                          </span>
+                          <span class="rendered">{source.english.text}</span>
+                        </>
                       )}
-                    </dt>
-                    <dd>
-                      {source.lang ? (
-                        <span class="said-in">{languageName(source.lang)}, as published</span>
-                      ) : null}
-                      <q lang={source.lang ?? undefined}>{source.quote}</q>
-                      {source.english && (
-                        <div class="englished">
-                          {source.english.kind === "publisher" ? (
-                            <>
-                              <span class="said-in">
-                                English, from the publisher's own edition
-                              </span>
-                              <q>{source.english.text}</q>
-                            </>
-                          ) : (
-                            <>
-                              <span class="said-in">
-                                English, translated for this course and not by the publisher
-                              </span>
-                              <span class="rendered">{source.english.text}</span>
-                            </>
-                          )}
-                          {source.english.url && source.english.url !== source.url && (
-                            <a class="en-source" href={source.english.url}>
-                              the publisher's English edition
-                            </a>
-                          )}
-                        </div>
+                      {source.english.url && source.english.url !== source.url && (
+                        <a class="en-source" href={source.english.url}>
+                          the publisher's English edition
+                        </a>
                       )}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-              {country.gap && (
-                <div class="gap">
-                  <p class="gap-lead">No equivalent of NHMRC found</p>
-                  <p class="gap-text">{country.gap}</p>
-                </div>
-              )}
+                    </div>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          {country.gap && (
+            <div class="gap">
+              <p class="gap-lead">No equivalent of NHMRC found</p>
+              <p class="gap-text">{country.gap}</p>
             </div>
-          </details>
+          )}
         </li>
       ))
     }
@@ -309,116 +323,111 @@ const languageName = (code: string): string => LANGUAGE_NAMES[code] ?? code;
 </div>
 
 <script>
-  // Selection, and nothing else. The list works with this file deleted: eleven
-  // disclosures, Australia open, each one operable on its own, and eleven
-  // anchors in the map that point at their summaries. What the script adds is
-  // the part the base state cannot do, which is to make the map and the list
-  // agree that at most one country is showing.
+  // Marking, and nothing else. Which entry is showing is decided by CSS, off
+  // the document fragment, so the figure works with this file deleted: the
+  // pins are ordinary in-page anchors, `:target` shows the entry they point
+  // at, and Australia shows when nothing is targeted. Making the script the
+  // authority instead would have meant either a history entry per selection or
+  // a `replaceState` that leaves the address bar and the stylesheet disagreeing
+  // about which country is open. What is left for the script is the part CSS
+  // cannot reach: the map has no way to draw a ring around the country whose
+  // entry is showing, because the country is a sibling of the entry and not an
+  // ancestor of it.
 
   // Reassigned by every wiring pass and read by the one window listener below.
   // The listener has to live outside the pass because `window` survives a
   // ClientRouter swap while the document does not: registering it inside would
   // add a second listener on every navigation, each one still pointing at a
   // detached copy of the figure.
-  let selectFromHash: (() => void) | null = null;
+  let markFromHash: (() => void) | null = null;
 
   function setUpGuidelineMap() {
     const root = document.querySelector<HTMLElement>("[data-guideline-map]");
-    if (!root || root.dataset.wired === "true") return;
+    if (!root) return;
+    // Already wired means this is a navigation that kept the element rather
+    // than replacing it, so there is nothing to bind and everything to
+    // re-read: the fragment may have moved since the last pass.
+    if (root.dataset.wired === "true") {
+      markFromHash?.();
+      return;
+    }
     root.dataset.wired = "true";
 
+    const figure = root.querySelector<HTMLElement>("figure");
     const links = Array.from(root.querySelectorAll<SVGAElement>("a[data-country]"));
-    const panels = Array.from(root.querySelectorAll<HTMLDetailsElement>("[data-panel]"));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-panel]"));
+    const fallback = panels.find((panel) => panel.dataset.default === "true")?.dataset.panel ?? "";
 
-    // What the figure currently says is showing. A plain reentrancy flag was
-    // the first version of this and did not work: a <details> fires `toggle`
-    // asynchronously, so the flag had already been cleared by the time the
-    // events arrived, the entry this closed reported itself closed, and the
-    // handler below dutifully reopened the default. Holding the intended
-    // selection instead means a toggle that already agrees with it is the
-    // script's own work and can be ignored, whenever it turns up.
-    let current = "";
-
-    const select = (iso: string): void => {
-      current = iso;
-      for (const panel of panels) panel.open = panel.dataset.panel === iso;
+    const mark = (iso: string): void => {
       for (const link of links) {
         const on = link.dataset.country === iso;
         link.classList.toggle("is-selected", on);
-        // aria-current rather than aria-selected: these are links into a list
-        // of disclosures, not tabs, and nothing here is a tablist.
+        // aria-current rather than aria-selected: these are links to an entry
+        // further down the figure, not tabs, and nothing here is a tablist.
         if (on) link.setAttribute("aria-current", "true");
         else link.removeAttribute("aria-current");
       }
     };
 
-    for (const link of links) {
-      link.addEventListener("click", (event) => {
-        const iso = link.dataset.country;
-        if (!iso) return;
-        const panel = panels.find((candidate) => candidate.dataset.panel === iso);
-        const summary = panel?.querySelector<HTMLElement>("summary");
-        if (!panel || !summary) return;
-        event.preventDefault();
-        select(iso);
-        // The default jump is suppressed for the scroll below, which takes the
-        // address bar with it, so put the fragment back. replaceState rather
-        // than pushState: selecting four countries in a row should not cost a
-        // reader four presses of Back to leave the page.
-        window.history.replaceState(null, "", `#${summary.id}`);
-        // Focus first with the scroll suppressed, then scroll deliberately, so
-        // the reader who arrived by keyboard lands on the control that says
-        // what is open, and the reader who arrived by mouse is not thrown to
-        // the top of it.
-        summary.focus({ preventScroll: true });
-        const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        summary.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "nearest" });
-      });
-    }
-
-    // Opening an entry from the list means the same thing as selecting its
-    // country on the map, so it closes the rest too. Closing the open one is
-    // left alone rather than bounced back to the default: a reader who shuts
-    // the entry they were reading wants it shut, and the map simply stops
-    // marking anything.
-    for (const panel of panels) {
-      panel.addEventListener("toggle", () => {
-        const iso = panel.dataset.panel ?? "";
-        if (panel.open) {
-          if (iso !== current) select(iso);
-        } else if (iso === current) {
-          select("");
-        }
-      });
-    }
-
-    // Arriving on a link to one of the entries should look the same as clicking
-    // the country, otherwise the map contradicts the address bar. Matched
-    // rather than trimmed, because every heading on the page has a fragment of
-    // its own and an unrelated one must not reach select().
+    // Which country the fragment names, or null. Matched rather than trimmed,
+    // because every heading on the page has a fragment of its own and an
+    // unrelated one must not reach mark(). The CSS falls back to Australia on
+    // any fragment that is not one of these, so the marking does too.
     const isoInHash = (): string | null => {
       const arrived = /^#guideline-([a-z]{2})$/.exec(window.location.hash);
       return arrived ? arrived[1].toUpperCase() : null;
     };
 
-    // A fragment link from elsewhere on the same page does not reload anything,
-    // and under ClientRouter it does not even fire astro:page-load, so without
-    // this the address bar could name a country the figure was not showing.
-    // Found by navigating to #guideline-cn from an already open page and
-    // watching the previous country stay open.
-    selectFromHash = () => {
-      const iso = isoInHash();
-      if (iso) select(iso);
-    };
+    // The click does the same fragment navigation the browser would have done,
+    // and two things around it.
+    //
+    // Taking the navigation over is the awkward part and it is ClientRouter's
+    // doing. Left alone, ClientRouter handles a same-page fragment link itself:
+    // the entry switches, `:target` updates, and no hashchange fires at all, so
+    // the ring stayed on Australia while the entry showed Japan. Its listener
+    // sits on the document and bails on a prevented default, and this one sits
+    // on the link, so preventing the default here keeps a same-page fragment a
+    // same-page fragment. Assigning location.hash then does exactly what the
+    // anchor would have: `:target` moves, focus lands on the entry, hashchange
+    // fires. One history entry per selection, which is what a reader without
+    // scripting gets too, so Back behaves the same either way.
+    //
+    // Then the scroll is put back, because a fragment navigation pulls its
+    // target to the top of the viewport, and for a reader who could already see
+    // the map that means the map they just clicked leaves the screen. Only
+    // undone when the figure was on screen to begin with, so somebody arriving
+    // from a link further down the page is still carried to the figure.
+    for (const link of links) {
+      link.addEventListener("click", (event) => {
+        const iso = link.dataset.country;
+        const fragment = link.getAttribute("href");
+        if (!iso || !fragment) return;
+        event.preventDefault();
+        const box = figure?.getBoundingClientRect();
+        const wasInView = !!box && box.bottom > 0 && box.top < window.innerHeight;
+        const y = window.scrollY;
+        window.location.hash = fragment;
+        mark(iso);
+        if (wasInView) window.scrollTo({ top: y, behavior: "auto" });
+      });
+    }
 
-    const opened = panels.find((panel) => panel.open);
-    select(isoInHash() ?? opened?.dataset.panel ?? "");
+    // Everything that changes the fragment without going through a pin: a link
+    // to one of these entries from elsewhere on the page, Back and Forward, a
+    // pasted URL. The CSS follows the fragment whatever moved it, so the ring
+    // has to as well, or the address bar could name a country the map was not
+    // ringing.
+    markFromHash = () => mark(isoInHash() ?? fallback);
+    markFromHash();
   }
 
   setUpGuidelineMap();
   // ClientRouter swaps the document on navigation, so bind again afterwards.
   document.addEventListener("astro:page-load", setUpGuidelineMap);
-  window.addEventListener("hashchange", () => selectFromHash?.());
+  window.addEventListener("hashchange", () => markFromHash?.());
+  // ClientRouter moves through history with pushState, so Back and Forward
+  // over a run of selections arrive here and not at hashchange.
+  window.addEventListener("popstate", () => markFromHash?.());
 </script>
 
 <style>
@@ -646,55 +655,76 @@ const languageName = (code: string): string => LANGUAGE_NAMES[code] ?? code;
     margin-block: 0;
   }
 
-  /* The guidelines themselves. This is the content, and it is a plain list of
-     disclosures that would still be a plain list of disclosures with the
-     figure deleted and with scripting off. */
+  /* The guidelines themselves. All eleven entries are in the document and one
+     of them is shown, which is the whole of the interaction and none of it is
+     scripted. The pins are in-page anchors, so the fragment already names a
+     country, and :target turns that into the entry on screen.
+
+     Written as a base state that something else switches off rather than as
+     `:not(:has(:target))`, which was the first attempt: a browser without
+     :has() drops that selector as invalid and shows nothing at all, which is
+     the worst possible way to fail for the one route that has to survive
+     without scripting. This way the same browser shows Australia plus the
+     targeted country, which is only untidy. */
   .guidelines {
-    margin-block: var(--at-spacing-lg);
+    margin-block: var(--at-spacing-md) var(--at-spacing-lg);
     padding: 0;
     list-style: none;
   }
 
-  .panel-item {
-    margin-block: 0 var(--at-spacing-xs);
-  }
-
   .panel {
-    border-inline-start: 3px solid var(--at-border);
+    display: none;
+    padding: var(--at-spacing-sm) var(--at-spacing-md);
+    border-inline-start: 3px solid var(--at-link);
   }
 
-  .panel[open] {
-    border-inline-start-color: var(--at-link);
+  /* Australia before a reader has chosen, and on any fragment that is not one
+     of these eleven. The lecture arrives here from a paragraph about
+     Australia's three documents, so the figure opens on the country the reader
+     was already being told about. */
+  .panel[data-default] {
+    display: block;
   }
 
-  .panel summary {
+  .panel:target {
+    display: block;
+  }
+
+  .guidelines:has(.panel:target) .panel[data-default]:not(:target) {
+    display: none;
+  }
+
+  /* The entry is the target of a fragment link, so the browser focuses it, and
+     a focus ring drawn around a whole entry is noise rather than information:
+     the reader was just carried here and can see that. The ring on the pin
+     they used says the same thing in the place they were looking. */
+  .panel:focus {
+    outline: none;
+  }
+
+  .panel h4 {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.5rem;
-    padding: var(--at-spacing-xs) var(--at-spacing-md);
-    cursor: pointer;
+    margin-block: 0 var(--at-spacing-xs);
   }
 
-  /* The number that keys the map, and it is decorative here: the entry already
-     says the country and the category in words, so a screen reader announcing
-     "6" before "France" would be reading the map's key aloud to somebody who
-     has no map. */
+  /* The number that keys the map, and it is read out rather than hidden. With
+     the eleven entries gone from the page there is nowhere else the pairing of
+     a number with a country is written down, so the entry has to be the place
+     that says "4" and "Japan" in the same breath. */
   .panel-num {
     flex: none;
     min-width: 1.5em;
     color: var(--at-text-secondary);
     font-variant-numeric: tabular-nums;
-    font-weight: 600;
   }
 
   .panel-name {
     font-weight: 600;
   }
 
-  .panel-body {
-    padding: 0 var(--at-spacing-md) var(--at-spacing-sm);
-  }
 
   /* The category in words, next to the country's name, so the classification is
      legible to a reader who never sees the map at all. */
