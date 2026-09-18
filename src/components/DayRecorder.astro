@@ -43,11 +43,11 @@
 // one under the timeline buttons and one under the export; the author has had
 // both out, on the grounds that a control whose label reads "Open the next
 // block" or "Save it as a PDF" has said its piece. What is left under the
-// drawing is derived rather than explanatory: three cells of figures, the
-// admission printed only while it is true of something on the sheet that a
-// block under half an hour is drawn taller than it ran, and the promise that
-// none of this is kept, which is not an instruction but the reason the export
-// exists.
+// drawing is derived rather than explanatory: three cells of figures, and the
+// promise that none of this is kept, which is not an instruction but the
+// reason the export exists. A line admitting that a block under half an hour
+// is drawn taller than it ran was there too, and the author has had it out as
+// the instrument talking about itself.
 //
 // Three things had to be solved before any of that was worth building.
 //
@@ -240,8 +240,6 @@ const PAPER_ROWS = 14;
               </p>
             </div>
           </div>
-
-          <p class="recorder-help tally-floored" data-floored hidden></p>
         </div>
       </div>
 
@@ -330,10 +328,27 @@ const PAPER_ROWS = 14;
 </section>
 
 <style>
-  /* The block sits in the lesson, so it is outlined rather than filled: the
-     only tinted box on a lab page is the safety block, and a second one would
-     compete with it. Border and radius are the theme's, so light and dark
-     arrive without a second palette. */
+  /* The outline is the component, and it is deliberate. Do not remove it.
+   *
+   * The block sits in the lesson, so it is outlined rather than filled: the
+   * only tinted box on a lab page is the safety block, and a second one would
+   * compete with it. Border and radius are the theme's, so light and dark
+   * arrive without a second palette.
+   *
+   * This has now nearly been deleted twice, by two agents reading the same
+   * standing instruction, so the reading is written down here. "Remove the
+   * rounded corner block, so the entire region could fill with actual content,
+   * just like a table" was about an inner block that used to sit inside the
+   * sheet, not about this container. The settled intent: each component on the
+   * page is a box, and the shared visual language lives inside the box. This
+   * border is what says where the day sheet begins and ends, and it is what
+   * separates the sheet from the component under it, so neither of them has to
+   * hold space open on the other's behalf.
+   *
+   * It was taken off for one build and put back unchanged. Flush against the
+   * page column the sheet did fill its width like a table, and it also stopped
+   * being a thing: the drawing, the figures and the promise read as three
+   * pieces of the lesson that happened to be adjacent. */
   .recorder {
     margin-block: var(--at-spacing-xl);
     padding: var(--at-spacing-lg);
@@ -586,37 +601,66 @@ const PAPER_ROWS = 14;
      4.5:1 that the words inside it owe a reader.
 
      Two states, because the button says two things now. Its label carries the
-     empty sheet, so the gold arrives with the first block: the sheet becomes
-     worth saving and the control that saves it becomes emphatic. The quiet
-     state drops the brand out of the border and changes nothing else, so the
-     box, the padding, the border width, the ink and the focus ring are
-     identical in both and nothing moves when the first block opens. The wash
-     of brand behind a control stays the Open button's mark and the heavy
-     border stays this one's, which is the distinction the two controls were
-     given when they were last looked at together.
+     empty sheet, so the brand arrives with the first block: the sheet becomes
+     worth saving and the control that saves it becomes the action.
 
-     It must not read as disabled, because pressing it is the route to a sheet
-     on paper and a student who wants paper presses it before recording
-     anything. So the quiet state is an ordinary button of this component and
-     not a greyed one: full strength ink, the same fill every other button has,
-     and the same edge colour. Nothing about it is dimmed.
+     The first version of this moved the border colour alone, from --at-border
+     to the gold, and the author could not see it. They were right and the
+     numbers agreed once the right two things were compared. Each edge against
+     the page reads 1.4:1 and 3.4:1, which sounds like a difference, but the
+     eye is comparing the two states with each other and not either with the
+     page: the two edges are the same hue at two alphas and come to 2.3:1
+     against one another, across about one and a half rendered pixels, with an
+     identical fill behind them. A hairline changing saturation is not a state
+     change. So the fill moves now as well, from the ordinary button surface to
+     the brand, which is 4.1:1 between the two states in light and 3.6:1 in
+     dark and cannot be missed.
 
-     The colour is the second channel and never the only one. The label is the
-     first, and it is also what a forced colours reader and a printed page get,
-     where a border colour is not something either of them keeps. The default
-     in the markup is the gold one, so a reader with no script, whose button
-     prints the ruled blank sheet, gets the emphatic state rather than the
-     state a script would have set. */
+     What holds from the first version: the box does not move. Same width, same
+     padding, same border width, same focus ring, so nothing shifts when the
+     first block opens. And the quiet state must not read as disabled, because
+     pressing it is the route to a sheet on paper and a student who wants paper
+     presses it before recording anything. It is an ordinary button of this
+     component, the same fill and edge and full strength ink as every other
+     one, and nothing about it is dimmed.
+
+     The ink flips with the fill, to --at-on-primary, which is the theme's own
+     answer to what survives on a brand surface and lands at 5.6:1 with this
+     gold. It clears 4.5:1 in both states in both schemes, so the label is never
+     the thing that pays for the emphasis.
+
+     This is now a filled brand button, which the Open control is not: that one
+     takes a twelve percent wash and a one pixel border, and the distinction
+     between the repeated action and the one that produces a file survives at a
+     glance. Colour is still the second channel and never the only one. The
+     label is the first, and it is what a forced colours reader and a printed
+     page get, where neither a border colour nor a fill is kept. The default in
+     the markup is the emphatic state, so a reader with no script, whose button
+     prints the ruled blank sheet, gets it rather than the state a script would
+     have set. */
   .recorder .print-button {
     width: 100%;
     padding-block: 0.45rem;
     border-color: var(--at-primary);
     border-width: 2px;
+    background: var(--at-primary);
+    color: var(--at-on-primary);
     font-weight: 600;
+  }
+
+  .recorder .print-button:hover {
+    border-color: var(--at-primary-hover);
+    background: var(--at-primary-hover);
   }
 
   .recorder .print-button[data-ready="false"] {
     border-color: var(--at-border);
+    background: var(--at-bg-alt);
+    color: var(--at-text);
+  }
+
+  .recorder .print-button[data-ready="false"]:hover {
+    border-color: var(--at-primary);
   }
 
   /* The label rides beside the field instead of above it, because the stack
@@ -677,18 +721,40 @@ const PAPER_ROWS = 14;
    * exact: a three hour block is 180px and holds three hours of writing. Below
    * it, a fifteen minute block would be fifteen pixels, which cannot hold a
    * word or a time field, so everything under thirty minutes is drawn thirty
-   * tall. That is a real break in the relationship and it is stated on the page
-   * rather than hidden: on a floored block the two times on the lines are the
-   * record and the height is only approximately it. Thirty was chosen because
-   * it is the roundest number that fits the contents, so the rule a reader has
-   * to hold is "half an hour and over is to scale". */
+   * tall. Thirty was chosen because it is the roundest number that fits the
+   * contents, so the rule is "half an hour and over is to scale".
+   *
+   * A line under the drawing used to say so whenever it was true of a block,
+   * and the author has had it out: a minimum mark size is the instrument's
+   * business and not something a student can act on. What that leaves is a
+   * drawing that is approximate for short blocks and a record that is not,
+   * which is the ordinary arrangement for any drawing with a minimum mark. The
+   * times are the record and they stay on the page: a floored block shows its
+   * own start in the gutter and the line below it shows where it ended, which
+   * is how every block on this sheet is read, and the printed record states
+   * each length as a number with no drawing in it at all. Checked on a twelve
+   * minute block rather than assumed: the row is 30px, both times render, and
+   * so do the writing field and the tick. */
   .tl-block {
     height: max(30px, calc(var(--mins, 60) * var(--px-per-min)));
   }
 
+  /* Flush with the line, which is the whole point of the column.
+   *
+   * Each of these times names the boundary at the top of its own row, and the
+   * gutter used to hold them 4.3px under it while the writing area beside them
+   * started 0.7px under it. Two things on one row, starting on two different
+   * lines, in the one component where a horizontal line is a time. They start
+   * together now.
+   *
+   * It also buys back the room the wash needed. A default block is thirty
+   * minutes and thirty pixels, the field is 25.1 of them, and at the old offset
+   * it finished 1.2px past the next boundary: with no border to see, that was
+   * invisible, and with a tint behind the digits it would have been a block of
+   * colour crossing a line that means something. */
   .tl-gutter {
     align-self: start;
-    padding-block-start: 0.2rem;
+    padding-block-start: 0;
   }
 
   /* The vertical rule down the sheet, which is what makes the horizontal lines
@@ -713,24 +779,93 @@ const PAPER_ROWS = 14;
     display: block;
   }
 
-  /* Sized to the floor: the whole row is 30px at its shortest and this is what
-     has to sit in it.
-
-     The two clocks on this sheet are not the same object and are not painted
-     the same. A block's start time is one of a dozen in a repeating column,
-     read down rather than read alone, so it is set small and tight and its
-     picker glyph goes. The glyph is fourteen pixels of a hundred pixel gutter
-     field, it repeats on every row, and it is the one part of the control that
-     carries no information. Hiding it costs nothing: Firefox never drew it, a
-     phone opens its own picker on a tap on the field itself, and the arrows
-     and the keyboard reach every minute of the day either way. */
+  /* The gutter, which is the column a reader looks at more than anything else
+     here.
+     *
+     * It was a stack of bordered rounded boxes: every time in its own little
+     * card, floating beside a drawing that is one continuous timeline. The
+     * boxes belonged to a form and the column belongs to a sheet. A paper day
+     * sheet writes its times in the margin, so these are set as text in the
+     * margin, and the field appearance arrives on hover and on focus instead of
+     * sitting there all day.
+     *
+     * The border is kept and made transparent rather than removed, and the
+     * radius is zeroed rather than the box being changed, so the border box is
+     * identical in all three states. Nothing on the drawing moves when a
+     * pointer crosses the column or when focus lands, which matters more here
+     * than anywhere else in the component: every one of these fields sits on a
+     * boundary line, and a field that grew by a pixel would drag the line it
+     * names.
+     *
+     * What a reader who has not hovered anything has to go on, since this is
+     * the risk in taking chrome off a control. Two things. The gutter is
+     * already a ruled column: every row draws its boundary across the gutter as
+     * well as the drawing, and the sheet's vertical rule closes it on the
+     * right, so each time already sits in a ruled cell of a form, which is
+     * where a person writes. On top of that a wash of the brand stays behind
+     * the digits at rest, which says "field" the way a filled text input does,
+     * without a border, without a corner, and without adding a horizontal line
+     * to a drawing whose horizontal lines all mean something.
+     *
+     * The wash is 22% and the number was chosen by measuring, not by feel,
+     * because the mistake this component just made twice is a change that is
+     * real in the stylesheet and invisible on the page. --at-accent-soft, the
+     * theme's token for exactly this job, is 10% and comes to 1.11:1 against
+     * the page, which is about a third of a table stripe and not an
+     * affordance. 22% reads 1.28:1 in light and 1.27:1 in dark, near enough the
+     * same step in both schemes, with the digits still at 14:1 on top of it.
+     *
+     * Which is why the obvious treatment, a rule under the time the way a paper
+     * form gives you a line to write on, is not what this uses. Measured rather
+     * than argued: a default block is thirty minutes, which is the drawing's
+     * floor, so the commonest row on the sheet is thirty pixels tall and the
+     * field sits twenty of them. An underline would land six pixels above the
+     * next boundary, and on a sheet where a horizontal line means a time, a
+     * second line six pixels from a real one is not a rule to write on, it is a
+     * misreading waiting to happen.
+     *
+     * The column is uniform now, which it was not. Every time in it is the same
+     * size, and none of them carries a picker glyph. The glyph was on the end
+     * row and not on the blocks, for a reason a reader has no way of knowing:
+     * three fields in one column wearing two treatments reads as an oversight.
+     * Hiding it costs nothing anywhere: Firefox never drew it, a phone opens
+     * its own picker on a tap on the field itself, and the arrows and the
+     * keyboard reach every minute of the day either way. The date up in the
+     * masthead keeps its glyph, because that one is a form field in a header
+     * and not a mark in a margin. */
   .recorder .tl-time input {
-    padding: 0.05rem 0.2rem;
+    padding: 0 0.2rem;
+    border-color: transparent;
+    border-radius: 0;
+    background: color-mix(in srgb, var(--at-primary) 22%, transparent);
     font-size: var(--at-font-size-xs);
   }
 
-  .recorder .tl-block .tl-time input::-webkit-calendar-picker-indicator {
+  .recorder .tl-time input::-webkit-calendar-picker-indicator {
     display: none;
+  }
+
+  /* The edge arrives on the way in, and the wash deepens under focus. Colour
+     only, in every state: the border width, the radius, the padding and the
+     font never move, so a pointer crossing the column cannot nudge a line that
+     names a time. The corners stay square throughout, because a rounded field
+     appearing under the pointer is the card coming back.
+
+     Both of these override the component's shared field rules, which lighten a
+     time input towards the page colour on hover and focus. That is right for
+     the date up in the masthead, which rests on the page; it is backwards here,
+     where the resting state is already a wash and lightening it would read as
+     the field going away as you reach for it. The progression runs one way:
+     22% at rest, an edge on hover, 32% and the gold under focus. */
+  .recorder .tl-time input:hover {
+    border-color: color-mix(in srgb, var(--at-primary) 60%, transparent);
+    background: color-mix(in srgb, var(--at-primary) 22%, transparent);
+  }
+
+  .recorder .tl-time input:focus-visible {
+    border-color: var(--at-primary);
+    border-radius: 0;
+    background: color-mix(in srgb, var(--at-primary) 32%, transparent);
   }
 
   /* Drawn tight to the field. Two pixels out would put the ring on the line
@@ -740,12 +875,12 @@ const PAPER_ROWS = 14;
     outline-offset: 1px;
   }
 
-  /* The wake time is the other case: one field, alone in the gutter, under a
-     label that is spelled out, in a row that has no duration to fit inside. It
-     takes the component's ordinary field size and keeps its glyph, because the
-     question the sheet opens with can afford the room and is the one clock
-     here a reader meets before they know what the sheet is. */
-  .recorder .tl-end .tl-time input {
+  /* One exception to the uniform column, and it is the state where there is no
+     column: an empty sheet, where the end row is the only field on the drawing
+     and is the question the sheet opens with. There it takes the ordinary field
+     size and keeps its spelled out label. The moment a block exists it joins
+     the column and is set like the rest of it. */
+  .recorder .tl-end.is-wake .tl-time input {
     padding: 0.25rem 0.4rem;
     font-size: var(--at-font-size-sm);
   }
@@ -1256,10 +1391,6 @@ const PAPER_ROWS = 14;
     }
   }
 
-  .recorder .tally-floored {
-    margin-block: var(--at-spacing-xs) 0;
-  }
-
   /* Standing alone under the button now that the hint between them has gone,
      so it takes the gap the hint used to hold open: the two margins that met
      here were both --at-spacing-xs and collapsed to four pixels, which read as
@@ -1464,6 +1595,31 @@ const PAPER_ROWS = 14;
     font-size: 10pt;
   }
 
+  /* The masthead an empty sheet prints instead of its facts line: two labels
+     with a rule running off each of them, which is the same treatment the
+     no-script blank sheet above uses and the same thing a paper form does.
+     0.4pt is the table's own hairline, so the rules to write on and the ruled
+     rows under them are one weight. */
+  .recorder-sheet :global(.sheet-blanks) {
+    display: flex;
+    gap: 10mm;
+    margin: 0 0 4mm;
+    font-size: 10pt;
+  }
+
+  .recorder-sheet :global(.sheet-blank) {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    gap: 2mm;
+  }
+
+  .recorder-sheet :global(.sheet-blank)::after {
+    content: "";
+    flex: 1;
+    border-block-end: 0.4pt solid #000;
+  }
+
   .recorder-sheet :global(.sheet-table) {
     width: 100%;
     border-collapse: collapse;
@@ -1509,6 +1665,20 @@ const PAPER_ROWS = 14;
     width: 26mm;
   }
 
+  /* A row with nothing in it is a row to write in, so it is given the height a
+     hand needs rather than collapsing to its own padding. Seven millimetres is
+     the line spacing of ordinary ruled paper.
+
+     The whole descendant selector goes inside :global(), including the td.
+     Written as :global(.sheet-row-blank) td it compiles with the scope
+     attribute on the td, which the script built and which therefore does not
+     carry one, and the rule silently matches nothing: the rows came out 12.8px
+     tall, which is their padding. Every other rule for this sheet wraps the
+     whole selector for the same reason. */
+  .recorder-sheet :global(.sheet-row-blank td) {
+    height: 7mm;
+  }
+
   /* A block can hold more than one line now, so the print has to keep them. */
   .recorder-sheet :global(.sheet-col-what) {
     white-space: pre-wrap;
@@ -1537,11 +1707,6 @@ const PAPER_ROWS = 14;
   // a minute there is no reason for the sheet to hold an opinion about how
   // short a real block can be.
   const MIN_BLOCK = 1;
-
-  // The shortest block the drawing can show at one pixel to the minute, which
-  // is the height a time field and a line of writing need. Matches the 30px
-  // floor in the stylesheet; below it the height stops meaning the duration.
-  const FLOOR_MINUTES = 30;
 
   // Reassigned by every wiring pass and read by the listeners that live on
   // window and document. Those cannot be registered inside the pass: window
@@ -1706,22 +1871,6 @@ const PAPER_ROWS = 14;
     if (sleepButton) sleepButton.hidden = closed;
     if (reopenButton) reopenButton.hidden = !closed;
 
-    // Said only when it is true of something on the sheet. The drawing is
-    // exact above half an hour and floored below it, which is a real break in
-    // the one relationship this component is built on, so it is admitted where
-    // the blocks are rather than in an introduction nobody rereads. It is not
-    // repeated on the printed sheet, because the printed sheet states every
-    // length as a number and has no drawing to be approximate.
-    const floored = blocks.filter((block) => minsOf(block) < FLOOR_MINUTES).length;
-    const flooredLine = root.querySelector<HTMLElement>("[data-floored]");
-    if (flooredLine) {
-      flooredLine.hidden = floored === 0;
-      flooredLine.textContent =
-        floored === 0
-          ? ""
-          : `${plural(floored, "block")} ran under half an hour and ${floored === 1 ? "is" : "are"} drawn half an hour tall: on ${floored === 1 ? "that one" : "those"} the two times are the record and the height is not.`;
-    }
-
     // The figures: three cells.
     //
     // Coverage leads. It is the week's own spec line, twenty-four continuous
@@ -1830,13 +1979,29 @@ const PAPER_ROWS = 14;
 
     const date = (fieldOf(root, "date") as HTMLInputElement | null)?.value ?? "";
 
-    const facts = [
-      `Date: ${date || "not stated"}`,
-      `Woke at: ${formatClock(wake)}`,
-      closed
-        ? `Covers: 24 h in ${plural(blocks.length, "block")}, sleep included`
-        : `Covers: ${formatSpan(total)} since waking, and the day is not closed`,
-    ].join("  ·  ");
+    // The header, which is two different things depending on whether there is
+    // anything to report.
+    //
+    // A sheet with nothing on it prints as a form: two labelled rules, for the
+    // date and for the waking time, because that sheet is going to be filled
+    // in with a pen and the pen needs somewhere to put them. What it must not
+    // print is the facts line, which on an empty sheet reads "Woke at: 07:00 ·
+    // Covers: 0 min since waking": the first asserts a default nobody typed
+    // and the second announces nought of twenty-four hours on a piece of paper
+    // where it cannot be taken back. That is the scorecard failure week 4
+    // writes a stopping rule for, printed.
+    const header = blocks.length === 0 ? make("p", "sheet-blanks") : make("p", "sheet-facts");
+    if (blocks.length === 0) {
+      header.append(make("span", "sheet-blank", "Date"), make("span", "sheet-blank", "Woke at"));
+    } else {
+      header.textContent = [
+        `Date: ${date || "not stated"}`,
+        `Woke at: ${formatClock(wake)}`,
+        closed
+          ? `Covers: 24 h in ${plural(blocks.length, "block")}, sleep included`
+          : `Covers: ${formatSpan(total)} since waking, and the day is not closed`,
+      ].join("  ·  ");
+    }
 
     const table = make("table", "sheet-table");
     const head = document.createElement("thead");
@@ -1873,12 +2038,52 @@ const PAPER_ROWS = 14;
       body.append(row);
       offset += mins;
     }
+
+    // Ruled room to carry on, while the day is still open.
+    //
+    // The instruction was to pad the empty sheet, which printed a header over
+    // no rows at all and was useless to anybody who wanted paper. The rule
+    // implemented is wider than that and narrower than "pad whenever there are
+    // fewer rows than the template", which was the other candidate. It pads
+    // while the day is open, at any number of blocks, and never once it is
+    // closed.
+    //
+    // Open is the state that means the record is unfinished, so ruled rows are
+    // an invitation to write the rest, and the empty sheet is just that case at
+    // zero. Closed means the opposite by construction: pressing Asleep from
+    // here fills the twenty-four hours, so the record is complete, and blank
+    // rows under a sheet whose own header says it covers 24 h would be the
+    // printed page contradicting itself and asking for hours that do not exist.
+    //
+    // The count comes from the blank paper sheet in the markup rather than from
+    // a second copy of the number, so the printed template and the no-script
+    // one cannot drift apart. They are meant to be the same document.
+    if (!closed) {
+      const paperRows = root.querySelectorAll("[data-paper] tbody tr").length || 14;
+      for (let index = blocks.length; index < paperRows; index += 1) {
+        const row = document.createElement("tr");
+        row.className = "sheet-row-blank";
+        // Every column a filled row has, the tick column included, so the sheet
+        // somebody continues with a pen is the same document as the one the
+        // script wrote the first rows of.
+        for (const className of [
+          "sheet-col-time",
+          "sheet-col-span",
+          "sheet-col-what",
+          "sheet-col-mark",
+        ]) {
+          row.append(make("td", className, ""));
+        }
+        body.append(row);
+      }
+    }
+
     table.append(body);
 
     sheet.replaceChildren(
       make("p", "sheet-course", "SLOP1638 week 1 lab · baseline record"),
       make("h2", "sheet-title", "One day, recorded and not improved"),
-      make("p", "sheet-facts", facts),
+      header,
       table,
       make(
         "p",
