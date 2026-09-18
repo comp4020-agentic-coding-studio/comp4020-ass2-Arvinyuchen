@@ -38,16 +38,16 @@
 // Where the words go, which is a rule and not a preference. Everything that
 // tells a reader how to fill the sheet sits in one block above the drawing and
 // is met once, before they start: what the drawing is, the keyboard route
-// through it, and what the one tick column means. The sheet itself carries no
+// through it, and what the one mark column means. The sheet itself carries no
 // prose at all. Short hints beside a control were allowed and two were taken,
 // one under the timeline buttons and one under the export; the author has had
 // both out, on the grounds that a control whose label reads "Open the next
 // block" or "Save it as a PDF" has said its piece. What is left under the
 // drawing is derived rather than explanatory: three cells of figures, and the
 // promise that none of this is kept, which is not an instruction but the
-// reason the export exists. A line admitting that a block under half an hour
-// is drawn taller than it ran was there too, and the author has had it out as
-// the instrument talking about itself.
+// reason the export exists. A line admitting that a block shorter than the
+// drawing's floor is drawn taller than it ran was there too, and the author has
+// had it out as the instrument talking about itself.
 //
 // Three things had to be solved before any of that was worth building.
 //
@@ -167,13 +167,13 @@ const PAPER_ROWS = 14;
       </details>
 
       <p class="recorder-help">
-        Tick <b>change</b> on a block you would be willing to run differently and could actually
-        reach. That is narrower than a block you dislike: the hour you resent is often the one
-        somebody else's timetable fixed, and the one you could actually move is duller. The tick
-        changes nothing about today. Week 1 is a baseline, and a baseline you have begun improving
-        is not one, so the block goes down as it happened. Weeks 5 to 7 are the course's Change
-        move, where you choose one thing and alter it. The tick is a note to yourself then, not a
-        plan now.
+        Every block starts at <b>Keep</b>. Set one to <b>Change</b> if you would be willing to run
+        it differently and could actually reach it. That is narrower than a block you dislike: the
+        hour you resent is often the one somebody else's timetable fixed, and the one you could
+        actually move is duller. Setting it changes nothing about today. Week 1 is a baseline, and
+        a baseline you have begun improving is not one, so the block goes down as it happened.
+        Weeks 5 to 7 are the course's Change move, where you choose one thing and alter it. The
+        mark is a note to yourself then, not a plan now.
       </p>
     </div>
 
@@ -190,24 +190,24 @@ const PAPER_ROWS = 14;
       <div class="tl" data-timeline>
         <ol class="tl-blocks" data-blocks></ol>
 
-        <div class="tl-row tl-end is-wake" data-end>
-          <div class="tl-gutter">
-            <label class="tl-time">
-              <span class="field-name" data-end-label>Woke at</span>
+        <div class="tl-edge is-wake" data-end>
+          <p class="tl-edge-line">
+            <label class="tl-edge-time">
+              <span data-end-label>Woke at</span>
               <input type="time" value={DEFAULT_WAKE} data-end-time />
             </label>
+          </p>
+
+          <div class="tl-grip" data-grip aria-hidden="true">
+            <span class="tl-grip-bar"></span>
+            <span class="tl-readout" data-readout></span>
           </div>
-          <div class="tl-body">
-            <div class="tl-grip" data-grip aria-hidden="true">
-              <span class="tl-grip-bar"></span>
-              <span class="tl-readout" data-readout></span>
-            </div>
-            <p class="tl-actions">
-              <button type="button" data-action="open">Open the next block</button>
-              <button type="button" data-action="sleep">Asleep from here</button>
-              <button type="button" data-action="reopen" hidden>Reopen the day</button>
-            </p>
-          </div>
+
+          <p class="tl-actions">
+            <button type="button" data-action="open">Open the next block</button>
+            <button type="button" data-action="sleep">Asleep from here</button>
+            <button type="button" data-action="reopen" hidden>Reopen the day</button>
+          </p>
         </div>
       </div>
 
@@ -233,10 +233,10 @@ const PAPER_ROWS = 14;
               </p>
             </div>
 
-            <div class="tally-cell tally-ticked">
+            <div class="tally-cell tally-change">
               <p class="tally-face">
                 <span class="tally-line"><span class="tally-count" data-tally-marked></span></span>
-                <span class="tally-label">ticked as change</span>
+                <span class="tally-label">set to change</span>
               </p>
             </div>
           </div>
@@ -298,25 +298,27 @@ const PAPER_ROWS = 14;
 
   <template data-block-template>
     <li class="tl-row tl-block" data-block data-mins="60">
-      <div class="tl-gutter">
+      <div class="tl-when">
         <label class="tl-time">
           <span class="field-name" data-time-label>Block starts at</span>
           <input type="time" data-time />
         </label>
+        <span class="tl-span" data-span></span>
       </div>
       <label class="tl-what">
         <span class="field-name">What you were doing</span>
         <textarea rows="1" data-what autocomplete="off"></textarea>
       </label>
       <p class="tl-controls">
-        <label class="tl-flag">
-          <input type="checkbox" data-flag />
-          <span
-            ><span class="recorder-hidden">Mark this block as one you might </span><span
-              class="tl-flag-word">change</span
-            ><span class="recorder-hidden"> in weeks 5 to 7</span></span
-          >
-        </label>
+        <button
+          type="button"
+          class="tl-flag"
+          data-flag
+          data-action="flag"
+          aria-pressed="false"
+          aria-label="Keep this block in weeks 5 to 7">
+          <span class="tl-flag-word">Keep</span>
+        </button>
         <button type="button" class="tl-remove" data-action="remove">
           <span aria-hidden="true">&#215;</span><span class="recorder-hidden">Remove this block</span>
         </button>
@@ -375,7 +377,7 @@ const PAPER_ROWS = 14;
    *
    * The component used to be prose with a drawing in the middle of it: an
    * instruction, a field, another instruction, the sheet, a paragraph about
-   * the tick, then the sheet's figures. A reader could not tell where the
+   * the mark, then the sheet's figures. A reader could not tell where the
    * reading stopped and the doing started, because it stopped and started four
    * times. Now it is how to fill it in, all of it, once; then the sheet, with
    * everything that acts on the sheet, including the button that takes it
@@ -558,16 +560,6 @@ const PAPER_ROWS = 14;
     opacity: 1;
   }
 
-  /* The checkboxes and radios take the brand gold, which is the one place a
-     colour is allowed to carry a state here, and never the only place: the
-     control's own tick is the channel that does the work. */
-  .recorder input[type="checkbox"] {
-    accent-color: var(--at-primary);
-    width: 1.1rem;
-    height: 1.1rem;
-    margin: 0;
-  }
-
   /* Stated rather than inherited. The theme's focus ring is set on its own
      components, and every control in here is an unstyled element the theme
      never sees; a form this size is exactly where a missing ring strands a
@@ -686,15 +678,14 @@ const PAPER_ROWS = 14;
   /* The timeline.
    *
    * One pixel to the minute, so an hour is sixty pixels and a drag is the
-   * length of the thing it describes. Every row is the same two columns: the
-   * time in the gutter and the sheet beside it, with the row's top border
-   * drawn across both as the line the reader pulls.
+   * length of the thing it describes. Every row is the same three columns, and
+   * they are the paper sheet's columns in the paper sheet's order: when the
+   * block started and how long it ran, what you were doing, and whether you
+   * would change it. The row's top border is drawn across all three as the
+   * line the reader pulls.
    *
-   * A block's height is its duration, with a floor of 2.25rem. The floor only
-   * bites below half an hour: it exists because a fifteen minute block is 15px
-   * and a time field is 22, and a row shorter than its own contents is not a
-   * row. Half an hour is also the length of an undragged block, so everything
-   * the buttons make is drawn exactly. */
+   * A block's height is its duration, with a floor. See .tl-block for what the
+   * floor is and what it costs. */
   .tl {
     --px-per-min: 1px;
     margin-block: var(--at-spacing-md) var(--at-spacing-sm);
@@ -706,21 +697,43 @@ const PAPER_ROWS = 14;
     list-style: none;
   }
 
+  /* The third track is a fixed width and that is not a preference either. It
+     was auto, and auto sizes to the contents of that row: every .tl-row is its
+     own grid, so a block reading "Change" took a 80.4px cell and the blocks
+     above and below it took 64.4px, and the vertical rule that is supposed to
+     run down the drawing stepped sideways at every marked block. Measured at
+     4.65rem, which is the word at 48.1px, the cross at 24.4px, and the padding
+     that keeps five pixels between them. Checked at both widths: all three
+     cells now share one left edge whatever each row says. */
   .tl-row {
     display: grid;
     gap: 0 var(--at-spacing-xs);
-    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    grid-template-columns: 5.5rem minmax(0, 1fr) 4.65rem;
     border-block-start: 1px solid var(--at-border);
   }
 
   /* The floor, and what it costs.
    *
-   * A block is its duration in pixels, so above half an hour the drawing is
+   * A block is its duration in pixels, so above the floor the drawing is
    * exact: a three hour block is 180px and holds three hours of writing. Below
    * it, a fifteen minute block would be fifteen pixels, which cannot hold a
-   * word or a time field, so everything under thirty minutes is drawn thirty
-   * tall. Thirty was chosen because it is the roundest number that fits the
-   * contents, so the rule is "half an hour and over is to scale".
+   * word or a time field, so everything shorter than the floor is drawn at it.
+   * The floor is whatever the first column's contents actually need, and it
+   * has moved: it was 30px when that column held a time field alone, and the
+   * author has since had the duration stacked under the time, which measures
+   * 25.1px of field over 16.2px of text. 44px is that stack with a pixel to
+   * spare, so the rule is now "three quarters of an hour and over is to
+   * scale".
+   *
+   * The fourteen minutes that buys are a real loss and they are not hidden
+   * here: a 30 minute block, which is what every press of Open the next block
+   * makes, is now drawn the same height as a 44 minute one. The reason for
+   * paying it is in the column it bought. Stacked, that column states the
+   * length of every block in words, including the short ones the drawing is
+   * least honest about, and it does so without taking the width off the
+   * writing field. A drawing that is approximate below 44 minutes but says
+   * "30 min" on the block beats one that is approximate below 30 and makes the
+   * reader subtract two clock times to find out.
    *
    * A line under the drawing used to say so whenever it was true of a block,
    * and the author has had it out: a minimum mark size is the instrument's
@@ -731,10 +744,10 @@ const PAPER_ROWS = 14;
    * own start in the gutter and the line below it shows where it ended, which
    * is how every block on this sheet is read, and the printed record states
    * each length as a number with no drawing in it at all. Checked on a twelve
-   * minute block rather than assumed: the row is 30px, both times render, and
-   * so do the writing field and the tick. */
+   * minute block rather than assumed: both times render, and so do the writing
+   * field and the mark. */
   .tl-block {
-    height: max(30px, calc(var(--mins, 60) * var(--px-per-min)));
+    height: max(44px, calc(var(--mins, 60) * var(--px-per-min)));
   }
 
   /* Flush with the line, which is the whole point of the column.
@@ -745,24 +758,64 @@ const PAPER_ROWS = 14;
    * lines, in the one component where a horizontal line is a time. They start
    * together now.
    *
-   * It also buys back the room the wash needed. A default block is thirty
-   * minutes and thirty pixels, the field is 25.1 of them, and at the old offset
-   * it finished 1.2px past the next boundary: with no border to see, that was
-   * invisible, and with a tint behind the digits it would have been a block of
-   * colour crossing a line that means something. */
-  .tl-gutter {
+   * It also buys back the room the rest of the cell needs. The field is 25.1px
+   * and the duration under it is 16.2, so the stack is 41.3 in a 44px row: at
+   * the old offset it would have finished past the next boundary, which on a
+   * sheet where a horizontal line means a time is a mark crossing a line that
+   * means something. */
+  /* Column one: when the block started, and how long it ran, stacked.
+   *
+   * They were side by side and they are stacked now, at the author's
+   * instruction, and the numbers say why. Side by side the pair needs a time
+   * field plus a gap plus the duration: 129.7px for "30 min" and 162.6px for
+   * "23 h 59 min", against a column of 117px. It overflowed, and not only on a
+   * phone: at a 1100px viewport a closed day printed its sleep block's
+   * "21 h 45 min" straight across the top of the writing area. Sizing the
+   * column to the worst case instead would have taken the width out of the
+   * writing field, which at a 390px viewport is 297px wide altogether: 163px of
+   * margin leaves 61px to write in. This component has already ruled on that
+   * trade once, in the rule that used to clip the mark's word below 30rem, and
+   * the ruling was that the activity field is the thing that has to be typeable
+   * and 81px is not a field.
+   *
+   * Stacked, the column needs only the wider of the two rather than the sum, so
+   * it is 5.5rem where it was 6.5. What the writing field actually ends up with
+   * at 390 is 105.3px against 115px before, because the third column took some
+   * of it back when the mark became a button wide enough to hold the word
+   * "Change": ten pixels of writing width for a stated duration on every block
+   * and a control a finger can hit. Every duration fits on one line at every
+   * width.
+   *
+   * What the stack costs is the floor, and the cost is stated on .tl-block. */
+  .tl-when {
+    display: flex;
+    flex-direction: column;
     align-self: start;
+    align-items: flex-start;
+    row-gap: 0;
+    min-width: 0;
     padding-block-start: 0;
   }
 
-  /* The vertical rule down the sheet, which is what makes the horizontal lines
-     read as a timeline rather than as a stack of form rows. */
-  .tl-body {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--at-spacing-xs);
-    padding: 0.25rem 0 0 var(--at-spacing-sm);
-    border-inline-start: 1px solid var(--at-border);
+  .recorder .tl-when .tl-time input {
+    width: auto;
+  }
+
+  /* Derived, never typed, and it says so by not looking like a field: no
+     border, secondary ink, and no rule under it now that the time above it has
+     one. What is editable in this cell is the boundary, which is the time
+     above it. See the comment on retime for why the two are the same fact from
+     two ends.
+
+     It is allowed to wrap rather than to overflow, though measured at this size
+     it never needs to: the longest string the component can produce is
+     "23 h 59 min" at 78px, and the narrowest the column gets is 99px at a 390px
+     viewport. Tight leading, because this line is what the floor pays for. */
+  .tl-span {
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-xs);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
   }
 
   /* The theme gives every label a bottom margin of --at-spacing-xs, which is
@@ -800,27 +853,42 @@ const PAPER_ROWS = 14;
      * already a ruled column: every row draws its boundary across the gutter as
      * well as the drawing, and the sheet's vertical rule closes it on the
      * right, so each time already sits in a ruled cell of a form, which is
-     * where a person writes. On top of that a wash of the brand stays behind
-     * the digits at rest, which says "field" the way a filled text input does,
-     * without a border, without a corner, and without adding a horizontal line
-     * to a drawing whose horizontal lines all mean something.
+     * where a person writes. What sits behind the digits at rest is now
+     * nothing, and what is under them is a rule.
      *
-     * The wash is 22% and the number was chosen by measuring, not by feel,
-     * because the mistake this component just made twice is a change that is
-     * real in the stylesheet and invisible on the page. --at-accent-soft, the
-     * theme's token for exactly this job, is 10% and comes to 1.11:1 against
-     * the page, which is about a third of a table stripe and not an
-     * affordance. 22% reads 1.28:1 in light and 1.27:1 in dark, near enough the
-     * same step in both schemes, with the digits still at 14:1 on top of it.
+     * The wash is gone at the author's instruction, and it is worth saying what
+     * it was and why the replacement is not nothing. It was the brand at 22%,
+     * a number picked by measuring rather than by feel after this component
+     * shipped 10% and found it was 1.11:1 against the page, which is a third
+     * of a table stripe and not an affordance. 22% read 1.28:1. It did the job
+     * a filled text input does: it said "field" without a border, without a
+     * corner, and without adding a horizontal line to a drawing whose
+     * horizontal lines all mean something.
      *
-     * Which is why the obvious treatment, a rule under the time the way a paper
-     * form gives you a line to write on, is not what this uses. Measured rather
-     * than argued: a default block is thirty minutes, which is the drawing's
-     * floor, so the commonest row on the sheet is thirty pixels tall and the
-     * field sits twenty of them. An underline would land six pixels above the
-     * next boundary, and on a sheet where a horizontal line means a time, a
-     * second line six pixels from a real one is not a rule to write on, it is a
-     * misreading waiting to happen.
+     * A rule under the time is the treatment a paper form uses, and this
+     * component argued against it once, correctly, on the geometry of the day:
+     * the commonest row was 30px, the field sat 25 of them, and an underline
+     * would have landed about five pixels above a real boundary, which on a
+     * sheet where a horizontal line means a time is a misreading waiting to
+     * happen. That geometry is gone. The author has since had the duration
+     * stacked under the time, so the field no longer sits at the bottom of its
+     * cell: measured in the page, the rule lands at y=25 of a 44px row with the
+     * duration on the line under it and the next boundary 19px below, and the
+     * duration is between them. The rule is also the width of the field rather
+     * than the width of the row, which is how a reader tells a rule to write on
+     * from a line that means a time, and it is the same idiom the printed
+     * masthead already uses for "Date" and "Woke at".
+     *
+     * The ink is the brand rather than the border token, and that was measured
+     * rather than assumed. --at-border is the obvious choice and it comes to
+     * 1.4:1 against the page in light and 1.8:1 in dark, which is the same
+     * mistake as the 10% wash in a different property: a line nobody can see is
+     * not a line. Solid --at-primary measures 3.44:1 light and 5.82:1 dark, so
+     * the affordance clears the 3:1 a non text indicator owes in both schemes.
+     *
+     * The progression above it runs one way and nothing in it moves the box:
+     * the rule at rest, the rule plus a 60% edge on the other three sides on
+     * hover, the full gold and the focus ring under focus.
      *
      * The column is uniform now, which it was not. Every time in it is the same
      * size, and none of them carries a picker glyph. The glyph was on the end
@@ -833,9 +901,9 @@ const PAPER_ROWS = 14;
      * and not a mark in a margin. */
   .recorder .tl-time input {
     padding: 0 0.2rem;
-    border-color: transparent;
+    border-color: transparent transparent var(--at-primary);
     border-radius: 0;
-    background: color-mix(in srgb, var(--at-primary) 22%, transparent);
+    background: transparent;
     font-size: var(--at-font-size-xs);
   }
 
@@ -843,27 +911,28 @@ const PAPER_ROWS = 14;
     display: none;
   }
 
-  /* The edge arrives on the way in, and the wash deepens under focus. Colour
-     only, in every state: the border width, the radius, the padding and the
-     font never move, so a pointer crossing the column cannot nudge a line that
-     names a time. The corners stay square throughout, because a rounded field
-     appearing under the pointer is the card coming back.
+  /* The rule closes into a box on the way in, and the box takes the full gold
+     under focus. Colour only, in every state: the border width, the radius, the
+     padding and the font never move, so a pointer crossing the column cannot
+     nudge a line that names a time. The corners stay square throughout, because
+     a rounded field appearing under the pointer is the card coming back.
 
      Both of these override the component's shared field rules, which lighten a
      time input towards the page colour on hover and focus. That is right for
      the date up in the masthead, which rests on the page; it is backwards here,
-     where the resting state is already a wash and lightening it would read as
-     the field going away as you reach for it. The progression runs one way:
-     22% at rest, an edge on hover, 32% and the gold under focus. */
+     where the field is drawn in ink rather than in fill and lightening it would
+     read as the field going away as you reach for it. The progression runs one
+     way and each step adds to the last: a rule under the digits at rest, the
+     rule closed into a box in the brand on hover, the full gold and the focus
+     ring under focus. */
   .recorder .tl-time input:hover {
-    border-color: color-mix(in srgb, var(--at-primary) 60%, transparent);
-    background: color-mix(in srgb, var(--at-primary) 22%, transparent);
+    border-color: color-mix(in srgb, var(--at-primary) 60%, transparent)
+      color-mix(in srgb, var(--at-primary) 60%, transparent) var(--at-primary);
   }
 
   .recorder .tl-time input:focus-visible {
     border-color: var(--at-primary);
     border-radius: 0;
-    background: color-mix(in srgb, var(--at-primary) 32%, transparent);
   }
 
   /* Drawn tight to the field. Two pixels out would put the ring on the line
@@ -873,46 +942,84 @@ const PAPER_ROWS = 14;
     outline-offset: 1px;
   }
 
-  /* One exception to the uniform column, and it is the state where there is no
-     column: an empty sheet, where the end row is the only field on the drawing
-     and is the question the sheet opens with. There it takes the ordinary field
-     size and keeps its spelled out label. The moment a block exists it joins
-     the column and is set like the rest of it. */
-  .recorder .tl-end.is-wake .tl-time input {
-    padding: 0.25rem 0.4rem;
+  /* The live edge: the bottom of the day, and the only part of this drawing
+   * that is not a block.
+   *
+   * It used to be a row of the same grid the blocks use, with its time in the
+   * left column and everything else crammed into the other two. That made the
+   * one line a reader spends the whole day looking at into an afterthought in
+   * a margin. It is its own region now, full width, in three stacked pieces:
+   * the boundary named in words and centred, the rule you pull, and the two
+   * buttons that do the same job without a pull.
+   *
+   * There are two horizontal lines here and they are not the same thing. The
+   * hairline at the top of the region is the boundary itself, the line the
+   * last block ends on and the one the day is measured to, drawn in the same
+   * ink as every other boundary in the table. The gold bar under the text is
+   * a handle, and it is thick and coloured because it is a thing to grab
+   * rather than a thing to read. The text sits between them naming the
+   * hairline above it, close enough to it to belong to it.
+   *
+   * Considered setting the name on the boundary itself, with the hairline
+   * running through the words and the page colour behind them, which would
+   * attach the two beyond doubt. It also puts a background colour on a piece
+   * of text that has to sit exactly on a one pixel line at every zoom level,
+   * and gains little over proximity. */
+  .tl-edge {
+    border-block-start: 1px solid var(--at-border);
+    padding-block-start: 0.35rem;
+  }
+
+  .tl-edge-line {
+    margin: 0;
+    text-align: center;
+  }
+
+  /* The name and the field on one line, the way it would be written on paper.
+     The field keeps the gutter's treatment, a rule under the digits, because it
+     is the same kind of thing as the times in the column above it and a reader
+     should not have to learn two treatments for one control. The rule sits
+     about 20px above the gold grip bar, which is 6px thick and coloured: a
+     hairline the width of a time field and a coloured bar the width of the
+     region are not going to be read as the same kind of line. */
+  .tl-edge-time {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--at-text-secondary);
     font-size: var(--at-font-size-sm);
   }
 
-  /* Clipped on every row but the first. The gutter is a column of times under
-     a line each, which says what they are; the wake time is the question the
-     sheet opens with and keeps its label. */
-  .tl-block .field-name,
-  .tl-end .field-name {
+  .recorder .tl-edge-time input {
+    width: auto;
+    padding: 0.1rem 0.3rem;
+    border-color: transparent transparent var(--at-primary);
+    border-radius: 0;
+    background: transparent;
+    color: var(--at-text);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .recorder .tl-edge-time input:hover {
+    border-color: color-mix(in srgb, var(--at-primary) 60%, transparent)
+      color-mix(in srgb, var(--at-primary) 60%, transparent) var(--at-primary);
+  }
+
+  .recorder .tl-edge-time input:focus-visible {
+    border-color: var(--at-primary);
+  }
+
+  /* Clipped on the blocks, where the boundary line, the rule under the digits
+     and the column say what the field is, and a label above it would not fit
+     inside the row. The accessible name is the same words either way. */
+  .tl-block .field-name {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
-  }
-
-  /* The opening question, visible only while the sheet is empty.
-   *
-   * Two things had to be true at once: the first thing a reader meets should
-   * say "Woke at" in words, and every row of a drawn day has to fit inside its
-   * own duration, which at the floor is thirty pixels and does not have room
-   * for a label above a field. The empty state is the end row, which has no
-   * duration at all, so the label lives there and is clipped everywhere else.
-   * The accessible name never changes: the clipped label is the same words.
-   *
-   * It was .tl-row.is-wake .field-name for one build, which also unclipped the
-   * writing area's label on the first block and pushed a visible WHAT YOU WERE
-   * DOING above a field sized to the block. */
-  .tl-end.is-wake .tl-gutter .field-name {
-    position: static;
-    width: auto;
-    height: auto;
-    clip-path: none;
   }
 
   /* The block is the writing area. It fills the space between the two lines
@@ -972,61 +1079,103 @@ const PAPER_ROWS = 14;
     background: color-mix(in srgb, var(--at-primary) 8%, transparent);
   }
 
-  /* Beside the writing area rather than inside it: an overlay would either
-     cover the first line of the text or reserve a column of padding on every
-     line of it. Side by side rather than stacked, because a thirty pixel block
-     is one row tall and two of these are 46px wide against 42px of height. */
+  /* The third cell, which is the control rather than holding one.
+   *
+   * It was a checkbox with the word "change" beside it. The author has had the
+   * cell itself made the button: pressed it is darker and reads Change,
+   * unpressed it is lighter and reads Keep. So the cell is a positioning
+   * context and nothing else, and the button fills it.
+   *
+   * The remove control cannot go inside that button, because a button inside a
+   * button is invalid and breaks both the keyboard and assistive tech. It is a
+   * sibling, taken out of flow and set in the top corner over the toggle, which
+   * is why the toggle reserves padding on that side: the word never runs under
+   * the cross. Two separate targets, one visual cell.
+   *
+   * The cell stretches to the full height of the row, so in a nine hour block
+   * the toggle is a nine hour tall bar of colour in the margin, which is the
+   * state channel at the scale of the drawing. The word stays at the top where
+   * the boundary line is. */
   .tl-controls {
-    display: flex;
-    flex-wrap: nowrap;
-    align-self: start;
-    align-items: center;
-    gap: 0.3rem;
+    position: relative;
+    align-self: stretch;
     margin: 0;
-    padding-block-start: 0.2rem;
+    padding: 0;
     white-space: nowrap;
   }
 
-  /* Below 30rem the word goes and the checkbox stays, because the activity
-     field is the thing that has to be typeable and 81px is not a field. The
-     word is only ever clipped, never removed, so the control keeps the same
-     accessible name at every width: "Mark this block as one you might change
-     in weeks 5 to 7". */
-  @media (width < 30rem) {
-    .tl-flag-word {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
+  /* No cross on the sleep block, so no room kept for one. */
+  .recorder .tl-block[data-sleep] .tl-flag {
+    padding-inline-end: 0.3rem;
   }
 
-  .tl-flag {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
+  /* Two channels, because one is never enough here. The word is the state and
+     the fill is the state, so nothing rests on colour alone: forced colours
+     drop the fill and keep the word, a greyscale print keeps the word, and a
+     reader who cannot separate two warm greys reads the word. That is the same
+     arrangement the export button uses, for the same reason.
+
+     The fills are measured against each other rather than against the page,
+     which is the comparison the eye makes and the one this component got wrong
+     once before on the export button, where 1.4:1 and 3.4:1 against the page
+     were 2.3:1 against each other and the author could not see the difference.
+     Keep is the border ink at 12% and Change is the solid brand: 3.3:1 apart in
+     light and 5.6:1 in dark, measured by compositing each over the page and
+     sampling the pixels rather than by reading the declarations. The brand at
+     45% was tried first and measured 1.6:1 and 1.9:1, which is below the step
+     the author could not see on the export button, so it went. The word on the
+     pressed fill is --at-on-primary at 5.6:1 and the word on the unpressed one
+     is secondary ink at 8.6:1, both clear of 4.5:1. */
+  .recorder .tl-flag {
+    display: block;
+    width: 100%;
+    height: 100%;
     margin: 0;
+    padding: 0.2rem 1.4rem 0.2rem 0.3rem;
+    border: 0;
+    border-inline-start: 1px solid var(--at-border);
+    border-radius: 0;
+    background: color-mix(in srgb, var(--at-border) 12%, transparent);
     color: var(--at-text-secondary);
     font-size: var(--at-font-size-xs);
+    line-height: 1.3;
+    text-align: start;
   }
 
-  .recorder .tl-flag input[type="checkbox"] {
-    width: 0.95rem;
-    height: 0.95rem;
+  .recorder .tl-flag[aria-pressed="true"] {
+    background: var(--at-primary);
+    color: var(--at-on-primary);
+  }
+
+  /* Hovering Keep shows a little of the colour it would become, which is the
+     only preview a one press control can offer. */
+  .recorder .tl-flag:hover {
+    background: color-mix(in srgb, var(--at-primary) 25%, transparent);
+  }
+
+  .recorder .tl-flag[aria-pressed="true"]:hover {
+    background: color-mix(in srgb, var(--at-primary) 88%, var(--at-text));
+  }
+
+  /* Inside the edge, like the writing cell's, because an outline offset
+     outwards would sit on the boundary line above and on the block below. */
+  .recorder .tl-flag:focus-visible {
+    outline: 2px solid var(--at-primary);
+    outline-offset: -2px;
   }
 
   .recorder .tl-remove {
-    flex: none;
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    z-index: 1;
     padding: 0 0.4rem;
     font-size: var(--at-font-size-sm);
     line-height: 1.5;
   }
 
-  /* A marked block takes the gold on its own rule, and the checkbox beside it
-     stays ticked: two channels, so the mark survives a greyscale print and a
-     reader who cannot separate the gold from the border grey. */
+  /* A marked block takes the gold on its own rule as well, so the mark is
+     readable from the writing column without crossing the row. */
   .recorder .tl-block.is-marked .tl-what textarea {
     border-inline-start: 3px solid var(--at-primary);
   }
@@ -1044,9 +1193,13 @@ const PAPER_ROWS = 14;
      Sizing it as an ordinary flex item put the three buttons beside it at
      max-content, which at 390px pushed the whole page 103px wider than the
      window: the timeline fitted and the row under it did not. */
+  /* The padding is the hit area and it is not decoration: 1.1rem either side
+     of a 6px bar gives the 44px a thumb needs to find a target it is about to
+     drag. It was cut to 0.7rem while this region was being rebuilt, which
+     looked tidier and measured 31px, and that is a worse target on the one
+     interaction in this component that cannot be tested here. Put back. */
   .tl-grip {
     position: relative;
-    flex: 1 1 100%;
     min-width: 0;
     padding-block: 1.1rem;
     cursor: grab;
@@ -1097,7 +1250,6 @@ const PAPER_ROWS = 14;
    * width of the row. */
   .tl-actions {
     display: grid;
-    flex: 1 1 100%;
     grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
     gap: var(--at-spacing-sm);
     min-width: 0;
@@ -1131,12 +1283,6 @@ const PAPER_ROWS = 14;
     border-color: var(--at-primary);
     background: color-mix(in srgb, var(--at-primary) 12%, var(--at-bg-alt));
     font-weight: 600;
-  }
-
-  .tl-end .tl-body {
-    flex-wrap: wrap;
-    grid-column: 2 / -1;
-    border-inline-start-color: transparent;
   }
 
   /* The figures under the sheet: three bounded cells, and nothing else.
@@ -1188,45 +1334,50 @@ const PAPER_ROWS = 14;
     font-variant-numeric: tabular-nums;
   }
 
-  /* The divider and the space sit on the figures rather than on the wrapper
-     around them, because the wrapper is now empty on an untouched sheet: the
-     line that used to say "Nothing recorded yet." is the export button's label
-     now. On the wrapper this rule drew itself under the drawing with nothing
-     beneath it, a hairline and twenty five pixels of air announcing a readout
-     that was not there. */
+  /* Space, and no rule.
+     The hairline that used to run across here has been taken out at the
+     author's instruction. It was the third horizontal line in nine vertical
+     pixels: the buttons end, a divider, then the readout's own top edge. The
+     readout is already a bounded row of three cells, so it has a boundary of
+     its own and does not need a second one drawn a few pixels above it.
+     The space stays, because the space is what the rule was really for: the
+     drawing above and the figures below are different kinds of thing, and a
+     gap says so without adding a line to a component whose horizontal lines
+     mean times. The cells keep their own edges and their two vertical
+     dividers. */
   .tally-figures {
     margin-block: 0 var(--at-spacing-md);
     padding-block-start: var(--at-spacing-sm);
-    border-block-start: 1px solid var(--at-divider);
   }
 
   /* The row. One cell over two by default, three across once all three fit.
      Measured rather than guessed, in a same origin iframe at each width, since
      Chrome will not make a window narrow enough to check a phone.
 
-     At a 390px viewport this region is 295px wide. Across three that is 98px a
-     cell, against a widest line of 157px in the first cell and 123px in the
-     third, so the day takes the whole line and the two counts split the one
-     under it. That is the better shape for the meter as well, which wants
-     length. Three across arrives at the 40rem the timeline already breaks at,
-     where the region is 545px.
+     At a 390px viewport this region is 298px wide. Across three that is under
+     100px a cell, against a widest line of 157px in the first, so the day takes
+     the whole line and the two counts split the one under it. That is the
+     better shape for the meter as well, which wants length. Three across
+     arrives at the 40rem the timeline already breaks at, where the region is
+     574px.
 
      Neither split is even, and the numbers in it are measured contents rather
      than a feeling about importance. The widest line each cell has to hold is
      157px for a coverage figure at 1.5rem, which is "23 h 46 min" and not the
-     "24 h" of a closed day, 97px for "blocks drawn" and 123px for "ticked as
-     change"; with the padding that is 179, 119 and 145, or 1.5 to 1 to 1.2.
-     The first cell being the widest is what the type asks for as well as what
-     the headline deserves.
+     "24 h" of a closed day, 96.5px for "blocks drawn", and 113.6px for the
+     third cell, which is "11 of 11" and not its label: that changed when the
+     tick became a button and the label went from "ticked as change" at 123px
+     to "set to change" at 98.6px, so the count is now the binding line in that
+     cell rather than the caption under it. With the padding that is 182, 122
+     and 139, or 1.5 to 1 to 1.14, and the track stays at 1.2 because the
+     rounding is in the cell's favour and a track that moves every time a word
+     changes length is a track nobody can reason about.
 
-     Worth recording, because it was the opposite of what was expected: this
-     split did not change when the state word came out of the first cell. That
-     word shared its line with the unit and the two came to 138px, less than
-     the figure above them, so the figure was always the binding constraint and
-     still is. What the remeasure changed was the slack, which now runs 20, 14
-     and 14 pixels at the tightest three across width, where it used to run 15,
-     20 and 14 and the cell with the least room to spare was the one carrying
-     the headline.
+     Checked rather than left to the arithmetic. At 720px, which is the
+     tightest the row is ever three across, the content boxes measure 206.3,
+     129.1 and 160 against those widest lines, so the slack runs 49, 33 and 46
+     pixels and no cell wraps: all three measure the same 80.5px tall with
+     eleven blocks on the sheet and every one of them set to change.
 
      The gap is the hairline: one pixel of the border colour showing between
      opaque cells, plus a border around the outside. Borders on the cells
@@ -1239,11 +1390,11 @@ const PAPER_ROWS = 14;
     display: grid;
     grid-template-columns: 1fr 1.2fr;
     gap: 1px;
-    /* Clear air under the divider that closes the drawing. The divider stays,
-       because it is what separates the readout from the drawing whether or not
-       there is a row to draw, and because the empty sheet has no box of its
-       own. Set tight, the two would read as one doubled border rather than as
-       a rule and a table. */
+    /* Clear air between the drawing and the readout. There was a hairline
+       above this as well and the author has had it out: the row is already a
+       bordered table with two dividers in it, so it has an edge of its own and
+       did not need a second line drawn a few pixels above that edge. The space
+       is what the rule was doing that the border cannot. */
     margin-block-start: var(--at-spacing-sm);
     border: 1px solid var(--at-border);
     background: var(--at-border);
@@ -1299,14 +1450,14 @@ const PAPER_ROWS = 14;
   /* Weight and ink carry the ranking, since the size does not. Coverage is the
      one figure a student cannot improve by recording differently, so it is the
      only one set bold. The count of blocks is a fact at ordinary weight. The
-     ticks are a step quieter again: same size, same weight, secondary ink and
-     a muted label, because the tick is optional and a number nobody is being
-     scored on should not be the brightest thing in the row. */
+     marks are a step quieter again: same size, same weight, secondary ink and
+     a muted label, because setting a block to Change is optional and a number
+     nobody is being scored on should not be the brightest thing in the row. */
   .tally-value {
     font-weight: 600;
   }
 
-  .tally-ticked .tally-count {
+  .tally-change .tally-count {
     color: var(--at-text-secondary);
   }
 
@@ -1315,7 +1466,7 @@ const PAPER_ROWS = 14;
     font-size: var(--at-font-size-sm);
   }
 
-  .tally-ticked .tally-label {
+  .tally-change .tally-label {
     color: var(--at-text-muted);
   }
 
@@ -1465,13 +1616,16 @@ const PAPER_ROWS = 14;
     white-space: nowrap;
   }
 
+  /* A wider margin once there is room for one, so the longest durations sit on
+     one line instead of wrapping. Width only: the type in the column stays the
+     size it is at every width, because the stack's height is what the floor
+     pays for and a larger field would push the floor up again. The flag's own
+     size used to step up here too, and does not now, since the word in it is
+     the state of a control rather than a label beside one and a control that
+     changes size between widths is a second thing to learn. */
   @media (width >= 40rem) {
     .tl-row {
-      grid-template-columns: 7.5rem minmax(0, 1fr) auto;
-    }
-
-    .tl-flag {
-      font-size: var(--at-font-size-sm);
+      grid-template-columns: 6.5rem minmax(0, 1fr) 4.65rem;
     }
   }
 
@@ -1757,8 +1911,14 @@ const PAPER_ROWS = 14;
   const whatOf = (block: Element): HTMLTextAreaElement =>
     block.querySelector("[data-what]") as HTMLTextAreaElement;
 
-  const flagOf = (block: Element): HTMLInputElement =>
-    block.querySelector("[data-flag]") as HTMLInputElement;
+  const flagOf = (block: Element): HTMLButtonElement =>
+    block.querySelector("[data-flag]") as HTMLButtonElement;
+
+  // The mark is a toggle button now rather than a checkbox, so the state lives
+  // on aria-pressed instead of on .checked. One reader, so the attribute and
+  // the word in the button cannot drift apart.
+  const isFlagged = (block: Element): boolean =>
+    flagOf(block).getAttribute("aria-pressed") === "true";
 
   const timelineOf = (root: HTMLElement): HTMLElement =>
     root.querySelector("[data-timeline]") as HTMLElement;
@@ -1867,8 +2027,25 @@ const PAPER_ROWS = 14;
       // on every keystroke cannot be typed into at all.
       if (document.activeElement !== input) input.value = start;
       input.dataset.clock = start;
+      // How long it ran, beside when it started. Derived and never typed: the
+      // boundary is the handle, and this is the distance between two of them.
+      const span = block.querySelector<HTMLElement>("[data-span]");
+      if (span) span.textContent = formatSpan(minsOf(block));
       block.style.setProperty("--mins", String(minsOf(block)));
-      block.classList.toggle("is-marked", flagOf(block).checked);
+      // The mark, in its three channels. The word in the button is the state,
+      // the fill behind it is the state, and the gold rule on the writing cell
+      // repeats it where the writing is. The accessible name carries the word
+      // and what it means, because "Keep" on its own says nothing about what
+      // is being kept: a screen reader gets "Change this block in weeks 5 to
+      // 7, toggle button, pressed", which is the visible word, the meaning and
+      // the state.
+      const flagged = isFlagged(block);
+      const flag = flagOf(block);
+      const flagWord = flag.querySelector<HTMLElement>(".tl-flag-word");
+      const word = flagged ? "Change" : "Keep";
+      if (flagWord) flagWord.textContent = word;
+      flag.setAttribute("aria-label", `${word} this block in weeks 5 to 7`);
+      block.classList.toggle("is-marked", flagged);
       offset += minsOf(block);
     });
 
@@ -1878,10 +2055,21 @@ const PAPER_ROWS = 14;
     endInput.dataset.clock = endClock;
     endInput.readOnly = closed;
     end?.classList.toggle("is-wake", blocks.length === 0);
+    // What the centred line says, and it says three things because the
+    // boundary under it means three things.
+    //
+    // "Woke at" is true exactly once, on a sheet with nothing on it, where the
+    // line is the start of the day and the field is the question the sheet
+    // opens with. After that the line is the far end of the last block, so it
+    // says what it now is: how far the record goes. "Up to 09:11" was the old
+    // wording, kept short because it lived in a 6.5rem margin; with the width
+    // of the sheet to say it in it can say what the number is instead of
+    // leaving a reader to infer it. Closed, the line is the same boundary read
+    // the other way round, the hour the sleep block runs back to.
     const endLabel = root.querySelector<HTMLElement>("[data-end-label]");
     if (endLabel) {
       endLabel.textContent =
-        blocks.length === 0 ? "Woke at" : closed ? "Back to waking at" : "Up to";
+        blocks.length === 0 ? "Woke at" : closed ? "Back to waking at" : "Recorded up to";
     }
 
     const grip = root.querySelector<HTMLElement>("[data-grip]");
@@ -1921,7 +2109,7 @@ const PAPER_ROWS = 14;
     // whole sentence, which is what a screen reader gets instead of a pill.
     //
     // The other two cells are counts and are written as counts. Eleven blocks
-    // is not better than six. The ticks are a share of what is on the sheet
+    // is not better than six. The marks are a share of what is on the sheet
     // rather than a bare number, which is what the author asked for and is
     // also the reading that cannot turn into a target: the denominator moves
     // every time a block opens, so there is no number to get to.
@@ -1929,7 +2117,7 @@ const PAPER_ROWS = 14;
     // Both copies of the coverage cell's text are written here. The second is
     // the one clipped to the fill, and writing them through one call is what
     // keeps them the same words.
-    const marked = blocks.filter((block) => flagOf(block).checked).length;
+    const marked = blocks.filter((block) => isFlagged(block)).length;
     const figures = root.querySelector<HTMLElement>("[data-tally-figures]");
     // A sheet with nothing on it gets no row at all. Three cells reading
     // nought, nought and nought of nought is a scorecard of not having
@@ -2054,9 +2242,14 @@ const PAPER_ROWS = 14;
       row.append(
         make("td", "sheet-col-what", what || (block.dataset.sleep === "true" ? "asleep" : "")),
       );
-      // The word, not a tick or a colour: this sheet is printed in black and
-      // read on paper, and "marked" survives both.
-      row.append(make("td", "sheet-col-mark", flagOf(block).checked ? "marked" : ""));
+      // The word the screen shows, not a tick and not a colour: this sheet is
+      // printed in black and read on paper, and the word survives both. Only
+      // "change" is printed. Keep is the resting state of every block, so
+      // printing it on every other row would put a column of the word "keep"
+      // down a page whose header already says "Might change", and it would
+      // fill in the one cell somebody reading on paper might want to mark with
+      // a pen. A blank cell under that header is a cell to write in.
+      row.append(make("td", "sheet-col-mark", isFlagged(block) ? "change" : ""));
       body.append(row);
       offset += mins;
     }
@@ -2430,6 +2623,25 @@ const PAPER_ROWS = 14;
       if (action === "remove") {
         const block = button.closest<HTMLLIElement>("[data-block]");
         if (block) removeBlock(root, block);
+        return;
+      }
+
+      // The mark. A checkbox fired change and layout() listened for it; a
+      // button fires neither, so the state is written here and layout() is
+      // called to read it back out into the word, the fill, the rule on the
+      // writing cell and the tally. Nothing else in the component writes
+      // aria-pressed.
+      //
+      // Not announced through the status line. This is the one control in the
+      // component whose result is entirely on screen and instant, and
+      // aria-pressed is announced by the screen reader on the button itself as
+      // part of the press. A second sentence in a live region would say the
+      // same thing twice.
+      if (action === "flag") {
+        const block = button.closest<HTMLLIElement>("[data-block]");
+        if (!block) return;
+        button.setAttribute("aria-pressed", isFlagged(block) ? "false" : "true");
+        layout(root);
         return;
       }
 
