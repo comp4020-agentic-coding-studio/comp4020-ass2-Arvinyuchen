@@ -92,71 +92,87 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     One night, read off an Apple Health export. It compares nothing and keeps nothing.
   </p>
 
-  <h4>Which night</h4>
+  <div class="night-how">
+    <h4>How to read one back</h4>
 
-  <p class="night-help">
-    The date first, because the file holds years and this page will only ever open one night of it.
-    The night meant is the one that closes that day: everything recorded between midday on the date
-    below and midday the next.
-  </p>
+    <p class="night-help">
+      On the phone: Health, then your own picture at the top, then Export All Health Data. That
+      gives you <b>export.zip</b>. Unzip it and choose <b>export.xml</b> from inside it, which is
+      the large one. This page does not open zip files and does not want the other file in there.
+    </p>
 
-  <label class="field night-date">
-    <span class="field-name">The day you recorded</span>
-    <input type="date" data-night-date />
-  </label>
+    <p class="night-help">
+      The date goes in first, because the file holds years and this page will only ever open one
+      night of it. The night it means is the one that closes that day: everything the export
+      recorded between midday on the date you give it and midday the next.
+    </p>
 
-  <h4>The file</h4>
+    <p class="night-help">
+      There is a route through this week that needs no watch and no export, and it costs you
+      nothing: fill the sleep block on the sheet above from memory, the way you fill the rest of the
+      day. That is the week's actual method, and memory is the instrument week 1 is built on. If you
+      would like to see what a device records without handing over your own file, press the button
+      for the sample night below, or take{" "}
+      <a href={withBase(SAMPLE)} download>the sample export</a> and choose it as the file. It is a
+      night that was generated rather than slept: it describes nobody.
+    </p>
+  </div>
 
-  <p class="night-help">
-    On the phone: Health, then your own picture at the top, then Export All Health Data. That gives
-    you <b>export.zip</b>. Unzip it and choose <b>export.xml</b> from inside it, which is the large
-    one. This page does not open zip files and does not want the other file in there.
-  </p>
+  <div class="night-work">
+    <div class="night-head">
+      <h4>The night</h4>
 
-  <label class="field night-file">
-    <span class="field-name">Your export.xml file</span>
-    <input type="file" accept=".xml,text/xml,application/xml" data-night-file />
-  </label>
+      <label class="night-date">
+        <span class="field-name">Night of</span>
+        <input type="date" data-night-date />
+      </label>
+    </div>
 
-  <p class="night-actions">
-    <button type="button" class="night-read" data-action="read" disabled>Read that night</button>
-    <button type="button" data-action="sample">Read the sample night instead</button>
-  </p>
+    <label class="night-file">
+      <span class="field-name">Your export.xml file</span>
+      <input type="file" accept=".xml,text/xml,application/xml" data-night-file />
+    </label>
 
-  <p class="night-progress" data-progress hidden></p>
-  <p class="night-status" role="status" data-status></p>
+    <p class="night-actions">
+      <button type="button" class="night-read" data-action="read" disabled>Read that night</button>
+      <button type="button" data-action="sample">Read the sample night instead</button>
+    </p>
 
-  <div class="night-out" data-out hidden></div>
+    <p class="night-progress" data-progress hidden></p>
+    <p class="night-status" role="status" data-status></p>
 
-  <h4>If you would rather not</h4>
+    <div class="night-out" data-out hidden></div>
 
-  <p>
-    There is a route through this week that needs no watch and no export, and it costs you nothing:
-    fill the sleep block on the sheet above from memory, the way you fill the rest of the day. That
-    is the week's actual method, and memory is the instrument week 1 is built on. If you would like
-    to see what a device records without handing over your own file, press <b>
-      Read the sample night instead
-    </b> above, or take{" "}
-    <a href={withBase(SAMPLE)} download>the sample export</a> and choose it as the file. It is a
-    night that was generated rather than slept: it describes nobody.
-  </p>
-
-  <p class="night-privacy">
-    Nothing here is saved and nothing is sent. Your export is read inside this tab, a slice at a
-    time, and this site is a set of static files with no server behind it to receive one. Nothing is
-    written to this browser, and a reload loses every bit of it. The only request this page can make
-    is for the sample night above, and only if you press the button for it. Same promise as the
-    sheet, and the same policy behind it: <a
-      href={withBase("/policies/#the-records-you-make-are-yours")}
-      >the records you make</a
-    > are yours.
-  </p>
+    <p class="night-privacy">
+      Nothing here is saved and nothing is sent. Your export is read inside this tab, a slice at a
+      time, and this site is a set of static files with no server behind it to receive one. Nothing
+      is written to this browser, and a reload loses every bit of it. The only request this page can
+      make is for the sample night, and only when you press the button for it. Same promise as the
+      sheet, and the same policy behind it:{" "}
+      <a href={withBase("/policies/#the-records-you-make-are-yours")}>the records you make</a> are
+      yours.
+    </p>
+  </div>
 </section>
 
 <style>
-  /* Outlined like the sheet above it and sitting directly under it, because
-     they are two halves of one twenty-four hours rather than two tools. The
-     only tinted block on a lab page is the safety block. */
+  /* The outline is deliberate. Do not remove it.
+   *
+   * Each component on this page is a box, and the box is what says where one
+   * tool ends and the next begins: the day sheet above and this block below it
+   * are two instruments for two halves of the same twenty-four hours, and
+   * without an edge apiece they read as one long undifferentiated stack. The
+   * shared visual language lives inside the boxes rather than instead of them.
+   *
+   * This is written down because it has now been misread twice. The standing
+   * instruction on this site against a rounded corner block was aimed at an
+   * inner block inside the day sheet, not at the outer container, and on the
+   * other reading both components came within a commit of losing their edges.
+   * No cards inside the box; the box itself stays.
+   *
+   * The four values are .recorder's own, read from DayRecorder.astro so that
+   * the two are visibly one kind of object rather than two near misses. If that
+   * component's box changes, this one changes with it. */
   .night {
     margin-block: var(--at-spacing-xl);
     padding: var(--at-spacing-lg);
@@ -169,24 +185,57 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
   }
 
   .night h4 {
-    margin-block: var(--at-spacing-xl) var(--at-spacing-xs);
+    margin-block: 0 var(--at-spacing-md);
   }
 
   .night-lead {
-    margin-block: 0 var(--at-spacing-lg);
+    margin-block: 0 var(--at-spacing-xl);
     color: var(--at-text-secondary);
   }
 
-  .night-help,
-  .night-progress {
-    margin-block: var(--at-spacing-xs) var(--at-spacing-md);
+  /* Two zones, and the boundary between them is the loudest thing in the
+     component. Everything that tells a reader what to do is above it and
+     nothing below it is prose bar the promise at the foot, which is the
+     arrangement the day sheet arrived at. Sixty four pixels of air, then the
+     rule, then thirty two: twice the largest gap inside either zone, so the
+     division cannot be read as just another paragraph break. */
+  .night-work {
+    margin-block-start: var(--at-spacing-2xl);
+    padding-block-start: var(--at-spacing-xl);
+    border-block-start: 1px solid var(--at-border);
+  }
+
+  /* The masthead: what this zone is, and the one piece of metadata that
+     identifies the night, in the corner on the same line. Baseline alignment
+     rather than centres, so the label sits on the heading's own line and drops
+     under it when there is no room for both. The rule beneath belongs to the
+     pair rather than to the heading, which is why it is on the wrapper. */
+  .night-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--at-spacing-xs) var(--at-spacing-md);
+    margin-block-end: var(--at-spacing-lg);
+    padding-block-end: var(--at-spacing-sm);
+    border-block-end: 1px solid var(--at-border);
+  }
+
+  .night .night-head h4 {
+    margin: 0;
+  }
+
+  /* Instructions, not prose: one step smaller and quieter than the lesson
+     around them. In the upper zone they are the whole content, so they take the
+     measure rather than sitting beside a control. */
+  .night-help {
+    margin-block: 0 var(--at-spacing-md);
     color: var(--at-text-secondary);
     font-size: var(--at-font-size-sm);
   }
 
-  .field {
-    display: block;
-    margin-block-end: var(--at-spacing-sm);
+  .night-help:last-child {
+    margin-block-end: 0;
   }
 
   .field-name {
@@ -199,7 +248,8 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
   }
 
   .night-date {
-    max-width: 11rem;
+    display: block;
+    min-width: 9rem;
   }
 
   .night input[type="date"] {
@@ -214,21 +264,96 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     font-variant-numeric: tabular-nums;
   }
 
-  .night input[type="file"] {
+  .night input[type="date"]:hover {
+    border-color: color-mix(in srgb, var(--at-primary) 50%, var(--at-border));
+  }
+
+  .night input[type="date"]:focus-visible {
+    border-color: var(--at-primary);
+    background: color-mix(in srgb, var(--at-primary) 8%, var(--at-bg));
+  }
+
+  .night :is(input[type="date"])::-webkit-calendar-picker-indicator {
+    margin-inline-start: 0.3rem;
+    padding: 0;
+    opacity: 0.45;
+    cursor: pointer;
+  }
+
+  .night :is(input[type="date"]):is(:hover, :focus-within)::-webkit-calendar-picker-indicator {
+    opacity: 1;
+  }
+
+  /* The file field.
+   *
+   * It stays a real <input type="file">, because everything it does for free is
+   * worth more than the look of it: the system picker, the keyboard, the drop
+   * target over the whole control, and the name of the chosen file announced
+   * without a line of script. What it does not have to do is arrive in the
+   * browser's own 1997 chrome next to type that has been set with some care, so
+   * the control takes the same bordered box every other field here wears and
+   * ::file-selector-button gives its button the same edge as the buttons under
+   * it. Nothing below changes what the control does.
+   *
+   * Firefox draws the button but not the same way, and Safari differs again.
+   * All three are painted here and none of them is relied on: with every one of
+   * these declarations dropped the field still opens a picker and still takes a
+   * drop. */
+  .night-file {
     display: block;
-    max-width: 100%;
+    margin-block-end: var(--at-spacing-md);
+  }
+
+  .night input[type="file"] {
+    width: 100%;
+    padding: 0.35rem 0.45rem;
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg);
+    color: var(--at-text-secondary);
+    font: inherit;
     font-size: var(--at-font-size-sm);
   }
 
-  /* Stated rather than inherited, for the same reason the sheet states it:
-     every control in here is an unstyled element the theme never sees. */
+  .night input[type="file"]:hover {
+    border-color: color-mix(in srgb, var(--at-primary) 50%, var(--at-border));
+  }
+
+  .night input[type="file"]::file-selector-button {
+    margin-inline-end: 0.6rem;
+    padding: 0.2rem 0.7rem;
+    border: 1px solid var(--at-border);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-alt);
+    color: var(--at-text);
+    font: inherit;
+    font-size: var(--at-font-size-sm);
+    cursor: pointer;
+  }
+
+  .night input[type="file"]:hover::file-selector-button {
+    border-color: var(--at-primary);
+  }
+
+  /* Stated rather than inherited: every control in here is an unstyled element
+     the theme never sees. */
   .night :is(input, button, a, summary):focus-visible {
     outline: 2px solid var(--at-primary);
     outline-offset: 2px;
   }
 
+  /* The buttons take the line they are on, the way the sheet's do: an auto-fit
+     grid, so two fill the row on a laptop and stack to full width on a phone
+     rather than huddling at the left in their own text widths. */
+  .night-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+    gap: var(--at-spacing-sm);
+    margin-block: 0 var(--at-spacing-md);
+  }
+
   .night button {
-    padding: 0.3rem 0.7rem;
+    padding: 0.45rem 0.7rem;
     border: 1px solid var(--at-border);
     border-radius: var(--at-border-radius);
     background: var(--at-bg-alt);
@@ -247,72 +372,95 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
     opacity: 0.55;
   }
 
-  /* The one action that produces something takes the brand, as the sheet's
-     print button does. The gold is the border and not the words. */
-  .night .night-read {
+  /* The repeated action carries the brand and the weight, the plain one beside
+     it does not. Disabled it drops back to the quiet treatment rather than
+     wearing a dimmed brand, since a washed out gold reads as a broken button
+     instead of an unavailable one. The words are the first channel either way:
+     the label says Read that night in both states. */
+  .night .night-read:not(:disabled) {
     border-color: var(--at-primary);
-    border-width: 2px;
+    background: var(--at-primary);
+    color: var(--at-on-primary);
     font-weight: 600;
   }
 
-  .night-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--at-spacing-sm);
-    margin-block: var(--at-spacing-md) var(--at-spacing-sm);
+  .night .night-read:not(:disabled):hover {
+    border-color: var(--at-primary-hover);
+    background: var(--at-primary-hover);
+  }
+
+  /* Progress while a file is being read, and what happened after. Quiet, and
+     the same size as the field labels they sit under, because neither is
+     something to read twice. */
+  .night-progress,
+  .night-status {
+    margin-block: 0 var(--at-spacing-md);
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+    font-variant-numeric: tabular-nums;
   }
 
   .night-status:empty {
     display: none;
   }
 
-  .night-status {
-    margin-block: var(--at-spacing-sm);
-    font-size: var(--at-font-size-sm);
-  }
-
   .night-status[data-tone="wrong"] {
     color: var(--at-warning);
   }
 
+  /* The night itself, once there is one. A rule above it, because what follows
+     is a different kind of thing from the controls that produced it, and the
+     component has no other way left to say so. */
+  .night-out:not([hidden]) {
+    margin-block-start: var(--at-spacing-xl);
+    padding-block-start: var(--at-spacing-lg);
+    border-block-start: 1px solid var(--at-border);
+  }
+
   .night-privacy {
-    margin-block-start: var(--at-spacing-lg);
+    margin-block: var(--at-spacing-xl) 0;
     font-size: var(--at-font-size-sm);
   }
 
-  /* Everything below here is built by the script rather than written in the
-     template above, so it is reached through :global. An Astro scoped selector
-     compiles to .lanes[data-astro-cid-x], and an element made in
-     document.createElement carries no such attribute: the rule would simply
-     never match. Same arrangement the day sheet uses for its printable sheet.
-     The scope is kept by hanging every one of them off .night-out, which is in
-     the template and does carry it. */
-
   /* The source picker. A night written by two instruments is two records, and
-     this is where the reader chooses which one to look at, one at a time. */
+     this is where the reader chooses which one to look at, one at a time. No
+     box around it: the legend is a field label like every other, and the
+     options sit in a row under it. */
   .night-out :global(fieldset) {
-    margin: var(--at-spacing-md) 0;
-    padding: var(--at-spacing-sm) var(--at-spacing-md);
-    border: 1px solid var(--at-border);
-    border-radius: var(--at-border-radius);
+    margin: 0 0 var(--at-spacing-md);
+    padding: 0;
+    border: 0;
   }
 
   .night-out :global(legend) {
-    padding-inline: 0.4rem;
+    padding: 0;
     color: var(--at-text-secondary);
     font-size: 0.75rem;
     letter-spacing: 0.08em;
+    line-height: 1.6;
     text-transform: uppercase;
   }
 
-  .night-out :global(fieldset label) {
-    display: block;
-    margin-block: 0.15rem;
+  .night-out :global(.night-sources) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--at-spacing-xs) var(--at-spacing-lg);
+  }
+
+  .night-out :global(.night-sources label) {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--at-font-size-sm);
   }
 
   .night-out :global(input[type="radio"]) {
     accent-color: var(--at-primary);
-    margin-inline-end: 0.4rem;
+    margin: 0;
+  }
+
+  .night-out :global(p) {
+    margin-block: 0 var(--at-spacing-md);
   }
 
   /* The two figures.
@@ -1162,8 +1310,13 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
       );
 
       const fieldset = make("fieldset");
-      const legend = make("legend", undefined, "Whose record to read");
-      fieldset.append(legend);
+      fieldset.append(make("legend", undefined, "Whose record to read"));
+      // The options in a row under their label, which is the same shape as
+      // every other field in this component: a small uppercase name with its
+      // control beneath it. The fieldset keeps the grouping for a screen
+      // reader and gives up its box, since the only outline on the page is the
+      // one around the whole component.
+      const options = make("div", "night-sources");
       groups.forEach((group, index) => {
         const label = make("label");
         const radio = document.createElement("input");
@@ -1175,8 +1328,9 @@ const SAMPLE = "/samples/apple-health-sleep-sample.xml";
           if (radio.checked) drawNight(group, host);
         });
         label.append(radio, document.createTextNode(group.source));
-        fieldset.append(label);
+        options.append(label);
       });
+      fieldset.append(options);
       out.append(fieldset);
     } else {
       out.append(
