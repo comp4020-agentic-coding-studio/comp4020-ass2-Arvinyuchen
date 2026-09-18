@@ -42,8 +42,6 @@ built pages: four live, two on the home page
 The paragraph floor reached the briefs; the eight it caught were rewritten by
 argument, not padded
 ([`4f47077`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/4f47077)).
-Rule 4 kept week 1's sleep reader from comparing instruments, which is week 3's
-method, so no feature ate another week.
 
 ## Keeping it factual
 
@@ -76,7 +74,6 @@ raised week 1 to medium risk with the three safety fields the schema demanded
 The author decided it was not useful, so it all came out, risk change and week
 3's rewording included
 ([`5854c29`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-Arvinyuchen/commit/5854c29)).
-The files stay, headed as not mounted.
 
 ## How I knew, and what it cannot see
 
