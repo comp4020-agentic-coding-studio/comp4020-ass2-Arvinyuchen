@@ -251,12 +251,10 @@ const PAPER_ROWS = 14;
         </button>
       </p>
 
-      <p class="recorder-privacy">
-        Nothing here is saved. This page sends nothing anywhere, writes nothing to this browser, and
-        loses the lot when the tab is closed or reloaded. The file you save is the only copy and it
-        is yours, which is what the course's policy on{" "}
-        <a href={withBase("/policies/#the-records-you-make-are-yours")}>the records you make</a> says
-        too.
+      <p class="tool-footer">
+        Nothing here is saved and nothing is sent: the file you save is the only copy, and{" "}
+        <a href={withBase("/policies/#the-records-you-make-are-yours")}>the records you make</a> are
+        yours.
       </p>
     </div>
 
@@ -1391,13 +1389,37 @@ const PAPER_ROWS = 14;
     }
   }
 
-  /* Standing alone under the button now that the hint between them has gone,
-     so it takes the gap the hint used to hold open: the two margins that met
-     here were both --at-spacing-xs and collapsed to four pixels, which read as
-     a caption on the button rather than as the page's own promise. */
-  .recorder-privacy {
-    margin-block: var(--at-spacing-sm) var(--at-spacing-md);
-    font-size: var(--at-font-size-sm);
+  /* The footer, and it is a convention rather than a paragraph.
+   *
+   * This was four lines of prose making the whole promise at length. The
+   * policies page carries the actual policy, so the long version was the claim
+   * written out twice, and the author has cut it to one line.
+   *
+   * It is not cut to nothing, which was the other option offered. This sheet
+   * asks a student to write out an entire day of their life into a form on a
+   * web page. Saying nothing at all about where that goes, on the page where
+   * the writing happens, is worse than a sentence that repeats a policy: a
+   * promise kept only on a page the reader has to go and find is a promise
+   * made to somebody else. One line costs one line and keeps the claim next to
+   * the act it is about, and the link carries whoever wants the rest of it.
+   *
+   * A hairline, a step down in size and ink, and the box's own padding
+   * underneath, so the line is the last thing inside the box and never looks
+   * like it fell out of it. It was briefly one of a matched pair, the sleep
+   * reader under this one ending the same way, and that component has since
+   * been taken off the week. This is the page's last line now, which is the
+   * right last line for it to have: the sheet, the control that takes it away,
+   * and then what the page does not keep.
+   *
+   * It does not print, and needs no rule to say so: the print stylesheet hides
+   * .recorder-live whole, which is where this sits. The printed record makes
+   * the promise itself, in its own foot line. */
+  .tool-footer {
+    margin-block: var(--at-spacing-lg) 0;
+    padding-block-start: var(--at-spacing-sm);
+    border-block-start: 1px solid var(--at-divider);
+    color: var(--at-text-muted);
+    font-size: var(--at-font-size-xs);
   }
 
   .recorder-tools {
