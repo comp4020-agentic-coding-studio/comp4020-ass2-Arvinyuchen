@@ -11,9 +11,11 @@ marking:
   mode: weighted
   criteria:
     - name: The change is traced to a sentence of guidance you have actually read
-      weight: 25
-    - name: The measure could detect a difference the size of the one you propose
       weight: 20
+    - name: The order of your two conditions is balanced, or you say why it cannot be
+      weight: 10
+    - name: The measure could detect a difference the size of the one you propose
+      weight: 15
     - name: The stopping rule is specific, and decided in advance
       weight: 15
     - name: You state what result would prove you wrong
@@ -37,6 +39,9 @@ spec:
   - >-
     it answers week 2's four questions about that sentence, in the order week 2
     asks them
+  - >-
+    it fixes the order the changed and unchanged days run in, and says how that
+    order is balanced or why this change cannot be ordered
   - >-
     it states one measure, the smallest difference that measure could detect,
     and where that figure came from
@@ -78,7 +83,21 @@ then, and in week 12 you run part of it again and account for the difference.
    short of the thing you are changing, say where it stops and that the rest is
    yours. Guidance narrows to a group and then runs out, and every reader of it
    has to close that last gap themselves.
-5. **The measure**, [operationalised](/glossary/#operationalise) as in week 2's
+5. **The order.** The changed block has to be compared against something, and
+   the something is the same block left alone, so say here which days run changed
+   and which run as they are. Fix that pattern now rather than deciding it each
+   morning. If every changed day comes first and every unchanged day second, "the
+   second stretch was better" and "I had got the hang of it by then" arrive as
+   the same sentence, and [counterbalancing](/glossary/#counterbalancing) is what
+   separates them: alternate, so that being second happens equally often to both.
+   Some changes will not alternate, because what you did on Monday is still in
+   you on Tuesday. Caffeine, bedtime and anything else that accumulates cannot be
+   swapped day by day, and a day by day swap would measure the accumulation
+   rather than the change. If yours is one of those, say so, say how you can
+   tell, and use week 5's [withdrawal design](/glossary/#withdrawal-design)
+   instead: a stretch as you are, a stretch changed, a stretch back as you were,
+   with the length of each one fixed here.
+6. **The measure**, [operationalised](/glossary/#operationalise) as in week 2's
    lab: what you will write down, when, and how long one recording takes. Then
    the part week 3 was for. State the smallest difference this measure could
    detect, and where that figure came from. Your two instruments disagreed by
@@ -86,12 +105,12 @@ then, and in week 12 you run part of it again and account for the difference.
    disagreement is one you have already shown yourself you cannot see. If the
    measure is new this week, say how you will find its spread before you rely on
    it.
-6. **The stopping rule.** When you stop, and what would make you stop earlier
+7. **The stopping rule.** When you stop, and what would make you stop earlier
    than that. Fixed now, in writing, the way week 5 fixed the end of its removal
    phase before the removal began. Every week of this course above the lowest
    risk publishes one before it asks you to do anything, and a plan to change
    your own day owes you the same.
-7. **What would prove you wrong.** A specific result, a number, a direction or a
+8. **What would prove you wrong.** A specific result, a number, a direction or a
    pattern, that you would accept as the change having failed.
 
 ## One worked trace
@@ -108,18 +127,22 @@ in a separate final report. So the sentence is in force, it is addressed to you,
 it is a recommendation rather than a tip, and how sure it is, this page will not
 say.
 
-What the guidance does not tell you is how long a break is, or where in a
-Thursday evening to put one. That is the part you are writing, and saying so in
-the document is worth more than quietly letting the guideline appear to have
-covered it.
+What the guidance does not tell you is how long a break is, where in a Thursday
+evening to put one, or which evenings to run changed and which to leave alone.
+That is the part you are writing, and saying so in the document is worth more
+than quietly letting the guideline appear to have covered it. Here the ordering
+is easy, because the block is at that desk most weeknights and standing up for
+two minutes is over by the time you sit back down: the two conditions alternate
+night by night, and neither of them is always the second one you tried.
 
 ## Why the last one carries the most marks
 
 Because it is the one that cannot be written afterwards. Everything else in the
 list can be reconstructed from memory once you know how things turned out, and
 reconstructed honestly, with no intent to mislead. The block was in your week 1
-record, the guideline is still published, the measure is in your hand and the
-stopping rule is a decision you could describe truthfully in October. What
+record, the guideline is still published, the measure is in your hand, the order
+is a pattern of dates anyone can read off the record, and the stopping rule is a
+decision you could describe truthfully in October. What
 cannot be reconstructed is what you would have counted as failure before you
 knew. Writing it down in advance is the only way that sentence means anything,
 and it is why this piece is due before the fortnight rather than after it.
