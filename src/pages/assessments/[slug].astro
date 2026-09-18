@@ -1,10 +1,50 @@
 ---
+// An assessment brief, laid out the way a lecture and a lab page are.
+//
+// BaseLayout rather than ContentLayout, for the reason the other two routes
+// give: ContentLayout renders `description` twice, once as the
+// <meta name="description"> and once as a visible lead paragraph under the
+// title, with no way to keep the first without the second. A course page does
+// not want a subtitle. So the heading and the metadata line are rendered here,
+// and `description` still goes to BaseLayout, where it goes on doing its real
+// jobs in search results and on the assessment cards.
+//
+// This route was the last one still on ContentLayout, so a reader moving from a
+// lecture to a lab to a brief met a subtitle on exactly one of the three, and
+// met the due date and the weight as bold body prose sitting above the brief
+// rather than as the quiet line of metadata the other two put under the title.
+//
+// What is on that line, and why those three.
+//
+// Week, due date, weight. The week comes first because that is where it sits on
+// the other two pages: a lecture is titled "Week 6: ..." and a lab "Week 6 Lab:
+// ...", so the week is the first thing a reader of either meets. An assessment
+// is titled by name, and this brief was asked to unify the layout without
+// touching the body, which includes not renaming the four pieces, so the week
+// would otherwise have disappeared from the page entirely. It earns the place
+// on its own terms too: the four deadlines are 2 April, 30 April, 14 May and 27
+// May, four Fridays that blur together, and weeks 6, 8, 10 and 12 do not.
+//
+// Each item says what it is rather than carrying a label, because that is what
+// "6 min read" does on the other two: no colons, and .page-meta supplies the
+// separators itself. "Worth 35%" and not "35% of the course", which is the
+// longer phrase this started with and which tipped the line onto a second row
+// at 390px, where the lecture's and the lab's both fit on one. The assessments
+// index already frames the set as four pieces totalling 100%, so the shorter
+// form loses nothing.
+//
+// There is no read time. A lecture and a lab are pages you read, and how long
+// that takes is a fair thing to promise. A brief is a page you work from, over
+// weeks, and the duration a student actually wants is the assessment's, which
+// nothing here knows. The number would also be wrong: readingMinutes() counts
+// the body, and a good half of this page is the marking table and the spec
+// list, which are not in it.
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
 import RelatedContent from "astro-course-university/components/RelatedContent.astro";
 import SpecList from "astro-course-university/components/SpecList.astro";
 import Callout from "astro-theme-university/components/Callout.astro";
-import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import BaseLayout from "astro-theme-university/layouts/BaseLayout.astro";
 import MarkingModel from "../../components/MarkingModel.astro";
 import { formatCourseDate } from "../../lib/dates";
 import SiteChrome from "../../components/SiteChrome.astro";
@@ -20,14 +60,34 @@ export async function getStaticPaths() {
 
 const { assessment } = Astro.props;
 const { Content } = await render(assessment);
+
+// Matches the name ContentLayout derived here until now, and the name the
+// assessment card on the index page derives from its href, so the view
+// transition from the card still lands on this heading.
+const transitionName = `card-title-${Astro.url.pathname.replace(/^\/|\/$/g, "").replace(/\//g, "-")}`;
 ---
 
-<ContentLayout
+<BaseLayout
   title={assessment.data.title}
-  description={assessment.data.description}
+  description={assessment.data.description ?? undefined}
   {...siteConfig}
 >
   <SiteChrome />
+  <h1 transition:name={transitionName}>{assessment.data.title}</h1>
+
+  <p class="page-meta">
+    <span>Week {assessment.data.week}</span>
+    <span>Due {formatCourseDate(assessment.data.due)}</span>
+    <span>Worth {assessment.data.weight}%</span>
+  </p>
+
+  {
+    /* Under the metadata line rather than over it, which is where the lab route
+       puts its safety block: the title and the line beneath it are one unit,
+       and a banner wedged between them separates a heading from the date that
+       belongs to it. It stays above the brief, because a warning that the brief
+       may change is only useful before the brief has been read. */
+  }
   {
     assessment.data.draft && (
       <Callout type="warning">
@@ -37,7 +97,7 @@ const { Content } = await render(assessment);
       </Callout>
     )
   }
-  <p><strong>Due:</strong> {formatCourseDate(assessment.data.due)} · <strong>Weight:</strong> {assessment.data.weight}%</p>
+
   <Content />
   {assessment.data.marking && <MarkingModel marking={assessment.data.marking} />}
   <div class="apparatus">
@@ -47,4 +107,4 @@ const { Content } = await render(assessment);
     </SpecList>
     <RelatedContent entry={assessment} collections={graphCollections} />
   </div>
-</ContentLayout>
+</BaseLayout>
