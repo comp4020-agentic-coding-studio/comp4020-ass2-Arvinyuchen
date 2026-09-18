@@ -10,23 +10,7 @@ phase: realisation
 method: naturalistic baseline
 component: the whole day
 needs: []
-risk: med
-stopping_rule: >-
-  Read the one night once. Stop if you find yourself typing in a second date to
-  see what another night looked like, or if what the screen said is still with
-  you an hour after you closed it. Tell your tutor you stopped. Stopping is a
-  result here and is marked as one.
-harm_boundary: >-
-  Nothing this week asks you to sleep differently, and nothing asks you to
-  sleep tonight in a way that would read better tomorrow. The night you read
-  has already happened and cannot be altered by reading it. It is not a health
-  reading either: nobody teaching this course can tell you what your sleep data
-  means, and the page does not try.
-opt_out: >-
-  Fill the sleep block from memory, the way you fill the rest of the day. That
-  is the week's own method, it needs no watch and no file, and it costs no
-  marks. If you would still like to see what an instrument records, read the
-  generated sample night published on this page instead of your own.
+risk: low
 claims: []
 spec:
   - you arrive with twenty-four continuous hours recorded
@@ -35,7 +19,6 @@ spec:
 ---
 
 import DayRecorder from "../../components/DayRecorder.astro";
-import SleepFromHealthExport from "../../components/SleepFromHealthExport.astro";
 
 ## What we do in the lab
 
@@ -70,39 +53,3 @@ the lot when the tab closes, so print the sheet or save it as a PDF before you
 leave the page.
 
 <DayRecorder />
-
-## The block you were not awake for
-
-The sheet closes on the one stretch of the day you could not write down while it
-happened. Every other hour goes on the page from inside it, which is the whole
-instruction and the reason the sheet exists; sleep is the only part of the
-twenty-four hours that has to be reconstructed afterwards, in the morning, from
-a night you were absent for. You will put something in that block anyway,
-because the day has to close, and what you put there is a different kind of
-record from everything above it.
-
-If you wear a watch, or your phone spent the night on the mattress, something
-was awake for those hours and wrote down what it thought was going on. The
-reader below opens one night of that. You give it the date of the day you are
-recording and the `export.xml` file out of the Health app, and it tells you what
-the instrument had you doing between midday on that day and midday on the next.
-That is the whole of what it does. It does not score your night, does not tell
-you what any of it means, and does not put its numbers beside yours: reading two
-instruments against each other is week 3, and turning up to that week having
-already done it is worse than turning up cold.
-
-None of this stops week 1 being a baseline. You are not asked to sleep
-differently, to go to bed at a different time, or to lie there knowing you are
-being measured, and the night you open is one that has already finished. There
-is also a route through all of it without a watch and without a file, described
-on the block itself, and it is the week's own method rather than a consolation
-prize.
-
-Which leaves the question of why a lab that changes nothing carries a stopping
-rule at the top of the page. It is not the day that can cost you something here,
-it is the data: a number about your own body, produced overnight by a device,
-is the first thing in this course with any power to bother you. Week 3 gives
-that its name, its evidence and the full version of the rule. This week has the
-mild form of it, and the mild form still gets a rule.
-
-<SleepFromHealthExport />

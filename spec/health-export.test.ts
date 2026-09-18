@@ -1,4 +1,10 @@
-// The week 1 sleep reader, tested against the sample export the course ships.
+// The sleep reader's parser, tested against the sample export beside it.
+//
+// The reader this was built for is no longer mounted on any lab: the author
+// took it off week 1 and kept the code. These tests still earn their place,
+// because what they cover is the parser and the sample file, both of which are
+// still in the repo, and because the contracts below are the ones anyone
+// putting it back would have to honour again.
 //
 // Two of these are contracts the lab makes to a student and the rest are the
 // one bug this parser can actually have.

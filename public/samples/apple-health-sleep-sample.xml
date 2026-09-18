@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  A sample Apple Health export, for SLOP1638 week 1.
+  A sample Apple Health export, for SLOP1638.
 
-  Every record in this file was generated. It describes nobody: there is no
-  person called Ada, no watch, and no night. It exists because the week 1 lab
-  reads a real export in the browser and a course that asked for a real one to
-  demonstrate with would be publishing somebody's sleep history permanently.
+  Nothing on the site reads this at the moment. It was made for a sleep reader
+  on the week 1 lab, which the author has since taken off the page; the reader
+  and this file were both kept rather than deleted. It is still what
+  spec/health-export.test.ts runs against, so it is not dead weight.
 
-  What it is for: a student with no watch, or one who would rather not hand
-  their own health export to a web page, reads this instead and takes the same
-  thing out of it. Week 3 uses it too, where the point is that the two sources
-  below disagree about the same night.
+  Every record in it was generated. It describes nobody: there is no person
+  called Ada, no watch, and no night. That was the point from the start, because
+  a course that demonstrated with a real export would be publishing somebody's
+  sleep history permanently, and a later deletion would not retract it.
 
   What it carries, because each of these is a shape the reader has to survive:
 
