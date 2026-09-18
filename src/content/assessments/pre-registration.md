@@ -115,15 +115,21 @@ covered it.
 
 ## Why the last one carries the most marks
 
-Because it is the one that cannot be written afterwards.
-
-Everything else in the list can be reconstructed from memory once you know how
-things turned out, and reconstructed honestly, with no intent to mislead. What
+Because it is the one that cannot be written afterwards. Everything else in the
+list can be reconstructed from memory once you know how things turned out, and
+reconstructed honestly, with no intent to mislead. The block was in your week 1
+record, the guideline is still published, the measure is in your hand and the
+stopping rule is a decision you could describe truthfully in October. What
 cannot be reconstructed is what you would have counted as failure before you
-knew. Writing it down in advance is the only way that sentence means anything.
+knew. Writing it down in advance is the only way that sentence means anything,
+and it is why this piece is due before the fortnight rather than after it.
 
 ## A note on what is being marked
 
 Your expectation does not have to be correct: a comprehensively wrong prediction
 can score full marks. You are marked on whether the document was specific enough
-to be wrong at all.
+to be wrong at all. Nobody reading it knows how your fortnight went, and nothing
+in the mark waits to find out, because marking the outcome would hand the marks
+to whoever happened to start on a bad week and return to an ordinary one. That
+is arithmetic rather than inference, and week 9 is where you watch it happen to
+somebody who thought it was a result.
