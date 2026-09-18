@@ -718,22 +718,17 @@ const PAPER_ROWS = 14;
    * exact: a three hour block is 180px and holds three hours of writing. Below
    * it, a fifteen minute block would be fifteen pixels, which cannot hold a
    * word or a time field, so everything shorter than the floor is drawn at it.
-   * The floor is whatever the first column's contents actually need, and it
-   * has moved: it was 30px when that column held a time field alone, and the
-   * author has since had the duration stacked under the time, which measures
-   * 25.1px of field over 16.2px of text. 44px is that stack with a pixel to
-   * spare, so the rule is now "three quarters of an hour and over is to
-   * scale".
    *
-   * The fourteen minutes that buys are a real loss and they are not hidden
-   * here: a 30 minute block, which is what every press of Open the next block
-   * makes, is now drawn the same height as a 44 minute one. The reason for
-   * paying it is in the column it bought. Stacked, that column states the
-   * length of every block in words, including the short ones the drawing is
-   * least honest about, and it does so without taking the width off the
-   * writing field. A drawing that is approximate below 44 minutes but says
-   * "30 min" on the block beats one that is approximate below 30 and makes the
-   * reader subtract two clock times to find out.
+   * The floor is 30 minutes, which is 25.4px of time field and the air around
+   * it, and the only blocks this drawing renders inexactly are the ones under
+   * half an hour. It went to 44px for one commit, because the duration had
+   * just been stacked under the time and the stack measures 41.6px, and that
+   * made every default block wrong: Open the next block makes a 30 minute
+   * block, so the commonest row on the sheet was being drawn at the height of
+   * a 44 minute one. The floor is the instrument's own limitation and there is
+   * no longer a line on the page admitting to it, so it has to be as small as
+   * the contents allow. It is the contents that give way instead, in
+   * .tl-block.is-brief below.
    *
    * A line under the drawing used to say so whenever it was true of a block,
    * and the author has had it out: a minimum mark size is the instrument's
@@ -747,7 +742,34 @@ const PAPER_ROWS = 14;
    * minute block rather than assumed: both times render, and so do the writing
    * field and the mark. */
   .tl-block {
-    height: max(44px, calc(var(--mins, 60) * var(--px-per-min)));
+    height: max(30px, calc(var(--mins, 60) * var(--px-per-min)));
+  }
+
+  /* The short row, which shows the time and not the duration.
+   *
+   * A block under three quarters of an hour has no room for the stack, so the
+   * cell falls back to the line it had before the duration was added to it.
+   * The duration is not deleted, only taken out of the drawing: it stays in the
+   * row for a screen reader, it is on the printed sheet as a number, and the
+   * next boundary line is one row down with the time on it, which is how the
+   * length of any block on this sheet is read.
+   *
+   * Side by side was the other way to keep it and the measurements rule it out.
+   * At a 390px viewport the column is 99px and the time field is 79.5, so there
+   * are 14.1px beside it. "30 min" is 45.1px and does not fit. An abbreviated
+   * "30m" is 30.6px and does not fit either: buying it means a 115.5px column,
+   * which takes the writing field from 106.5px to 90. At 1100px the column is
+   * 117 and "30m" does fit, by 1.5px, so the abbreviation would be a form that
+   * exists at one width and not the other. It would also be a third way of
+   * spelling a unit this component was told to settle once, as "24 h" and
+   * "30 min", and inventing a second notation is not a call to make here. */
+  .tl-block.is-brief .tl-span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* Flush with the line, which is the whole point of the column.
@@ -759,10 +781,10 @@ const PAPER_ROWS = 14;
    * together now.
    *
    * It also buys back the room the rest of the cell needs. The field is 25.1px
-   * and the duration under it is 16.2, so the stack is 41.3 in a 44px row: at
-   * the old offset it would have finished past the next boundary, which on a
-   * sheet where a horizontal line means a time is a mark crossing a line that
-   * means something. */
+   * and the duration under it is 16.2, so the stack is 41.3 and the shortest
+   * row it is ever drawn in is 45: at the old offset it would have finished
+   * past the next boundary, which on a sheet where a horizontal line means a
+   * time is a mark crossing a line that means something. */
   /* Column one: when the block started, and how long it ran, stacked.
    *
    * They were side by side and they are stacked now, at the author's
@@ -782,12 +804,14 @@ const PAPER_ROWS = 14;
    * it is 5.5rem where it was 6.5. What the writing field actually ends up with
    * at 390 is 105.3px against 115px before, because the third column took some
    * of it back when the mark became a button wide enough to hold the word
-   * "Change": ten pixels of writing width for a stated duration on every block
-   * and a control a finger can hit. Every duration fits on one line at every
-   * width.
+   * "Change": ten pixels of writing width for a stated duration and a control a
+   * finger can hit. Every duration fits on one line at every width.
    *
-   * What the stack costs is the floor, and the cost is stated on .tl-block. */
+   * What the stack costs is the short rows, which cannot hold it and show the
+   * time alone. See .tl-block.is-brief, which is where the floor is paid for
+   * instead. */
   .tl-when {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-self: start;
@@ -870,14 +894,21 @@ const PAPER_ROWS = 14;
      * the commonest row was 30px, the field sat 25 of them, and an underline
      * would have landed about five pixels above a real boundary, which on a
      * sheet where a horizontal line means a time is a misreading waiting to
-     * happen. That geometry is gone. The author has since had the duration
-     * stacked under the time, so the field no longer sits at the bottom of its
-     * cell: measured in the page, the rule lands at y=25 of a 44px row with the
-     * duration on the line under it and the next boundary 19px below, and the
-     * duration is between them. The rule is also the width of the field rather
-     * than the width of the row, which is how a reader tells a rule to write on
-     * from a line that means a time, and it is the same idiom the printed
-     * masthead already uses for "Date" and "Woke at".
+     * happen. Measured in the page now that the cell has two forms: on a
+     * stacked row the rule lands at y=25.1 with the duration on the line under
+     * it and the next boundary 19.2px below, and on a brief row the old
+     * geometry is back, 4.2px of clear space in a thirty pixel row.
+     *
+     * Which is the honest version of the original objection, and it is kept
+     * rather than argued away: on the shortest rows this is a hairline four
+     * pixels above a boundary. What makes it readable anyway is the thing the
+     * first argument missed, which is length. The rule is 79.2px, the width of
+     * the field it belongs to; the boundary is 298.5px, the width of the row.
+     * A reader is not comparing two lines of the same kind at four pixels, they
+     * are looking at a short mark under some digits and a long one across the
+     * sheet. It is the same idiom the printed masthead already uses for "Date"
+     * and "Woke at", where a rule to write on also runs under the words and not
+     * across the page.
      *
      * The ink is the brand rather than the border token, and that was measured
      * rather than assumed. --at-border is the obvious choice and it comes to
@@ -1618,11 +1649,12 @@ const PAPER_ROWS = 14;
 
   /* A wider margin once there is room for one, so the longest durations sit on
      one line instead of wrapping. Width only: the type in the column stays the
-     size it is at every width, because the stack's height is what the floor
-     pays for and a larger field would push the floor up again. The flag's own
-     size used to step up here too, and does not now, since the word in it is
-     the state of a control rather than a label beside one and a control that
-     changes size between widths is a second thing to learn. */
+     size it is at every width, because the height of the stack is what decides
+     how many rows can draw their duration at all, and a larger field would push
+     that threshold up. The flag's own size used to step up here too, and does
+     not now, since the word in it is the state of a control rather than a label
+     beside one and a control that changes size between widths is a second thing
+     to learn. */
   @media (width >= 40rem) {
     .tl-row {
       grid-template-columns: 6.5rem minmax(0, 1fr) 4.65rem;
@@ -1980,6 +2012,14 @@ const PAPER_ROWS = 14;
   // and an hour is not useless, sits either side of it.
   const DEFAULT_BLOCK = 30;
 
+  // Where the first column stops stacking. A block is its minutes in pixels,
+  // the stack of time over duration measures 41.6px, and 45 rather than 42 is
+  // the margin: 42 leaves four tenths of a pixel, which is inside the rounding
+  // this page does at a device pixel ratio of 1.333, and 45 leaves 3.4px and is
+  // a number a reader can hold. Blocks of three quarters of an hour and over
+  // show both lines; shorter ones show the time.
+  const STACK_MIN = 45;
+
   /** Which field holds the wake time: the first block's, or the end row's when
    * no block has been drawn yet. Both are the same line on the drawing. */
   const wakeInputOf = (root: HTMLElement): HTMLInputElement => {
@@ -2027,10 +2067,34 @@ const PAPER_ROWS = 14;
       // on every keystroke cannot be typed into at all.
       if (document.activeElement !== input) input.value = start;
       input.dataset.clock = start;
-      // How long it ran, beside when it started. Derived and never typed: the
+      // How long it ran, under when it started. Derived and never typed: the
       // boundary is the handle, and this is the distance between two of them.
+      // Always written, whether or not the row is tall enough to draw it, so
+      // the text a screen reader reaches and the text the printed sheet uses
+      // come from the same line of code as the one on the page.
       const span = block.querySelector<HTMLElement>("[data-span]");
       if (span) span.textContent = formatSpan(minsOf(block));
+      // Whether it is drawn. Two reasons a row shows the time alone.
+      //
+      // The first is room: under STACK_MIN the row is shorter than the stack,
+      // and a cell taller than its own row would push into the block below it,
+      // which on this drawing means writing over somebody's afternoon.
+      //
+      // The second is that it is being dragged, and that one is about flicker
+      // rather than about room. The threshold sits somewhere on the page, and a
+      // hand holding a line near it would cross back and forth over it, so the
+      // duration would blink on and off under the pointer. Hysteresis was the
+      // other candidate and it is worse: two thresholds mean the same forty
+      // five minute block renders one way or the other depending on how it got
+      // there, so two blocks of the same length could disagree, and a drawing
+      // whose marks depend on their history is not one you can read. Holding
+      // the brief form for the whole pull costs nothing, because the grip's own
+      // readout is showing the end time and the duration under the pointer for
+      // every frame of the drag. The form settles once, on release.
+      block.classList.toggle(
+        "is-brief",
+        minsOf(block) < STACK_MIN || block.classList.contains("is-dragged"),
+      );
       block.style.setProperty("--mins", String(minsOf(block)));
       // The mark, in its three channels. The word in the button is the state,
       // the fill behind it is the state, and the gold rule on the writing cell
@@ -2494,8 +2558,13 @@ const PAPER_ROWS = 14;
       // instrument is allowed to let them.
       const room = remainingMins(root) + (drag.block ? minsOf(drag.block) : 0);
       const minutes = Math.min(Math.max(Math.round(pulled), MIN_BLOCK), Math.max(MIN_BLOCK, room));
-      if (!drag.block) drag.block = openBlock(root, minutes);
-      else {
+      // Marked before the layout that reads it, so the cell under the pointer
+      // keeps one form for the whole pull. See the is-brief toggle in layout().
+      if (!drag.block) {
+        drag.block = openBlock(root, minutes);
+        drag.block?.classList.add("is-dragged");
+      } else {
+        drag.block.classList.add("is-dragged");
         setMins(drag.block, minutes);
         layout(root);
       }
@@ -2515,6 +2584,12 @@ const PAPER_ROWS = 14;
     const grip = drag.grip;
     drag = null;
     timelineOf(root).classList.remove("is-dragging");
+    // Released, so the cell settles into whichever form its final length fits.
+    // Before the early return below, because a cancelled drag has to settle too.
+    if (block) {
+      block.classList.remove("is-dragged");
+      layout(root);
+    }
     const readout = root.querySelector<HTMLElement>("[data-readout]");
     if (readout) readout.textContent = "";
     if (!commit) return;
