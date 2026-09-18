@@ -23,11 +23,10 @@ spec:
 ---
 
 Four protocols, chosen by you from weeks 1 to 8, collected with their raw
-records. Roughly a page each.
-
-This is the least glamorous piece of assessment in the course and the one that
-will teach you the most, because writing a protocol down for somebody else to
-run is how you discover which parts of it you had been improvising.
+records, roughly a page each. This is the least glamorous piece of assessment in
+the course and the one that will teach you the most, because writing a protocol
+down for somebody else to run is how you discover which parts of it you had been
+improvising.
 
 ## What each one needs
 
@@ -47,10 +46,10 @@ either, in October, when you need it for the replication.
 
 Every protocol has a blind spot, and week 2 was about choosing which one you
 could live with. A portfolio where all four protocols claim to see everything is
-a portfolio of four protocols nobody has examined.
-
-Say what each one misses. You are marked up for finding a real limitation, not
-marked down for having one.
+a portfolio of four protocols nobody has examined. So say what each one misses,
+as concretely as you can: the nights it could not cover, the difference too small
+for it to register, the thing it records only when you remember to. You are
+marked up for finding a real limitation, not marked down for having one.
 
 ## What is not being marked
 

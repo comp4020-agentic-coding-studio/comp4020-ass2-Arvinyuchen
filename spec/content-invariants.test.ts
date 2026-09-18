@@ -35,6 +35,13 @@ const bodyOf = (id: string): string => {
   return entry.body ?? "";
 };
 
+/** Where a node's prose actually lives. A failure that names an API id sends
+ * the reader to a build artefact; a failure that names a file sends them to
+ * the sentence. */
+const sourceOf = (id: string): string =>
+  [`src/content/${id}.md`, `src/content/${id}.mdx`].find((path) => existsSync(resolve(path))) ??
+  `src/content/${id}`;
+
 /** A node's body split into prose paragraphs, with everything that is not prose
  * removed: frontmatter is already gone, and headings, imports, JSX blocks,
  * lists, tables, blockquotes and fenced code are all dropped. What is left is
@@ -76,7 +83,7 @@ const MINIMUM_GLOSSARY_TERMS = 8;
 // while a stranded single sentence lands between 11 and 20. A floor of 25 sits
 // in the gap: it fails every one-line paragraph found on the site and passes
 // every real one.
-const MINIMUM_LECTURE_PARAGRAPH_WORDS = 25;
+const MINIMUM_PROSE_PARAGRAPH_WORDS = 25;
 
 // Appeals to authority that skip the number. Rule 2 exists to stop these.
 const UNQUALIFIED_APPEALS = [
@@ -298,27 +305,51 @@ describe("rule 3: a stranger can read this course", () => {
     }
   });
 
-  // A lecture paragraph carrying one sentence is a formatting habit, not a
-  // unit of argument. The three blocks under "Find the guidelines that suit
-  // you" were each built as three beats and each beat was given its own
-  // paragraph, which on screen read as three stranded lines instead of one
-  // case: "The same rule gives different instructions at different latitudes."
-  // sitting alone above the evidence for it.
+  // A paragraph carrying one sentence is a formatting habit, not a unit of
+  // argument. The three blocks under "Find the guidelines that suit you" were
+  // each built as three beats and each beat was given its own paragraph, which
+  // on screen read as three stranded lines instead of one case: "The same rule
+  // gives different instructions at different latitudes." sitting alone above
+  // the evidence for it.
+  //
+  // Assessments are held to the same floor as lectures. A brief argues for
+  // what it asks for, at length and in prose: why the falsification item
+  // carries the most marks, why a modified re-run answers a different
+  // question, why the outcome is not marked. Those are claims with support, so
+  // they are paragraphs on the same terms, and the eight stranded lines the
+  // four briefs carried between them were the same formatting habit the
+  // lectures had.
   //
   // Labs are deliberately exempt, and the exemption is the point rather than a
   // loophole. A protocol step is an instruction, and "This week you do not
-  // measure anything." is doing its whole job in seven words. Lectures argue,
-  // so a lecture paragraph owes the reader a claim and its support together.
-  // If a lecture ever genuinely needs a one-line beat, move that line into a
+  // measure anything." is doing its whole job in seven words. If a lecture or
+  // a brief ever genuinely needs a one-line beat, move that line into a
   // Callout, which is the component for exactly that and is not prose.
-  it("builds lecture paragraphs out of arguments, not single sentences", () => {
-    for (const lecture of lectures) {
-      prosePargraphsOf(lecture.id).forEach((paragraph) => {
+  //
+  // What an assessment exempts, checked against all four briefs rather than
+  // assumed from the lectures:
+  //
+  // The non-prose constructions a brief actually carries are the numbered list
+  // of what goes in the submission, the bulleted list of what each protocol
+  // needs, and a worked example. The two lists drop on their first character,
+  // the same way a lecture's lists do, and the worked example turned out to be
+  // ordinary prose that argues and so owes the floor like any other paragraph.
+  // No new exemption was needed for the collection, and inventing one would
+  // have been a hole rather than a rule.
+  //
+  // The exemption that does exist here is structural and worth naming, because
+  // it is invisible: this reads the body, so the frontmatter never reaches it.
+  // A spec line ("both results appear, unaveraged", four words) and a criterion
+  // name are field values rather than paragraphs, and they are doing their
+  // whole job at that length for the same reason a protocol step is.
+  it("builds lecture and assessment paragraphs out of arguments, not single sentences", () => {
+    for (const node of [...lectures, ...assessments]) {
+      prosePargraphsOf(node.id).forEach((paragraph) => {
         const words = paragraph.split(/\s+/).filter(Boolean).length;
         expect(
           words,
-          `${lecture.id} has a ${words}-word paragraph: "${paragraph.slice(0, 60)}...". A lecture paragraph states a claim and supports it, so it runs to at least ${MINIMUM_LECTURE_PARAGRAPH_WORDS} words`,
-        ).toBeGreaterThanOrEqual(MINIMUM_LECTURE_PARAGRAPH_WORDS);
+          `${sourceOf(node.id)} has a ${words}-word paragraph: "${paragraph.slice(0, 60)}...". A paragraph in a lecture or a brief states a claim and supports it, so it runs to at least ${MINIMUM_PROSE_PARAGRAPH_WORDS} words. Merge it into the paragraph it is the claim or the conclusion of, or give it the support it is missing, and do not pad it to length`,
+        ).toBeGreaterThanOrEqual(MINIMUM_PROSE_PARAGRAPH_WORDS);
       });
     }
   });

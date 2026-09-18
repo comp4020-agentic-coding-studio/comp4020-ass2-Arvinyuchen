@@ -136,9 +136,12 @@ check.
 - **Captions carry how to read the figure and the citation, nothing else.** Any
   number read off a figure belongs in body prose at body size. A finding in the
   smallest type on the page is a finding nobody reads.
-- **Paragraphs are units of argument.** Lecture prose runs at least 25 words a
-  paragraph, checked. A single stranded sentence is a formatting habit, not a
-  point. Labs are exempt: a protocol step is an instruction and "This week you
-  do not measure anything." is doing its whole job in seven words.
+- **Paragraphs are units of argument.** Lecture and assessment prose runs at
+  least 25 words a paragraph, checked. A single stranded sentence is a
+  formatting habit, not a point, and a brief that argues for what it asks for
+  owes its reader the same paragraphs a lecture does. Labs are exempt: a
+  protocol step is an instruction and "This week you do not measure anything."
+  is doing its whole job in seven words. Headings, lists, tables, quoted blocks
+  and frontmatter fields are not prose and are counted nowhere.
 - **Fix the harness, not the instance.** When something slips through, add or
   tighten a check rather than patching the single page.

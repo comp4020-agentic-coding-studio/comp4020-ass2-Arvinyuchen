@@ -40,8 +40,11 @@ allowed to mean.
 
 ## What to hand in
 
-Five parts, in this order. The word count covers the first four; the record is
-not counted and is not a summary.
+Five parts, in this order, because the order is the argument: the question, then
+what you did, then what happened, and only then what it is allowed to mean. The
+word count covers the first four. The record is not counted, and it is not a
+summary: a record edited down to the lines that support the conclusion is the one
+part of this that a marker cannot check against anything.
 
 1. **The question**, copied from your pre-registration without editing it. If
    you want to report a different question, that is a departure, and it goes in
@@ -132,14 +135,13 @@ nothing here, and a photograph of a legible paper log loses nothing.
 ## Null results
 
 If nothing happened, report that nothing happened, at the same length and with
-the same care you would have given a positive result.
-
-A null result is not the absence of a finding, and the difference is where the
-marks are. "I found no difference" on its own says nothing, because a design
-that could not have detected a difference produces that sentence too. The
-version that scores is "I found no difference, and given how far my two
-instruments disagreed with each other in week 3, the smallest difference I could
-have detected was larger than the one I went looking for."
+the same care you would have given a positive result. A null result is not the
+absence of a finding, and the difference is where the marks are. "I found no
+difference" on its own says nothing, because a design that could not have
+detected a difference produces that sentence too. The version that scores is "I
+found no difference, and given how far my two instruments disagreed with each
+other in week 3, the smallest difference I could have detected was larger than
+the one I went looking for."
 
 The reason this is insisted on is not politeness about disappointing semesters.
 [Week 12](/sessions/12-unmeasured/) carries the numbers on what happened to a

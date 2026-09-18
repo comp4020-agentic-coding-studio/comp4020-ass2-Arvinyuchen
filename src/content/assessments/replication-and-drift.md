@@ -26,7 +26,11 @@ spec:
 ---
 
 Twelve hundred words. Take one protocol you have already run, run it again
-without changing anything, and explain why the two answers differ.
+without changing anything, and explain why the two answers differ. The explaining
+is the assessment: the second run is half a day of work you have already done
+once, and the account of the gap between the two answers is the rest of it, which
+is why forty-five of the marks sit there and none of them sit on the two answers
+agreeing.
 
 ## Do not improve the protocol
 
@@ -39,7 +43,12 @@ about drift, and the marks for this piece sit in the comparison, which a
 modified protocol destroys.
 
 If the original protocol was genuinely unsafe or unrunnable, say so and stop.
-That is a legitimate finding and it is assessed as one.
+That is a legitimate finding and it is assessed as one: name the line in the
+protocol that fails, say what it would take to make it safe, and say plainly that
+the repaired version is a different protocol and cannot be set beside the first
+run. Every week of this course above the lowest risk published a stopping rule
+and something else to do instead before it asked you to do anything, and this
+piece keeps the same promise.
 
 ## Do not average them
 
@@ -50,11 +59,9 @@ person you are now.
 ## The largest criterion, again, is the account
 
 You need at least one explanation for the difference that is **not** a mistake
-you made.
-
-Looking for errors first is correct, and you should. But after you have looked
-and found nothing, the explanations that remain are the interesting ones: the
-season changed, your workload changed, you have spent a semester learning to
+you made. Looking for errors first is correct, and you should. But after you have
+looked and found nothing, the explanations that remain are the interesting ones:
+the season changed, your workload changed, you have spent a semester learning to
 watch yourself and that changed you too. Week 4 told you the observer was in the
 room. Week 10 told you the subject keeps moving.
 
@@ -65,7 +72,8 @@ course. A submission that explains none of it as sloppiness has not checked.
 
 The last part of this piece, and the last thing you will write for the course, is
 one paragraph: **the expiry date on your own main finding.** When would you need
-to run this again before you trusted it? Say a date and say why.
-
-There is no correct answer. There is a difference between a considered one and a
-shrug.
+to run this again before you trusted it? Say a date and say why. There is no
+correct answer, and there is a difference between a considered one and a shrug: a
+date resting on something that actually moves, the end of semester, the turn of
+the season, the next time your weeks look the way these ones did, is a considered
+one, and a date chosen because it is a round number away is not.
