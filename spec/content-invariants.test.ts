@@ -360,6 +360,94 @@ describe("house style", () => {
   // src/data is exempt on purpose. Those files carry sentences quoted verbatim
   // from national guidance, and editing a source's punctuation to satisfy a
   // house rule would be a worse fault than the dash.
+  // The JSX newline trap, which has now cost this site five sentences.
+  //
+  // A line of prose ending in a word, with an element on the next line, loses
+  // the space between them: the whitespace around a newline is dropped, so
+  //
+  //     collected in the
+  //     <a href="/glossary/">glossary</a>
+  //
+  // ships as "collected in theglossary". It is invisible in the source, where
+  // those two lines look like ordinary wrapped prose, and it is invisible in
+  // review for the same reason, which is why it has happened five times and
+  // twice on the same page. The fix is an explicit {" "} closing the text line.
+  //
+  // Rule 3 is what this defends. A reader who meets "collected in theglossary"
+  // has met a typo, and a course that spends twelve weeks on how carefully an
+  // instrument records things cannot ship prose its own build ran together.
+  //
+  // Read from the built pages and not from the source, because the source is
+  // exactly where it looks fine.
+  //
+  // Two decisions in the pattern, both from measuring the whole site rather
+  // than from taste:
+  //
+  // Only elements that are inline by nature are policed. The first version of
+  // this check included <span> and came back three false positives on one
+  // component, where the span is display: block and starts its own line, so
+  // the space it is missing is a space nobody could see. A test cannot read
+  // the stylesheet to tell those apart, so it stays with the tags that are
+  // always part of a sentence. Dropping <span> also removed the need for a
+  // second exclusion, since every icon marker that had to be special cased was
+  // one.
+  //
+  // Scripts and styles are cut out first. Minified JavaScript is full of
+  // `i<a.length`, which is a comparison and not a sentence.
+  //
+  // The one exclusion left is the theme's own heading anchor, the # link it
+  // appends inside every heading. That one really does touch the heading text,
+  // and it is markup rather than prose.
+  it("never runs a word into the element next to it", () => {
+    const INLINE = "a|b|em|strong|code";
+    const files = globSync("dist/**/*.html");
+    expect(files.length, "no built pages found: this check is pointing at nothing").toBeGreaterThan(
+      0,
+    );
+
+    const startTagAt = (html: string, at: number): string =>
+      html.slice(at, html.indexOf(">", at) + 1);
+    const startTagBefore = (html: string, at: number, name: string): string => {
+      const opened = html.lastIndexOf(`<${name}`, at);
+      return opened === -1 ? "" : startTagAt(html, opened);
+    };
+
+    const found: string[] = [];
+    for (const file of files) {
+      const html = readFileSync(file, "utf8")
+        .replace(/<script[\s\S]*?<\/script>/g, " ")
+        .replace(/<style[\s\S]*?<\/style>/g, " ");
+
+      const wordThenTag = new RegExp(`\\w<(${INLINE})\\b`, "g");
+      const tagThenWord = new RegExp(`</(${INLINE})>\\w`, "g");
+
+      for (const pattern of [wordThenTag, tagThenWord]) {
+        pattern.lastIndex = 0;
+        let match = pattern.exec(html);
+        while (match) {
+          const tag =
+            pattern === wordThenTag
+              ? startTagAt(html, match.index + 1)
+              : startTagBefore(html, match.index, match[1]);
+          if (!tag.includes("at-heading-anchor")) {
+            const around = html
+              .slice(Math.max(0, match.index - 45), match.index + 55)
+              .replace(/\s+/g, " ");
+            found.push(`${file}\n      ...${around}...`);
+          }
+          match = pattern.exec(html);
+        }
+      }
+    }
+
+    expect(
+      found,
+      `a word is touching the element beside it, with no space between them:\n    ${found.join(
+        "\n    ",
+      )}\n  Find that sentence in src/ and close the text line with {" "} before the element: a newline between text and an element is not a space.`,
+    ).toEqual([]);
+  });
+
   it("keeps dashes out of prose", () => {
     const files = [
       ...globSync("src/content/**/*.md"),
